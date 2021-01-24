@@ -1,0 +1,848 @@
+{
+    "fileTypes": [
+        "Script.txt"
+    ],
+    "firstLineMatch": "#RequireContext",
+    "keyEquivalent": "^~M",
+    "name": "ManiaScript",
+    "scopeName": "source.ms",
+    "patterns": [
+        {
+            "include": "#core"
+        }
+    ],
+    "repository": {
+        "brackets": {
+            "patterns": [
+                {
+                    "include": "#round-brackets"
+                },
+                {
+                    "include": "#square-brackets"
+                },
+                {
+                    "include": "#curly-brackets"
+                }
+            ]
+        },
+        "round-brackets": {
+            "patterns": [
+                {
+                    "begin": "\\(",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "meta.brace.round.ms"
+                        }
+                    },
+                    "end": "\\)",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.brace.round.ms"
+                        }
+                    },
+                    "name": "meta.brace.round.ms",
+                    "patterns": [
+                        {
+                            "include": "#expression"
+                        }
+                    ]
+                }
+            ]
+        },
+        "square-brackets": {
+            "patterns": [
+                {
+                    "begin": "\\[",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "meta.brace.square.ms"
+                        }
+                    },
+                    "end": "\\]",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.brace.square.ms"
+                        }
+                    },
+                    "name": "meta.brace.square.ms",
+                    "patterns": [
+                        {
+                            "include": "#expression"
+                        }
+                    ]
+                }
+            ]
+        },
+        "curly-brackets": {
+            "patterns": [
+                {
+                    "begin": "\\{",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "meta.brace.curly.ms"
+                        }
+                    },
+                    "end": "\\}",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.brace.curly.ms"
+                        }
+                    },
+                    "name": "punctuation.definition.block.ms",
+                    "patterns": [
+                        {
+                            "include": "$self"
+                        }
+                    ]
+                }
+            ]
+        },
+        "comments": {
+            "patterns": [
+                {
+                    "begin": "/\\*\\*(?!/)",
+                    "captures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.ms"
+                        }
+                    },
+                    "end": "\\*/",
+                    "name": "comment.block.documentation.ms"
+                },
+                {
+                    "begin": "/\\*",
+                    "captures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.ms"
+                        }
+                    },
+                    "end": "\\*/",
+                    "name": "comment.block.ms"
+                },
+                {
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.comment.ms"
+                        }
+                    },
+                    "match": "(//).*$\\n?",
+                    "name": "comment.line.double-slash.ms"
+                }
+            ]
+        },
+        "keyword-language": {
+            "patterns": [
+                {
+                    "comment": "Common control keywords found in various C style languages",
+                    "match": "\\b(break|continue|do|for|foreach|sleep|yield|return|while|meanwhile|wait)\\b",
+                    "name": "keyword.control.flow.ms"
+                },
+                {
+                    "comment": "Common control keywords found in various C style languages",
+                    "match": "\\b(case|else|if)\\b",
+                    "name": "keyword.control.conditional.ms"
+                },
+                {
+                    "comment": "Keywords specific to maniascript",
+                    "match": "#\\b(Command|RequireContext|Setting|Const|Extends)\\b",
+                    "name": "keyword.control.ms"
+                },
+                {
+                    "match": "(#\\bInclude\\b)\\s+(\".*?\")(\\s+as\\s+\\b(\\w+)\\b){0,1}",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.ms"
+                        },
+                        "2": {
+                            "name": "string.quoted.ms"
+                        },
+                        "4": {
+                            "name": "support.class.ms"
+                        }
+                    },
+                    "name": "meta.include.ms"
+                }
+            ]
+        },
+        "storage-types": {
+            "patterns": [
+                {
+                    "match": "(?<!\\.)\\bText\\b",
+                    "name": "storage.type.text.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bReal\\b",
+                    "name": "storage.type.number.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bIdent\\b",
+                    "name": "storage.type.identity.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bBoolean\\b",
+                    "name": "storage.type.boolean.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bInteger\\b",
+                    "name": "storage.type.integer.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bVec2\\b",
+                    "name": "storage.type.vector-tuple.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bVec3\\b",
+                    "name": "storage.type.vector-triple.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bInt3\\b",
+                    "name": "storage.type.integer-triple.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bInt2\\b",
+                    "name": "storage.type.integer-tuple.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bVoid\\b",
+                    "name": "storage.type.void.ms"
+                }
+            ]
+        },
+        "keyword-storage": {
+            "patterns": [
+                {
+                    "match": "(?<!\\.)\\b(persistent|netread|netwrite|declare|metadata)\\b",
+                    "name": "storage.type.ms"
+                }
+            ]
+        },
+        "language-constant": {
+            "patterns": [
+                {
+                    "match": "(?<!\\.)\\bTrue\\b",
+                    "name": "constant.language.boolean.true.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bFalse\\b",
+                    "name": "constant.language.boolean.false.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bNull\\b",
+                    "name": "constant.language.null.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bNullId\\b",
+                    "name": "constant.language.null.ms"
+                },
+                {
+                    "comment": "Match numbers",
+                    "match": "\\b((0(x|X)[0-9a-fA-F]+)|([0-9]+(\\.[0-9]+)?))\\b",
+                    "name": "constant.numeric.decimal.ms"
+                }
+            ]
+        },
+        "literal-struct": {
+            "patterns": [
+                {
+                    "begin": "(\\#\\bStruct\\b)\\s+\\b(.+?)\\b\\s*(?={)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.control.ms"
+                        },
+                        "2": {
+                            "name": "support.class.structure.ms"
+                        }
+                    },
+                    "end": "}",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.brace.curly.ms"
+                        }
+                    },
+                    "name": "support.struct.ms",
+                    "patterns": [
+                        {
+                            "include": "#comments"
+                        },
+                        {
+                            "match": "(\\w+)((\\[(\\w*)\\]){0,5})\\s+(\\w+)",
+                            "name": "support.struct.property.ms",
+                            "captures": {
+                                "1": {
+                                    "patterns": [
+                                        {
+                                            "include": "#storage-types"
+                                        },
+                                        {
+                                            "include": "#support-classes"
+                                        }
+                                    ]
+                                },
+                                "2": {
+                                    "patterns": [
+                                        {
+                                            "include": "#storage-types"
+                                        },
+                                        {
+                                            "include": "#support-classes"
+                                        }
+                                    ]
+                                },
+                                "5": {
+                                    "name": "variable.type.readwrite.ms"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "match": "(#\\bStruct\\b)\\s+(\\w+)\\s+as\\s+\\b(\\w+)\\b",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.ms"
+                        },
+                        "2": {
+                            "name": "support.class.structure.ms"
+                        },
+                        "3": {
+                            "name": "support.class.structure.ms"
+                        }
+                    },
+                    "name": "support.struct.ms"
+                },
+                {
+                    "match": "(#\\bStruct\\b)\\s+(\\w+)::(\\w+)\\s+as\\s+\\b(\\w+)\\b",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.ms"
+                        },
+                        "2": {
+                            "name": "support.class.ms"
+                        },
+                        "3": {
+                            "name": "support.class.ms"
+                        },
+                        "4": {
+                            "name": "support.class.ms"
+                        }
+                    }
+                }
+            ]
+        },
+        "support-classes": {
+            "patterns": [
+                {
+                    "match": "\\b(TimeLib|MathLib|TextLib|AnimLib|CAchievementsAchievement|CAchievementsAchievementDesc|CAchievementsEvent|CAchievementsManager|CAchievementsStat|CAchievementsStatDesc|CAction|CActionInterface|CActionManager|CAnchorData|CAnimManager|CAnyEditorPlugin|CAudioManager|CAudioSource|CAudioSourceMusic|CBadge|CBadgeEditor|CBadgeManager|CBaseConstEvent|CBaseEvent|CBlock|CBlockClip|CBlockClipList|CBlockModel|CBlockModelClip|CBlockModelVariant|CBlockModelVariantAir|CBlockModelVariantGround|CBlockUnit|CBlockUnitModel|CCampaign|CClient|CCollector|CDataFileMgr|CEditorAsset|CEditorBase|CEditorEditor|CEditorEvent|CEditorMainPlugin|CEditorMesh|CEditorModule|CEditorPluginHandle|CEditorPluginModuleEvent|CEntity|CGhost|CHighScoreComparison|CHighScoreComparisonSummary|CHttpEvent|CHttpManager|CHttpRequest|CImage|CInputEvent|CInputManager|CInputPad|CItemAnchor|CMacroblockInstance|CMacroblockModel|CManiaApp|CManiaAppBase|CManiaAppBrowser|CManiaAppEvent|CManiaAppPlayground|CManiaAppPlaygroundCommon|CManiaAppPlaygroundEvent|CManiaAppStation|CManiaAppTitle|CManiaAppTitleLayer|CMap|CMapBotPath|CMapBotSpawn|CMapEditorPlugin|CMapEditorPluginEvent|CMapEditorPluginLayer|CMapGroup|CMapInfo|CMapLandmark|CMapObjectAnchor|CMapSector|CMapSpawn|CMapType|CMapWaypoint|CMatchSettings|CMatchSettingsManager|CMatchSettingsPlaylistItem|CMlBrowser|CMlCamera|CMlControl|CMlEntry|CMlFileEntry|CMlFrame|CMlGauge|CMlGraph|CMlGraphCurve|CMlLabel|CMlMediaPlayer|CMlMinimap|CMlPage|CMlQuad|CMlScript|CMlScriptEvent|CMlScriptIngame|CMlStation|CMlTextEdit|CMode|CModeTurret|CModeTurretManager|CModeVehicle|CModeVehicleManager|CModuleMenu|CModuleMenuComponent|CModuleMenuFileBrowser|CModuleMenuLayer|CModuleMenuModel|CModuleMenuPageModel|CModulePlayground|CModulePlaygroundChrono|CModulePlaygroundHud|CModulePlaygroundHudModel|CModulePlaygroundInventory|CModulePlaygroundPlayerState|CModulePlaygroundScoresTable|CModulePlaygroundSpeedMeter|CModulePlaygroundStore|CModulePlaygroundTeamState|CNaturalLeaderBoardInfo|CNod|CNotificationsConsumer|CNotificationsConsumerEvent|CNotificationsConsumerNotification|CPackCreator|CPackCreatorPack|CPackCreatorRecipient|CPackCreatorTitleInfo|CParsingDocument|CParsingManager|CParsingNode|CPlayer|CPlaygroundClient|CPlug|CRealLeaderBoardInfo|CReplayInfo|CScore|CScoreMgr|CServerAdmin|CServerInfo|CServerPlugin|CServerPluginEvent|CSmAction|CSmActionEvent|CSmBase|CSmBlock|CSmBlockPole|CSmGauge|CSmLandmark|CSmMapBase|CSmMapGate|CSmMapGauge|CSmMapLandmark|CSmMapType|CSmMlScriptIngame|CSmMode|CSmModeEvent|CSmObject|CSmPlayer|CSmPlayerDriver|CSmScore|CSmSector|CStation|CSystemPlatform|CTaskResult|CTaskResult_BuddiesChallengeRecord|CTaskResult_BuddiesChallengeRecordsComparison|CTaskResult_BuddyChallengeRecordsComparison|CTaskResult_FileList|CTaskResult_GameModeList|CTaskResult_Ghost|CTaskResult_GhostList|CTaskResult_MapList|CTaskResult_MapRecord|CTaskResult_MapRecordList|CTaskResult_ModeInfo|CTaskResult_NaturalLeaderBoardInfoList|CTaskResult_PlayerMapRecords|CTaskResult_RealLeaderBoardInfoList|CTaskResult_ReplayList|CTaskResult_StringIntList|CTeam|CTitle|CTitleControl|CTitleEdition|CTmMapType|CTmMlPlayer|CTmMlScriptIngame|CTmMode|CTmModeEvent|CTmPlayer|CTmRaceClientEvent|CTmResult|CTmScore|CTrackManiaScore|CUIConfig|CUIConfigEvent|CUIConfigMgr|CUILayer|CUser|CUserV2Manager|CUserV2Profile|CVehicleSettings|CVideo|CVideoManager|CXmlRpc|CXmlRpcEvent|CIdent|CInt3|CInteger|CReal|CSHudModule|CText|CVec2|CVec3|CVoid|This)\\b",
+                    "name": "support.class.buildin.ms"
+                }
+            ]
+        },
+        "punctuation": {
+            "patterns": [
+                {
+                    "match": "\\;",
+                    "name": "punctuation.terminator.statement.ms"
+                },
+                {
+                    "match": ",",
+                    "name": "meta.delimiter.comma.ms"
+                }
+            ]
+        },
+        "support-functions": {
+            "patterns": [
+                {
+                    "match": "(?<=\\.)\\b(clear|count|containsonly|containsoneof|slice|exists|existskey|remove|removekey|add|addfirst|sort|sortreverse|sortkey|sortkeyreverse|keyof|tojson|fromjson)\\b(?:\\()",
+                    "name": "support.function.ms"
+                },
+                {
+                    "match": "\\b(log|assert|dump)\\b",
+                    "name": "support.function.ms"
+                }
+            ]
+        },
+        "literal-template-string": {
+            "patterns": [
+                {
+                    "begin": "\"\"\"",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.template-string.begin.ms"
+                        }
+                    },
+                    "end": "\"\"\"",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.template-string.end.ms"
+                        }
+                    },
+                    "name": "string.templatestring.ms",
+                    "patterns": [
+                        {
+                            "include": "#template-string-content"
+                        },
+                        {
+                            "begin": "{{{",
+                            "beginCaptures": {
+                                "0": {
+                                    "name": "punctuation.templatestring.element.begin.ms"
+                                }
+                            },
+                            "end": "}}}",
+                            "endCaptures": {
+                                "0": {
+                                    "name": "punctuation.templatestring.element.end.ms"
+                                }
+                            },
+                            "name": "entity.templatestring.element.ms",
+                            "patterns": [
+                                {
+                                    "include": "#expression"
+                                }
+                            ]
+                        },
+                        {
+                            "include": "text.xml"
+                        }
+                    ]
+                }
+            ]
+        },
+        "operators": {
+            "patterns": [
+                {
+                    "match": "\\s+\\b(as|in|for)\\b(?!\\s*\\()",
+                    "name": "keyword.operator.ms"
+                },
+                {
+                    "match": "!(?!=)|&&|[|]{2}",
+                    "name": "keyword.operator.logical.ms"
+                },
+                {
+                    "match": "=(?!=)",
+                    "name": "keyword.operator.assignment.ms"
+                },
+                {
+                    "match": "%=|&=|\\*=|\\+=|-=|/=|\\^|\\^=|\\|=|<<=|>>=|>>>=",
+                    "name": "keyword.operator.assignment.augmented.ms"
+                },
+                {
+                    "match": "<=|>=|<|>",
+                    "name": "keyword.operator.relational.ms"
+                },
+                {
+                    "match": "==|!=",
+                    "name": "keyword.operator.comparison.ms"
+                },
+                {
+                    "match": "/|%{1}|(?<!\\*)\\*{1}(?!\\*)|(?<!\\+)\\+{1}(?!\\+)|(?<!-)-{1}(?!-)",
+                    "name": "keyword.operator.arithmetic.ms"
+                },
+                {
+                    "match": "::"
+                }
+            ]
+        },
+        "literal-switch": {
+            "patterns": [
+                {
+                    "begin": "(?<!\\.)\\b(switch|switchtype)\\b",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.control.switch.ms"
+                        }
+                    },
+                    "end": "\\}",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.brace.curly.ms"
+                        }
+                    },
+                    "name": "meta.switch.ms",
+                    "patterns": [
+                        {
+                            "include": "#round-brackets"
+                        },
+                        {
+                            "begin": "\\{",
+                            "beginCaptures": {
+                                "0": {
+                                    "name": "meta.brace.curly.ms"
+                                }
+                            },
+                            "end": "(?=})",
+                            "patterns": [
+                                {
+                                    "begin": "(?<!\\.)\\b(case|default)\\b",
+                                    "beginCaptures": {
+                                        "1": {
+                                            "name": "keyword.control.switch.ms"
+                                        }
+                                    },
+                                    "end": "(?=:)",
+                                    "patterns": [
+                                        {
+                                            "include": "#expression"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "include": "$self"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "template-string-content": {
+            "patterns": [
+                {
+                    "name": "entity.templatestring.element.ms",
+                    "begin": "{{{",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "meta.embedded.tag.script.open.ms"
+                        }
+                    },
+                    "end": "}}}",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.embedded.tag.script.close.ms"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#expression"
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.embedded.script.block.ms",
+                    "begin": "(<script>)(<!--|\\<\\!\\[CDATA\\[)",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "meta.embedded.tag.script.open.ms"
+                        },
+                        "1": {
+                            "name": "meta.embedded.tag.comment.open.ms"
+                        }
+                    },
+                    "end": "(-->|\\]\\]>)(\\<\\/script>)",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.embedded.tag.comment.close.ms"
+                        },
+                        "1": {
+                            "name": "meta.embedded.tag.script.close.ms"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "$self"
+                        }
+                    ]
+                }
+            ]
+        },
+        "literal-string": {
+            "patterns": [
+                {
+                    "begin": "(?<!\")\"{1}(?!\"\")",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.string.begin.ms"
+                        }
+                    },
+                    "end": "(\"{1})|([\\n])",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.string.end.ms"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.string.end.illegal.ms"
+                        }
+                    },
+                    "name": "string.quoted.ms",
+                    "patterns": [
+                        {
+                            "include": "#string-content"
+                        }
+                    ]
+                }
+            ]
+        },
+        "function-declaration-parameters": {
+            "patterns": [
+                {
+                    "begin": "\\(",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.parameters.begin.ms"
+                        }
+                    },
+                    "end": "\\)",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.parameters.end.ms"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "match": "[_$a-zA-Z][$\\w]*",
+                            "name": "variable.parameter.function.ms"
+                        },
+                        {
+                            "match": ",",
+                            "name": "punctuation.separator.parameter.function.ms"
+                        },
+                        {
+                            "begin": "=",
+                            "beginCaptures": {
+                                "0": {
+                                    "name": "keyword.operator.assignment.ms"
+                                }
+                            },
+                            "end": "(?=[,)])",
+                            "name": "meta.parameter.optional.ms",
+                            "patterns": [
+                                {
+                                    "include": "#expression"
+                                }
+                            ]
+                        },
+                        {
+                            "include": "#comments"
+                        }
+                    ]
+                }
+            ]
+        },
+        "language-label": {
+            "patterns": [
+                {
+                    "captures": {
+                        "1": {
+                            "name": "support.type.label.ms"
+                        }
+                    },
+                    "match": "\\+{3}\\s*(\\w+)\\s*\\+{3}|\\-{3}\\s*(\\w+)\\s*\\-{3}",
+                    "name": "meta.label.entry.ms"
+                },
+                {
+                    "captures": {
+                        "1": {
+                            "name": "support.type.label.ms"
+                        }
+                    },
+                    "match": "\\*{3}\\s*(\\w+)\\s*\\*{3}",
+                    "name": "meta.label.injector.ms"
+                }
+            ]
+        },
+        "literal-variable": {
+            "patterns": [
+                {
+                    "match": "(?<!(?<!\\.\\.)\\.)\\b(arguments)\\b",
+                    "name": "variable.parameter.ms"
+                },
+                {
+                    "match": "\\w+(?=::)|(?<=::)\\w+",
+                    "name": "entity.name.type.enum.ms"
+                },
+                {
+                    "captures": {
+                        "1": {
+                            "name": "support.class.ms"
+                        },
+                        "2": {
+                            "name": "keyword.operator.accessor.ms"
+                        }
+                    },
+                    "match": "(?x)  \\b([A-Z][\\w]*)\\s*(\\:\\:)",
+                    "name": "meta.property.class.ms"
+                },
+                {
+                    "captures": {
+                        "1": {
+                            "name": "variable.other.object.ms"
+                        }
+                    },
+                    "match": "(?<!\\.)[_a-zA-Z][\\w]*\\s*(?=[\\[\\.])",
+                    "name": "variable.other.class.ms"
+                },
+                {
+                    "captures": {
+                        "2": {
+                            "name": "variable.other.property.ms"
+                        }
+                    },
+                    "match": "(?<=\\.)\\s*[_a-zA-Z][\\w]*",
+                    "name": "variable.other.property.static.ms"
+                },
+                {
+                    "match": "[_a-zA-Z][\\w]*",
+                    "name": "variable.other.readwrite.ms"
+                }
+            ]
+        },
+        "string-content": {
+            "patterns": [
+                {
+                    "match": "\\\\\\s*\\n",
+                    "name": "constant.character.escape.newline.ms"
+                },
+                {
+                    "match": "\\\\(x[\\da-fA-F]{2}|u[\\da-fA-F]{4}|.)",
+                    "name": "constant.character.escape.ms"
+                },
+                {
+                    "captures": {
+                        "1": {
+                            "name": "constant.character.escape.ms"
+                        },
+                        "2": {
+                            "name": "entity.name.format.string.argument.ms"
+                        },
+                        "3": {
+                            "name": "constant.character.escape.ms"
+                        }
+                    },
+                    "match": "(\\$<%)([\\d])(\\$>)",
+                    "name": "meta.string.format.ms"
+                }
+            ]
+        },
+        "literal-for": {
+            "patterns": [
+                {
+                    "begin": "(?<!\\.)\\b(for)\\b",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.control.loop.ms"
+                        }
+                    },
+                    "end": "\\)",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.brace.round.ms"
+                        }
+                    },
+                    "name": "meta.for.ms",
+                    "patterns": [
+                        {
+                            "begin": "\\(",
+                            "beginCaptures": {
+                                "0": {
+                                    "name": "meta.brace.round.ms"
+                                }
+                            },
+                            "end": "(?=\\))",
+                            "patterns": [
+                                {
+                                    "include": "#keyword-storage"
+                                },
+                                {
+                                    "include": "#expression"
+                                },
+                                {
+                                    "include": "#punctuation"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "expression": {
+            "patterns": [
+                {
+                    "include": "#support-classes"
+                },
+                {
+                    "include": "#support-functions"
+                },
+                {
+                    "include": "#comments"
+                },
+                {
+                    "include": "#literal-switch"
+                },
+                {
+                    "include": "#literal-template-string"
+                },
+                {
+                    "include": "#literal-string"
+                },
+                {
+                    "include": "#language-constant"
+                },
+                {
+                    "include": "#keyword-language"
+                },
+                {
+                    "include": "#keyword-storage"
+                },
+                {
+                    "include": "#storage-types"
+                },
+                {
+                    "include": "#literal-struct"
+                },
+                {
+                    "include": "#operators"
+                },
+                {
+                    "include": "#brackets"
+                },
+                {
+                    "include": "#literal-function-call"
+                },
+                {
+                    "include": "#literal-variable"
+                },
+                {
+                    "include": "#literal-for"
+                },
+                {
+                    "include": "#punctuation"
+                },
+                {
+                    "include": "#language-label"
+                }
+            ]
+        },
+        "core": {
+            "patterns": [
+                {
+                    "include": "#expression"
+                }
+            ]
+        },
+        "literal-function-call": {
+            "patterns": [
+                {
+                    "captures": {
+                        "1": {
+                            "name": "entity.name.function.ms"
+                        },
+                        "2": {
+                            "name": "meta.group.braces.round.function.arguments.ms"
+                        }
+                    },
+                    "match": "(?x)  \\.?([_$a-zA-Z][$\\w]*)\\s*  (\\(\\s*\\))",
+                    "name": "meta.function-call.without-arguments.ms"
+                },
+                {
+                    "captures": {
+                        "1": {
+                            "name": "entity.name.function.ms"
+                        }
+                    },
+                    "match": "(?x)  \\.?([_$a-zA-Z][$\\w]*)\\s* (?=\\()",
+                    "name": "meta.function-call.with-arguments.ms"
+                }
+            ]
+        }
+    }
+}

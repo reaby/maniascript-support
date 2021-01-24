@@ -1,0 +1,38 @@
+{
+	"fileTypes": [],
+	"injectionSelector": "L:text.xml",
+	"patterns": [
+		{
+			"include": "#maniascript-block"
+		}
+	],
+	"repository": {
+		"maniascript-block": {
+            "name": "meta.embedded.script.block.ms",
+                    "begin": "(<script>)\\s*(<!--|\\<\\!\\[CDATA\\[)",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "meta.embedded.tag.script.open.ms"
+                        },
+                        "1": {
+                            "name": "meta.embedded.tag.comment.open.ms"
+                        }
+                    },
+                    "end": "(-->|\\]\\]>)\\s*(\\<\\/script>)",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.embedded.tag.comment.close.ms"
+                        },
+                        "1": {
+                            "name": "meta.embedded.tag.script.close.ms"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "source.ms"
+                        }
+                    ]
+		}
+	},
+	"scopeName": "xml.maniascript"
+}

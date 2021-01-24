@@ -1,0 +1,120 @@
+{
+    "name": "maniascript-support",
+    "description": "Maniascript support for vscode",
+    "version": "0.0.7",    
+    "publisher": "reaby",
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.52.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "activationEvents": [
+        "onLanguage:maniascript",
+        "onLanguage:xml",
+        "onLanguage:jinja-xml"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/reaby/maniascript-support"
+    },
+    "main": "./out/extension.js",
+    "contributes": {
+        "languages": [
+            {
+                "id": "maniascript",
+                "aliases": [
+                    "ManiaScript",
+                    "Maniascript"
+                ],
+                "extensions": [
+                    ".Script.txt",
+                    ".script.txt"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "colors": [
+            {
+                "id": "maniascript.structColor",
+                "description": "Struct color",
+                "defaults": {
+                    "dark": "#4ec9b0",
+                    "light": "#4ec9b0",
+                    "highContrast": "#000"
+                }
+            }
+        ],
+        "snippets": [
+            {
+                "language": "maniascript",
+                "path": "./snippets/maniascript.json"
+            }
+        ],
+        "grammars": [
+            {
+                "scopeName": "jinja2.maniascript",
+                "path": "./syntaxes/jinja2-ManiaScript.json",
+                "injectTo": [
+                    "text.xml.jinja"
+                ],
+                "embeddedLanguages": {
+                    "meta.embedded.script.block.ms": "maniascript"
+                }
+            },
+            {
+                "scopeName": "xml.maniascript",
+                "path": "./syntaxes/xml-ManiaScript.json",
+                "injectTo": [
+                    "text.xml"
+                ],
+                "embeddedLanguages": {
+                    "meta.embedded.script.block.ms": "maniascript"
+                },
+                "tokenTypes": {
+                    "meta.embedded.script.block.ms": "other"
+                }
+            },           
+            {
+                "language": "maniascript",
+                "scopeName": "source.ms",
+                "path": "./syntaxes/ManiaScript.json"
+            }
+        ],
+        "configuration": {
+            "title": "ManiaScript",
+            "properties": {
+                "maniascript.apidocPath": {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "default": null,
+                    "description": "Path to doc.h for parsing latest completions from ManiaScript API"
+                },
+                "maniascript.useManiaplanetApi": {
+                    "type": [
+                        "boolean"
+                    ],
+                    "default": false,
+                    "description": "Set to use Maniaplanet doc.h format, othervice will use the new Trackmania api"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "lint": "eslint . --ext .ts,.tsx",
+        "watch": "tsc -watch -p ./"
+    },
+    "devDependencies": {
+        "@types/node": "^12.12.0",
+        "@typescript-eslint/eslint-plugin": "^3.0.2",
+        "@typescript-eslint/parser": "^3.0.2",
+        "eslint": "^7.1.0",
+        "typescript": "^4.0.2",
+        "@types/vscode": "^1.52.0"
+    }
+}
