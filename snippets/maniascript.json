@@ -141,7 +141,7 @@
   "struct": {
     "prefix": "#Struct",
     "body": [
-      "#Struct K_${1:name} {",
+      "#Struct K_${1:Name} {",
       "\t${2:type} ${3:varname};",
       "\t$0",
       "}",
@@ -152,7 +152,7 @@
   "new_struct": {
     "prefix": "new",
     "body": [
-      "${1:structType}{${2:property}=${3:value}$0}"
+      "K_${1:Struct}{${2:property}=${3:value}$0}"
     ],
     "description": "New instance of Struct"
   },
@@ -184,12 +184,27 @@
     ],
     "description": "int3"
   },
+  "in2": {
+    "prefix": "in2",
+    "body": [
+      "<${1:int}, ${2:int}>$0"
+    ],
+    "description": "vec2"
+  },
   "vec2": {
     "prefix": "ve2",
     "body": [
       "<${1:float}, ${2:float}>$0"
     ],
     "description": "vec2"
+  },
+  "dlog": {
+    "prefix": "dlog",
+    "body": [
+      "log(Now ^ \"> ${1:desc} : \" ^ ${2:value}); // TODO: remove debug log.",
+      "$0"
+    ],
+    "description": "debug log"
   },
   "decontrol": {
     "prefix": "decontrol",

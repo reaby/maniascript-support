@@ -1,7 +1,5 @@
-import { workspace } from "vscode";
-import * as fs from "fs";
 import { structureType, nameType, includeType } from "./types/typeClasses";
-
+import { removeDuplicates } from "../utils";
 export class StructureParser {
   parse(docText: string): structureType[] {
     const output: structureType[] = [];
@@ -33,11 +31,11 @@ export class StructureParser {
           output.push({
             structName: name,
             members: elemTypes,
-            codeBlock: structLines[0] + structInfo + "}\n",
+            codeBlock: `#Struct ${name} {\n` + structInfo + "}\n",
           });
         }
       });
     }
-    return output;
+    return removeDuplicates(output, "structName");
   }
 }

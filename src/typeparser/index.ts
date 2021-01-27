@@ -24,6 +24,11 @@ export default class TypeParser {
     // do stuff
   }
 
+  updateStructs(text: string) {
+    const struct = new StructureParser();
+    this.structures = struct.parse(text);
+  }
+
   update(text: string) {
     const match = text.match(/(#RequireContext\s+\w+)|(@context\s+\w+)/m);
     let requireContext = "";

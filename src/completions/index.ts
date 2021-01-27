@@ -1,4 +1,3 @@
-import { timeStamp } from "console";
 import {
   CompletionItem,
   CompletionItemKind,
@@ -8,7 +7,6 @@ import {
 import Api from "../api";
 import TypeParser from "../typeparser";
 import { functionType, structureType } from "../typeparser/types/typeClasses";
-import { removeDuplicates } from "../utils";
 
 export default class Completer {
   readonly typeParser: TypeParser;

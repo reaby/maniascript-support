@@ -3,8 +3,10 @@ import TypeParser from "./typeparser";
 import Decorator from "./decorator";
 import Completer from "./completions";
 import SignatureHelper from "./signaturehelp";
+import RenameHelper from "./rename";
 
 import Api from "./api";
+import { rename } from "fs";
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -16,7 +18,8 @@ export function activate(context: vscode.ExtensionContext) {
   const typeParser = new TypeParser();
   const decorator = new Decorator(typeParser);
   const completions = new Completer(typeParser, api);
-  const signatureHelper = new SignatureHelper(typeParser, api,  completions);
+  const signatureHelper = new SignatureHelper(typeParser, api, completions);
+  const renameHelper = new RenameHelper(typeParser);
 
   let activeEditor: vscode.TextEditor | undefined =
     vscode.window.activeTextEditor;
@@ -26,22 +29,61 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   context.subscriptions.push(
-    vscode.languages.registerSignatureHelpProvider({language: "maniascript", scheme: "file"},
-    {
-      provideSignatureHelp(document, position, token, context) {
-        const line = new vscode.Range(
-          new vscode.Position(position.line, 0),
-          position
-        );
+    vscode.languages.registerSignatureHelpProvider(
+      { language: "maniascript", scheme: "file" },
+      {
+        provideSignatureHelp(document, position, token, context) {
+          const line = new vscode.Range(
+            new vscode.Position(position.line, 0),
+            position
+          );
 
-        const text = document.getText(line);
-        const idx = context.activeSignatureHelp?.activeSignature ?? 0;
-        typeParser.update(document.getText());
-        return signatureHelper.provideHelp(text, idx);
+          const text = document.getText(line);
+          const idx = context.activeSignatureHelp?.activeSignature ?? 0;
+          typeParser.update(document.getText());
+          return signatureHelper.provideHelp(text, idx);
+        },
+      },
+      "("
+    )
+  );
+  context.subscriptions.push(
+    vscode.languages.registerRenameProvider(
+      { language: "maniascript", scheme: "file" },
+      {
+        prepareRename(document, position, token) {
+          const range1 = new vscode.Range(
+            new vscode.Position(position.line, 0),
+            position
+          );
+          const range2 = new vscode.Range(
+            new vscode.Position(position.line, 0),
+            new vscode.Position(position.line + 1, 0)
+          );
+
+          const text = document.getText(range1).trim();
+          const line = document.getText(range2).trim();
+                    
+          return renameHelper.check(document, line, text, position);
+        },
+        provideRenameEdits(document, position, newname, token) {
+          const range1 = new vscode.Range(
+            new vscode.Position(position.line, 0),
+            position
+          );
+          const range2 = new vscode.Range(
+            new vscode.Position(position.line, 0),
+            new vscode.Position(position.line + 1, 0)
+          );
+
+          const text = document.getText(range1).trim();
+          const line = document.getText(range2).trim();
+
+          return renameHelper.rename(document, line, text, position, newname);
+        },
       }
-    },
-    "("         
-    ));
+    )
+  );
 
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(
@@ -149,6 +191,7 @@ export function activate(context: vscode.ExtensionContext) {
       timeout = undefined;
     }
     timeout = setTimeout(() => {
+      typeParser.updateStructs(activeEditor?.document.getText() ?? "");
       decorator.update(activeEditor);
     }, 500);
   }
