@@ -113,6 +113,7 @@
             }
         }
     },
+    "icon": "images/ms.png",
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
