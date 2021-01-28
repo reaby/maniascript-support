@@ -1,0 +1,31 @@
+{
+    "filetypes": [],
+    "scopeName": "templateString.injection",
+    "injectionSelector": "L:string.quoted.double",
+    "patterns": [
+        {
+            "include": "#templateString"
+        }
+    ],
+    "repository": {
+        "templateString": {
+            "begin": "{{{",
+            "beginCaptures": {
+                "0": {
+                    "name": "meta.embedded.tag.script.open.ms"
+                }
+            },
+            "end": "}}}",
+            "endCaptures": {
+                "0": {
+                    "name": "meta.embedded.tag.script.close.ms"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "source.ms"
+                }
+            ]
+        }
+    }
+}

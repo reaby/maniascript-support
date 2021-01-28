@@ -19,7 +19,6 @@ export default class RenameHelper {
     const variableRegex = /((^(\s+)?declare\s+(metadata\s+|netread\s+|netwrite\s+|persistent\s+){0,1}(?<type>.*?)\s)|(#Const\s*|#Struct\s*))(?<var>\w+)/gm;
     const functionRegex = /^\s*\b(.*?)\b \b(?<func>[a-zA-Z_][a-zA-Z0-9_]*)\((.*)\)\s*\{/gm;
 
-    const doc: string[] = document.getText().split("\n");
     const caret = this.wordAtCaret(line, text);
 
     const varResult = variableRegex.exec(line);
@@ -41,23 +40,20 @@ export default class RenameHelper {
 
     const edit = new vscode.WorkspaceEdit();
     if (search !== null) {
-      let i = 0;
-      for (const dline of doc) {
-        const re = new RegExp(`(?<![.])${search}(?=([^"]*"[^"]*")*[^"]*$)`, "g");
-        const matches = dline.matchAll(re);
-        for (const match of matches) {
-          const start = match.index;
-          if (start) {
-            const range = new vscode.Range(
-              i,
-              start,
-              i,
-              start + match[0].length
-            );
-            edit.replace(document.uri, range, newName);
-          }
+      const doc: string = document.getText();
+      const re = new RegExp(
+        `(?<![.])\\b${search}\\b(?=([^"\\\\]*(\\\\.|"([^"\\\\]*\\\\.)*[^"\\\\]*"))*[^"]*$)`,
+        "g"
+      );
+
+      const matches = doc.matchAll(re);
+      for (const match of matches) {
+        if (match && match.index) {
+          const start = document.positionAt(match.index);
+          const end = document.positionAt(match.index + match[0].length);
+          const range = new vscode.Range(start, end);
+          edit.replace(document.uri, range, newName);
         }
-        i += 1;
       }
     }
     return edit;
