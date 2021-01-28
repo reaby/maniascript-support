@@ -1,3 +1,7 @@
+# version 0.0.9
+* Changes renamer to ignore templatestrings as well
+* new feature: xml inside maniascript templatestring with {{{ }}} will now highlite colors for maniascript instead xml string
+
 # version 0.0.8
 * Various changes in snippets in order to comply with the maniascript coding style recommendations.
 * Fix structs resolver
