@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { TextEditor, workspace } from "vscode";
+import { Range,  workspace } from "vscode";
 import {
   includeType,
   structureType,
@@ -20,9 +20,6 @@ export default class TypeParser {
   functions: functionType[] = [];
   variables: nameType[] = [];
   requireContext = "";
-  constructor() {
-    // do stuff
-  }
 
   updateStructs(text: string) {
     const struct = new StructureParser();
@@ -80,14 +77,27 @@ export default class TypeParser {
 
   parseIncludes(text: string): includeType[] {
     const includes: includeType[] = [];
-
+    const allLines = text.split("\n");
     const namespacesMatch = text.match(/^\s*#Include "(\S+)" as (\w+)/gm);
     const matches = [...new Set(namespacesMatch)];
 
     matches.forEach((definition) => {
-      const ref = definition.split('"')[1] ?? "";
-      const name = definition.split(" ")?.pop()?.replace("s*", "") ?? "";
-      includes.push({ includeName: ref, variableName: name });
+      const regex = /#Include "(\S+)" as (\w+)/.exec(definition);
+      if (regex) {      
+      const offset = text.indexOf(definition.trim());   
+      const lines = text.slice(0, offset).split("\n");
+      const i = lines.length-1;
+      const start = definition.indexOf(regex[2], regex[0].length-regex[2].length);
+      const range = new Range(
+        i,
+        start,
+        i,
+        start + regex[2].length
+      );  
+
+      includes.push({ includeName: regex[1], variableName: regex[2], range: range });
+      }
+
     });
 
     return includes;

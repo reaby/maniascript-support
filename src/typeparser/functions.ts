@@ -1,3 +1,4 @@
+import { Range } from "vscode";
 import { functionType, nameType } from "./types/typeClasses";
 
 export class FunctionParser {
@@ -28,6 +29,19 @@ export class FunctionParser {
           docArray,
           docArray.findIndex((value) => value == line.trim())
         );
+
+        const offset = docText.indexOf(line.trim());   
+        const lines = docText.slice(0, offset).split("\n");
+        const allLines = docText.split("\n");
+        const i = lines.length-1;
+        const start = allLines[i].indexOf(funcName);
+        const range = new Range(
+          i,
+          start,
+          i,
+          start + funcName.length
+        );       
+
         if (method[2].replace(/^\s*/, "") == "") {
           output.push({
             name: funcName,
@@ -35,16 +49,21 @@ export class FunctionParser {
             returnValue: returnType,
             docBlock: docs,
             codeBlock: body,
+            range: range,
           });
           continue;
         }
         const outParam: nameType[] = [];
         const params = method[2].match(/([^,]+\(.+?\))|([^,]+)/g);
+        let counter = 0;
         if (params != null) {
           for (const vari of params) {
             if (vari == null) continue;
-            const type = vari.trim().split(/\s/);
-            outParam.push({ name: type[1], type: type[0] });
+            const type = vari.trim().split(/\s/);            
+            const start2 = allLines[i].indexOf(type[1], method[1].length+1+type[0].length);            
+            counter += type[1].length;
+            const range2 = new Range(i, start2, i, start2+type[1].length);            
+            outParam.push({ name: type[1], type: type[0], range: range2 });
           }
         }
 
@@ -54,6 +73,7 @@ export class FunctionParser {
           returnValue: returnType,
           docBlock: docs,
           codeBlock: body,
+          range: range,
         });
       }
     }

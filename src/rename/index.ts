@@ -1,5 +1,3 @@
-import { groupCollapsed } from "console";
-import { parse } from "path";
 import * as vscode from "vscode";
 import TypeParser from "../typeparser";
 

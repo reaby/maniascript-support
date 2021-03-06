@@ -4,7 +4,7 @@ import Decorator from "./decorator";
 import Completer from "./completions";
 import SignatureHelper from "./signaturehelp";
 import RenameHelper from "./rename";
-
+import DefinitionHelper from "./definition";
 import Api from "./api";
 import { rename } from "fs";
 
@@ -20,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
   const completions = new Completer(typeParser, api);
   const signatureHelper = new SignatureHelper(typeParser, api, completions);
   const renameHelper = new RenameHelper(typeParser);
+  const definitionHelper = new DefinitionHelper(typeParser);
 
   let activeEditor: vscode.TextEditor | undefined =
     vscode.window.activeTextEditor;
@@ -47,6 +48,19 @@ export function activate(context: vscode.ExtensionContext) {
       "("
     )
   );
+
+  context.subscriptions.push(
+    vscode.languages.registerDefinitionProvider(
+      { language: "maniascript", scheme: "file" },
+      {
+        provideDefinition(document, position, token) {
+          typeParser.update(document.getText());          
+          return definitionHelper.provideDefinitions(document, position);
+        },
+      }
+    )
+  );
+
   context.subscriptions.push(
     vscode.languages.registerRenameProvider(
       { language: "maniascript", scheme: "file" },
@@ -63,7 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
 
           const text = document.getText(range1).trim();
           const line = document.getText(range2).trim();
-                    
+
           return renameHelper.check(document, line, text, position);
         },
         provideRenameEdits(document, position, newname, token) {
