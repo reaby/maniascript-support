@@ -126,56 +126,13 @@ export default class Completer {
   }
 
   resolveVariable(search: string, requireContext: string): CompletionItem[] {
-    let resolved = "";
-    const searchChain = search.split(".");
-    searchChain.pop();
-
-    if (searchChain.length >= 0) {
-      let vari = "";
-      if (searchChain.length == 1) {
-        vari = searchChain[0].replace(/\[(.*?)\]/g, "");
-        resolved =
-          this.getTypeVariable(vari) ??
-          this.findTypesInContext(vari, requireContext) ??
-          "";
-      } else {
-        vari = searchChain[0].replace(/\[(.*?)\]/g, "");
-        for (let count = 0; count < searchChain.length - 1; count++) {
-          vari = vari.replace(/\[(.*?)\]/g, "");
-          vari =
-            this.getTypeVariable(vari) ??
-            this.findTypesInContext(vari, requireContext) ??
-            vari;
-
-          const next = searchChain[count + 1].replace(/\[(.*?)\]/g, "");
-          for (const member of this.api.getClassProperties(vari)) {
-            if (member.name == next) {
-              resolved = vari = member.type;
-              break;
-            }
-          }
-          for (const elem of this.typeParser.structures) {
-            for (const member of elem.members) {
-              if (member.name == next) {
-                resolved = vari = member.type;
-                break;
-              }
-            }
-          }
-        }
-      }
-    } else {
-      resolved =
-        this.getTypeVariable(search) ??
-        this.findTypesInContext(search, requireContext) ??
-        "";
-    }
+    // eslint-disable-next-line prefer-const
+    let { resolved, searchChain } = this.searchVariableType(search);
 
     // spit autocomplete
     if (resolved != null) {
       const array = resolved.match(/\[(.*?)\]/g);
       const arrLen = searchChain.pop();
-
       resolved = resolved.replace(/\[(.*?)\]/g, "");
       const match = arrLen?.match(/\w+(?!\[\])?/g);
 
@@ -207,9 +164,74 @@ export default class Completer {
     return [];
   }
 
+  searchVariableType(search: string): any {
+    let resolved = "";
+    const searchChain = search.split(".");
+    searchChain.pop();
+
+    if (searchChain.length >= 0) {
+      let vari = "";
+      if (searchChain.length == 1) {
+        vari = searchChain[0].replace(/\[(.*?)\]/g, "");
+        resolved =
+          this.getTypeVariable(vari) ??
+          this.findTypesInContext(vari, this.requireContext) ??
+          "";
+      } else {
+        vari = searchChain[0].replace(/\[(.*?)\]/g, "");
+        for (let count = 0; count < searchChain.length - 1; count++) {
+          vari = vari.replace(/\[(.*?)\]/g, "");
+          vari =
+            this.getTypeVariable(vari) ??
+            this.findTypesInContext(vari, this.requireContext) ??
+            vari;
+
+          const next = searchChain[count + 1].replace(/\[(.*?)\]/g, "");
+          for (const member of this.api.getClassProperties(vari)) {
+            if (member.name == next) {
+              resolved = vari = member.type;
+              break;
+            }
+          }
+          for (const elem of this.typeParser.structures) {
+            for (const member of elem.members) {
+              if (member.name == next) {
+                resolved = vari = member.type;
+                break;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      resolved =
+        this.getTypeVariable(search) ??
+        this.findTypesInContext(search, this.requireContext) ??
+        "";
+    }
+
+    return { resolved, searchChain };
+  }
+
   getTypeVariable(search: string): string | null {
     for (const elem of this.typeParser.variables) {
-      if (search == elem.name) return elem.type;
+      if (search == elem.name) {
+        const type = elem.type;
+        return type;
+      }
+    }
+
+    for (const elem of this.typeParser._foreach) {
+      if (search == elem.name) {
+        const { resolved, arrChain } = this.searchVariableType(elem.type + ".");
+        let type =
+          resolved ??
+          this.findTypesInContext(elem.type, this.requireContext) ??
+          elem.type;
+        type = type.replace("[]", "");
+
+        return type;
+      }
     }
 
     return null;

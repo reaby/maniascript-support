@@ -140,7 +140,7 @@ export default class ManiaplanetApiParser implements ApiParser {
           if (line != 0) {
             const enumValues = [];
             while (!data[line].match(/\s*\};/g)) {
-              enumValues.push(data[line].trim());
+              enumValues.push(data[line].trim().replace(",",""));
               line += 1;
             }
             out[enumval[1]] = enumValues;
@@ -152,7 +152,7 @@ export default class ManiaplanetApiParser implements ApiParser {
   }
 
   parseMethods(data: string[]): any | undefined {
-    const out: any = [];    
+    const out: any = [];
     const regex = /\s*\b(.+?)\b\s+(.*(?=\()).*/g;
     regex.lastIndex = -1;
     for (const line of data) {
@@ -200,7 +200,6 @@ export default class ManiaplanetApiParser implements ApiParser {
         });
       }
     }
-
     return out;
   }
 }

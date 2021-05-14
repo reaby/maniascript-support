@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { Range,  workspace } from "vscode";
+import { Range, workspace } from "vscode";
 import {
   includeType,
   structureType,
@@ -19,6 +19,7 @@ export default class TypeParser {
   functionsExternal: functionTypeExternal[] = [];
   functions: functionType[] = [];
   variables: nameType[] = [];
+  _foreach: nameType[] = [];
   requireContext = "";
 
   updateStructs(text: string) {
@@ -57,6 +58,7 @@ export default class TypeParser {
 
     this.functions = functions.parse(text);
     this.variables = variables.parse(text);
+    this._foreach = variables.parseForeach(text);
   }
 
   getExternalFile(filename: string): string {
@@ -83,21 +85,22 @@ export default class TypeParser {
 
     matches.forEach((definition) => {
       const regex = /#Include "(\S+)" as (\w+)/.exec(definition);
-      if (regex) {      
-      const offset = text.indexOf(definition.trim());   
-      const lines = text.slice(0, offset).split("\n");
-      const i = lines.length-1;
-      const start = definition.indexOf(regex[2], regex[0].length-regex[2].length);
-      const range = new Range(
-        i,
-        start,
-        i,
-        start + regex[2].length
-      );  
+      if (regex) {
+        const offset = text.indexOf(definition.trim());
+        const lines = text.slice(0, offset).split("\n");
+        const i = lines.length - 1;
+        const start = definition.indexOf(
+          regex[2],
+          regex[0].length - regex[2].length
+        );
+        const range = new Range(i, start, i, start + regex[2].length);
 
-      includes.push({ includeName: regex[1], variableName: regex[2], range: range });
+        includes.push({
+          includeName: regex[1],
+          variableName: regex[2],
+          range: range,
+        });
       }
-
     });
 
     return includes;

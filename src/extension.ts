@@ -6,7 +6,6 @@ import SignatureHelper from "./signaturehelp";
 import RenameHelper from "./rename";
 import DefinitionHelper from "./definition";
 import Api from "./api";
-import { rename } from "fs";
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -52,6 +51,18 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider(
       { language: "maniascript", scheme: "file" },
+      {
+        provideDefinition(document, position, token) {
+          typeParser.update(document.getText());          
+          return definitionHelper.provideDefinitions(document, position);
+        },
+      }
+    )
+  );
+  
+  context.subscriptions.push(
+    vscode.languages.registerDefinitionProvider(
+      { language: "xml", scheme: "file" },
       {
         provideDefinition(document, position, token) {
           typeParser.update(document.getText());          
@@ -157,9 +168,7 @@ export function activate(context: vscode.ExtensionContext) {
           return completionItems;
         },
       },
-      ".",
-      ":",
-      "#"
+      "."
     )
   );
 
@@ -193,9 +202,7 @@ export function activate(context: vscode.ExtensionContext) {
           return completionItems;
         },
       },
-      ".",
-      ":",
-      "#"
+      "."     
     )
   );
 

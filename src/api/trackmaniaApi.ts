@@ -34,7 +34,8 @@ export default class TrackmaniaApiParser implements ApiParser {
           completions = this.processNamespace(scopeArray, completions);
         }
 
-        const regexClasses = /^class\s+\b(.*?)\b\s+(:\s+public\s+\b(.*?)\b\s+){0,1}.*/gm;
+        const regexClasses =
+          /^class\s+\b(.*?)\b\s+(:\s+public\s+\b(.*?)\b\s+){0,1}.*/gm;
         const matches = file.match(regexClasses) ?? [];
         for (const match of matches) {
           const startLine = fileArray.indexOf(match);
@@ -57,7 +58,6 @@ export default class TrackmaniaApiParser implements ApiParser {
       console.log(
         "Using file: " + fileName + " for Trackmania maniascript completions!"
       );
-
       return completions;
     }
     return doch;
@@ -181,7 +181,6 @@ export default class TrackmaniaApiParser implements ApiParser {
         });
       }
     }
-
     return out;
   }
 }
