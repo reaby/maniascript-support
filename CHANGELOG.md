@@ -1,3 +1,6 @@
+# version 0.0.13
+* Enhance: variable resolving.
+
 # version 0.0.12
 * Fixed: trackmania api parser for `Array<Type>`
 * Added: hoverProvider and added alot infos of variables, functions and structs and so on.

@@ -215,6 +215,12 @@ export default class Completer {
   }
 
   getTypeVariable(search: string): string | null {
+    for (const elem of this.typeParser.functions) {
+      for (const param of elem.params) {
+        if (search == param.name) return param.type;
+      }
+    }
+
     for (const elem of this.typeParser.variables) {
       if (search == elem.name) {
         const type = elem.type;
@@ -320,7 +326,7 @@ export default class Completer {
               item.insertText = prop.name;
               item.filterText = prop.name;
               const docs = new MarkdownString();
-              docs.appendText(prop.documentation??".");
+              docs.appendText(prop.documentation ?? ".");
               item.documentation = docs;
               out.push(item);
             });
@@ -347,9 +353,9 @@ export default class Completer {
             );
             item.detail = groupMethods[label].returns;
             const docs = new MarkdownString();
-            docs.appendText(groupMethods[label].documentation??".");
+            docs.appendText(groupMethods[label].documentation ?? ".");
             item.documentation = docs;
-            
+
             item.filterText = name;
             item.insertText = new SnippetString(name + `(${vals.join(", ")})`);
 
@@ -380,7 +386,7 @@ export default class Completer {
             item.insertText = prop.name;
             item.filterText = prop.name;
             const docs = new MarkdownString();
-            docs.appendText(prop.documentation??".");
+            docs.appendText(prop.documentation ?? ".");
             item.documentation = docs;
             out.push(item);
           });
@@ -417,8 +423,8 @@ export default class Completer {
             );
             item.detail = groupMethods[label].returns;
             const docs = new MarkdownString();
-            docs.appendText(groupMethods[label].documentation??".");
-            item.documentation = docs;            
+            docs.appendText(groupMethods[label].documentation ?? ".");
+            item.documentation = docs;
             item.filterText = name;
             item.insertText = new SnippetString(name + `(${vals.join(", ")})`);
 
@@ -461,7 +467,7 @@ export default class Completer {
       );
       Item.detail = elem.includeName;
       Item.insertText = elem.variableName;
-      Item.filterText = elem.variableName;      
+      Item.filterText = elem.variableName;
       out.push(Item);
     }
 
@@ -544,8 +550,8 @@ export default class Completer {
             func.name + `(${vals.join(", ")})`
           );
           const doc = `${i}::${func.name}(${args.join(", ")}) {}`;
-          item.documentation.appendCodeblock(doc, "maniascript");          
-          item.documentation.appendText(func.documentation??".");          
+          item.documentation.appendCodeblock(doc, "maniascript");
+          item.documentation.appendText(func.documentation ?? ".");
           out.push(item);
         }
         const groupEnum = namespaces[i].enums ?? {};
@@ -587,19 +593,48 @@ export default class Completer {
     return false;
   }
 
+  getExtStructElems(file: string, name: string): CompletionItem[] {
+    const out: CompletionItem[] = [];
+    for (const structs of this.typeParser.structuresExternal) {
+      if (structs.var == file) {
+        for (const struct of structs.structs) {
+          if (struct.structName == name) {
+            for (const member of struct.members) {
+              const item = new CompletionItem(
+                member.name,
+                CompletionItemKind.Variable
+              );
+              item.detail = member.type;
+              out.push(item);
+            }
+            return out;
+          }
+        }
+      }
+    }
+    return out;
+  }
+
   getStructElems(name: string): CompletionItem[] {
     const out: CompletionItem[] = [];
     for (const struct of this.typeParser.structures) {
       if (struct.structName == name) {
-        for (const member of struct.members) {
-          const item = new CompletionItem(
-            member.name,
-            CompletionItemKind.Variable
-          );
-          item.detail = member.type;
-          out.push(item);
+        if (struct.ext) {
+          const m = struct.extType?.split("::");
+          if (m) {
+            return this.getExtStructElems(m[0], m[1]);
+          }
+        } else {
+          for (const member of struct.members) {
+            const item = new CompletionItem(
+              member.name,
+              CompletionItemKind.Variable
+            );
+            item.detail = member.type;
+            out.push(item);
+          }
+          return out;
         }
-        return out;
       }
     }
     return out;

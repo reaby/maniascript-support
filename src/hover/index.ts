@@ -38,7 +38,6 @@ export default class HoverHelper {
         for (const func of this.typeParser.functions) {
           if (func.name == word) {
             const doc = new vscode.MarkdownString();
-            // doc.appendCodeblock(func.codeBlock, "maniascript");
             if (func.docBlock) {
               doc.appendCodeblock(func.docBlock + "\n", "javascript");
             }
@@ -59,7 +58,29 @@ export default class HoverHelper {
           doc.appendCodeblock(func, "maniascript");
           return new vscode.Hover(doc);
         }
+        
+        // structures
+        for (const struct of this.typeParser.structures) {
+          if (struct.structName == variable) {
+            let doc = "";
 
+            if (struct.ext) {
+              const m = struct.extType?.split("::");
+              if (m) {
+                doc = this.getExternals(m[0], m[1], variable);
+              }
+            } else {
+              if (struct.docBlock) {
+                doc = struct.docBlock + "\n" + struct.codeBlock;
+              }
+            }
+            const out = new vscode.MarkdownString();
+            out.appendCodeblock(doc, "maniascript");
+            return new vscode.Hover(out);
+          }
+        }
+
+      // variables
         const { resolved, searchChain } =
           this.completions.searchVariableType(variable);
         if (resolved) {
@@ -76,11 +97,12 @@ export default class HoverHelper {
         console.log(err);
       }
     } else {
+      // enums and externals
       const parts = variable.split("::");
       if (parts.length == 2) {
         const out =
           this.getNamespaceContents(parts[0], parts[1]) ||
-          this.getExternals(parts[0], parts[1]);
+          this.getExternals(parts[0], parts[1], variable);
         if (out == "") return null;
         const doc = new vscode.MarkdownString();
         doc.appendCodeblock(out, "maniascript");
@@ -110,7 +132,7 @@ export default class HoverHelper {
           if (func.name === word) {
             let out = "";
             if (func.documentation) {
-              out += func.documentation + "\n\n";
+              out += "/**\n" + func.documentation + "\n*/\n";
             }
             const outpar = [];
             for (const param of func.params) {
@@ -125,16 +147,20 @@ export default class HoverHelper {
     return "";
   }
 
-  getExternals(search: string, word: string): string {
+  getExternals(file: string, structName: string, word: string): string {
     for (const extStruct of this.typeParser.structuresExternal) {
-      if (extStruct.var == search) {
+      if (extStruct.var == file) {
         for (const struct of extStruct.structs) {
-          if (struct.structName == word) {
+          for (const element of struct.members) {
+            if (element.name == word) {
+              return element.type;
+            }
+          }
+          if (struct.structName == structName) {
             let doc = "";
             if (struct.docBlock) {
               doc += struct.docBlock + "\n";
             }
-
             return doc + struct.codeBlock;
           }
         }
@@ -142,9 +168,9 @@ export default class HoverHelper {
     }
 
     for (const extFunc of this.typeParser.functionsExternal) {
-      if (extFunc.var == search) {
+      if (extFunc.var == file) {
         for (const func of extFunc.functions) {
-          if (func.name == word) {
+          if (func.name == structName) {
             let doc = "";
             if (func.docBlock) {
               doc += func.docBlock + "\n";
@@ -160,13 +186,23 @@ export default class HoverHelper {
   getStruct(structName: string, word: string): string {
     for (const struct of this.typeParser.structures) {
       if (struct.structName == structName.replace(/\[.*?\]/, "")) {
+        if (struct.ext) {
+          const m = struct.extType?.split("::");
+          if (m) {
+            return this.getExternals(m[0], m[1], word);
+          }
+          return "";
+        }
         for (const element of struct.members) {
           if (element.name == word) {
             return element.type;
           }
         }
-        const doc = struct.docBlock ?? "";
-        return doc + "\n" + struct.codeBlock;
+        let docs = "";
+        if (struct.docBlock) {
+          docs = struct.docBlock;
+        }
+        return docs + struct.codeBlock;
       }
     }
     return "";
@@ -183,7 +219,7 @@ export default class HoverHelper {
             if (prop.name == type) {
               let docs = "";
               if (prop.documentation) {
-                docs = prop.documentation + "\n";
+                docs = "/**\n" + prop.documentation + "\n*/\n";
               }
               out =
                 docs + groupName + (prop.readonly == true ? " (readonly)" : "");
@@ -219,7 +255,7 @@ export default class HoverHelper {
             }
             let doc = "";
             if (groupMethods[label].documentation) {
-              doc = groupMethods[label].documentation + "\n";
+              doc = "/**\n" + groupMethods[label].documentation + "\n*/\n";
             }
             out = doc + `${returns} ${name}(${args.join(", ")})`;
           }

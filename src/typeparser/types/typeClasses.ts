@@ -1,4 +1,4 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
 export interface includeType {
   includeName: string;
@@ -18,6 +18,8 @@ export interface structureType {
   codeBlock: string;
   docBlock?: string;
   range?: vscode.Range;
+  ext: boolean;
+  extType?: string;
 }
 
 export interface structureTypeExternal {

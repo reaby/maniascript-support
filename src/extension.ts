@@ -37,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideHover(document, position, token) {
-          typeParser.update(document.getText());
+          typeParser.update(document.getText()||"");
           return hoverHelper.onHover(document, position);
         },
       }

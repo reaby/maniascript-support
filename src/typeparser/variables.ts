@@ -7,7 +7,7 @@ export class VariableParser {
     const output: nameType[] = [];
     const allLines = text.split("\n");
     const regex =
-      /(\s+)?declare\s+(metadata\s+|netread\s+|netwrite\s+|persistent\s+){0,1}(.*?)\s+(\w+)\s*(for\s+\w+){0,1}\s*(=|;)/g;
+      /(\s+)?declare\s+(metadata\s+|netread\s+|netwrite\s+|persistent\s+){0,1}([\w[\]:]+)\s+(\w+)\s*(for\s+\w+){0,1}\s*(=|;)/g;
 
     for (const line in allLines) {
       let m;
@@ -19,42 +19,11 @@ export class VariableParser {
 
         const i = Number.parseInt(line);
         const start = allLines[i].indexOf(m[4], 9 + m[3].length);
-        const range = new vscode.Range(i, start, i, start + m[4].length);
+        const range = new vscode.Range(i, start, i, start + m[4].length);        
         output.push({ name: m[4], type: m[3], range: range });
       }
     }
 
-    const lines = text.match(/^\s*\b(.*?)\b \b([a-zA-Z0-9_]*)\((.*)\)\s*\{/gm);
-
-    if (lines != null) {
-      for (const line of lines) {
-        if (line == null) continue;
-        const method = line.replace(/^s*/, "").match(/\b([^()]+)\((.*)\)/);
-        if (method == null) continue;
-        if (method.length == 3) {
-          const params = method[2].match(/([^,]+\(.+?\))|([^,]+)/g);
-          if (params != null) {
-            for (const vari of params) {
-              if (vari == null) continue;
-              const type = vari.split(/\s/);
-
-              const offset = text.indexOf(line.trim());
-              const lines = text.slice(0, offset).split("\n");
-              const allLines = text.split("\n");
-              const i = lines.length - 1;
-              const start = allLines[i].indexOf(type[1]);
-              const range = new vscode.Range(
-                i,
-                start,
-                i,
-                start + type[1].length
-              );
-              output.push({ name: type[1], type: type[0], range: range });
-            }
-          }
-        }
-      }
-    }
     return output;
   }
 
