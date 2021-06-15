@@ -113,6 +113,7 @@ export default class Completer {
       ["slice", "slice(start,count)", "slice(${1:start}, ${2:count}"],
       ["tojson", "tojson() : Text", "tojson()"],
       ["fromjson", "fromjson(value) : Text", "fromjson(${1:value})"],
+      ["get", "get(key, defaultValue)", "get(${1:key}, ${2:value})"],
     ];
 
     methodCompletions.forEach((method) => {
@@ -169,7 +170,7 @@ export default class Completer {
     const searchChain = search.split(".");
     searchChain.pop();
 
-    if (searchChain.length >= 0) {
+    if (searchChain.length > 0) {
       let vari = "";
       if (searchChain.length == 1) {
         vari = searchChain[0].replace(/\[(.*?)\]/g, "");
@@ -318,6 +319,9 @@ export default class Completer {
                 groupName + (prop.readonly == true ? " (readonly)" : "");
               item.insertText = prop.name;
               item.filterText = prop.name;
+              const docs = new MarkdownString();
+              docs.appendText(prop.documentation??".");
+              item.documentation = docs;
               out.push(item);
             });
           }
@@ -342,7 +346,10 @@ export default class Completer {
               CompletionItemKind.Method
             );
             item.detail = groupMethods[label].returns;
-            item.documentation = new MarkdownString();
+            const docs = new MarkdownString();
+            docs.appendText(groupMethods[label].documentation??".");
+            item.documentation = docs;
+            
             item.filterText = name;
             item.insertText = new SnippetString(name + `(${vals.join(", ")})`);
 
@@ -372,6 +379,9 @@ export default class Completer {
               groupName + (prop.readonly == true ? " (readonly)" : "");
             item.insertText = prop.name;
             item.filterText = prop.name;
+            const docs = new MarkdownString();
+            docs.appendText(prop.documentation??".");
+            item.documentation = docs;
             out.push(item);
           });
         });
@@ -406,7 +416,9 @@ export default class Completer {
               CompletionItemKind.Method
             );
             item.detail = groupMethods[label].returns;
-            item.documentation = new MarkdownString();
+            const docs = new MarkdownString();
+            docs.appendText(groupMethods[label].documentation??".");
+            item.documentation = docs;            
             item.filterText = name;
             item.insertText = new SnippetString(name + `(${vals.join(", ")})`);
 
@@ -449,7 +461,7 @@ export default class Completer {
       );
       Item.detail = elem.includeName;
       Item.insertText = elem.variableName;
-      Item.filterText = elem.variableName;
+      Item.filterText = elem.variableName;      
       out.push(Item);
     }
 
@@ -532,7 +544,8 @@ export default class Completer {
             func.name + `(${vals.join(", ")})`
           );
           const doc = `${i}::${func.name}(${args.join(", ")}) {}`;
-          item.documentation.appendCodeblock(doc, "maniascript");
+          item.documentation.appendCodeblock(doc, "maniascript");          
+          item.documentation.appendText(func.documentation??".");          
           out.push(item);
         }
         const groupEnum = namespaces[i].enums ?? {};

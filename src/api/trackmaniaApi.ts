@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import { DocumentHighlight } from "vscode";
 import { completionsTemplate } from "./completions";
 import * as doch from "./doch.json";
 import { ApiParser } from "./types";
@@ -18,8 +17,8 @@ export default class TrackmaniaApiParser implements ApiParser {
         completions = completionsTemplate;
         const file = fs
           .readFileSync(fileName)
-          .toString()
-          .replace(/(\/\*[\s\S]*?(.*)\*\/)|(\/\/.*)/gm, "");
+          .toString();
+          //.replace(/(\/\*[\s\S]*?(.*)\*\/)|(\/\/.*)/gm, "");
         const fileArray = file.split("\n");
 
         const regexNamespaces = /^namespace\s+(.*?)\s*\{/gm;
@@ -49,7 +48,7 @@ export default class TrackmaniaApiParser implements ApiParser {
 
           completions = this.processClasses(scopeArray, completions);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.log("doc.h read error: " + err);
         console.log(err.stack);
         console.log("No completions in use!");
@@ -129,9 +128,10 @@ export default class TrackmaniaApiParser implements ApiParser {
 
   parseMethods(data: string[]): any {
     const out = [];
-    const regex = /\s*\b(.+?)\b\s+(.*(?=\()).*/g;
+    const regex = /\s*(.+?)\s+(.*(?=\()).*;/g;
     regex.lastIndex = -1;
-    for (const line of data) {
+    for (const idx in data) {
+      const line = data[idx];
       regex.lastIndex = -1;
       const value = regex.exec(line);
       if (value) {
@@ -152,6 +152,7 @@ export default class TrackmaniaApiParser implements ApiParser {
           name: value[2],
           returns: this.fixArrays(value[1]),
           params: methodParams,
+          documentation: this.parseDoc(data, idx),
         });
       }
     }
@@ -159,12 +160,28 @@ export default class TrackmaniaApiParser implements ApiParser {
     return out;
   }
 
+  parseDoc(data: string[], line: string) {
+    const regex = /\s*\/\*!/g;
+    const lines = [];
+    for (let i = 0; i <= 20; i++) {
+      const lineData = data[parseInt(line) -1 - i];     
+      if (lineData.match(regex)) {
+        return lines.reverse().join("\n");
+      }
+      const docLine = lineData.replace(/(\s*\/\*!)|(\s*\*\/)|(\s*\*)/g, "").trim();
+      if (docLine !== "") {
+        lines.push(docLine);
+      }
+    }
+    return "";
+  }
+
   parseProperties(data: string[]): any {
     const out: any = {};
-    //const regex = /\s*(const\s*){0,1}([\w[\]<>]+?)\s+\b(\w+)\b;/g;
-    const regex = /^\s*(const){0,1}\s*([\w[\]<>]+?)\s+\b(\w+)\b;/g;
+    const regex = /\s*(const){0,1}\s*([\w[\]<>]+?)\s+\b(\w+)\b;/g;
     regex.lastIndex = -1;
-    for (const line of data) {
+    for (const idx in data) {
+      const line = data[idx];
       regex.lastIndex = -1;
       const value = regex.exec(line);
       if (value !== null) {
@@ -178,6 +195,7 @@ export default class TrackmaniaApiParser implements ApiParser {
         out[this.fixArrays(value[2])].push({
           name: value[3],
           readonly: readOnly,
+          documentation: this.parseDoc(data, idx),
         });
       }
     }

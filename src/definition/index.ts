@@ -22,7 +22,7 @@ export default class SymbolHelper {
       new vscode.Range(new vscode.Position(position.line, 0), position)
     );
 
-    const search = this.wordAtCaret(line, caret);
+    const search = document.getText(document.getWordRangeAtPosition(position));
 
     let found = false;
     let out = new vscode.Location(document.uri, new vscode.Position(0, 0));
@@ -49,7 +49,7 @@ export default class SymbolHelper {
     }
 
     if (found) return out;
-   
+
     out = new vscode.Location(document.uri, new vscode.Position(0, 0));
     for (const variable of this.typeParser.variables) {
       if (variable.name == search) {

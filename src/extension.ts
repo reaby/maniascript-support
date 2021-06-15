@@ -5,7 +5,10 @@ import Completer from "./completions";
 import SignatureHelper from "./signaturehelp";
 import RenameHelper from "./rename";
 import DefinitionHelper from "./definition";
+import HoverHelper from "./hover";
+import FoldingHelper from "./folding";
 import Api from "./api";
+import FoldingRangeHelper from "./folding";
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -20,6 +23,8 @@ export function activate(context: vscode.ExtensionContext) {
   const signatureHelper = new SignatureHelper(typeParser, api, completions);
   const renameHelper = new RenameHelper(typeParser);
   const definitionHelper = new DefinitionHelper(typeParser);
+  const hoverHelper = new HoverHelper(typeParser, api, completions);
+  const foldingHelper = new FoldingRangeHelper();
 
   let activeEditor: vscode.TextEditor | undefined =
     vscode.window.activeTextEditor;
@@ -27,7 +32,29 @@ export function activate(context: vscode.ExtensionContext) {
   if (activeEditor) {
     triggerUpdateDocument();
   }
+  context.subscriptions.push(
+    vscode.languages.registerHoverProvider(
+      { language: "maniascript", scheme: "file" },
+      {
+        provideHover(document, position, token) {
+          typeParser.update(document.getText());
+          return hoverHelper.onHover(document, position);
+        },
+      }
+    )
+  );
 
+  /*context.subscriptions.push(
+    vscode.languages.registerFoldingRangeProvider(
+      { language: "maniascript", scheme: "file" },
+      {
+        provideFoldingRanges(document, context, token) {
+          return foldingHelper.fold(document);
+        },
+      }
+    )
+  );*/
+  
   context.subscriptions.push(
     vscode.languages.registerSignatureHelpProvider(
       { language: "maniascript", scheme: "file" },
@@ -53,19 +80,19 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideDefinition(document, position, token) {
-          typeParser.update(document.getText());          
+          typeParser.update(document.getText());
           return definitionHelper.provideDefinitions(document, position);
         },
       }
     )
   );
-  
+
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider(
       { language: "xml", scheme: "file" },
       {
         provideDefinition(document, position, token) {
-          typeParser.update(document.getText());          
+          typeParser.update(document.getText());
           return definitionHelper.provideDefinitions(document, position);
         },
       }
@@ -202,7 +229,7 @@ export function activate(context: vscode.ExtensionContext) {
           return completionItems;
         },
       },
-      "."     
+      "."
     )
   );
 

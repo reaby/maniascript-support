@@ -1,3 +1,7 @@
+# version 0.0.12
+* Fixed: trackmania api parser for `Array<Type>`
+* Added: hoverProvider and added alot infos of variables, functions and structs and so on.
+
 # version 0.0.11
 * Fixed: enum parser for maniaplanet api, removed trailing comma (,)
 * Fixed: definition provider to work actually with manialink xml pages
