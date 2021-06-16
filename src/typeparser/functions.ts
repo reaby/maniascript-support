@@ -7,7 +7,7 @@ export class FunctionParser {
     const docArray = docText.split("\n");
     const output: functionType[] = [];
     const lines = docText.match(
-      /^\s*\b(.*?)\b \b([a-zA-Z_][a-zA-Z0-9_]*)\((.*)\)\s*\{/gm
+      /^(\t| )*\b(.*?)\b \b([a-zA-Z_][a-zA-Z0-9_]*)\((.*)\)\s*\{(\t| )*/gm
     );
 
     if (lines == null) return [];
@@ -20,21 +20,16 @@ export class FunctionParser {
         const returnType = method[1].split(" ")[0];
         const funcName = method[1].split(" ")[1];
         // parse docblock
-        const docs = this.parseDocBlock(
-          docArray,
-          docArray.findIndex((value) => value == line.trim())
-        );
 
-        const body = this.parseFuncBlock(
-          docArray,
-          docArray.findIndex((value) => value == line.trim())
-        );
+        const lineNb = docArray.indexOf(line);
+        const docs = this.parseDocBlock(docArray, lineNb);
+        const body = this.parseFuncBlock(docArray, lineNb);
 
         const offset = docText.indexOf(line.trim());
         const lines = docText.slice(0, offset).split("\n");
-        const allLines = docText.split("\n");
         const i = lines.length - 1;
-        const start = allLines[i].indexOf(funcName);
+        //const start = docArray[i].indexOf(funcName);
+        const start = lineNb;
         const range = new Range(i, start, i, start + funcName.length);
 
         if (method[2].replace(/^\s*/, "") == "") {
@@ -55,7 +50,7 @@ export class FunctionParser {
           for (const vari of params) {
             if (vari == null) continue;
             const type = vari.trim().split(/\s/);
-            const start2 = allLines[i].indexOf(
+            const start2 = docArray[i].indexOf(
               type[1],
               method[1].length + 1 + type[0].length
             );
@@ -93,7 +88,10 @@ export class FunctionParser {
   parseDocBlock(docLines: string[], line: number): string {
     let out = "";
     if (line != -1) {
-      if (docLines[line - 1].includes("*/")) {
+      if (
+        docLines[line - 1].includes("*/") ||
+        docLines[line - 2].includes("*/")
+      ) {
         for (let i = 1; i < 30; i++) {
           if (line - i > 0) {
             out = docLines[line - i] + "\n" + out;

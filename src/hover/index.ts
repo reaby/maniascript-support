@@ -58,29 +58,17 @@ export default class HoverHelper {
           doc.appendCodeblock(func, "maniascript");
           return new vscode.Hover(doc);
         }
-        
-        // structures
-        for (const struct of this.typeParser.structures) {
-          if (struct.structName == variable) {
-            let doc = "";
 
-            if (struct.ext) {
-              const m = struct.extType?.split("::");
-              if (m) {
-                doc = this.getExternals(m[0], m[1], variable);
-              }
-            } else {
-              if (struct.docBlock) {
-                doc = struct.docBlock + "\n" + struct.codeBlock;
-              }
-            }
+        for (const incl of this.typeParser.includes) {
+          if (incl.variableName == variable) {
             const out = new vscode.MarkdownString();
+            const doc = '#Include "' + incl.includeName + '"';
             out.appendCodeblock(doc, "maniascript");
             return new vscode.Hover(out);
           }
         }
 
-      // variables
+        // variables
         const { resolved, searchChain } =
           this.completions.searchVariableType(variable);
         if (resolved) {
@@ -161,7 +149,7 @@ export default class HoverHelper {
             if (struct.docBlock) {
               doc += struct.docBlock + "\n";
             }
-            return doc + struct.codeBlock;
+            return doc + struct.codeBlock.split("\n")[0];
           }
         }
       }
@@ -175,7 +163,7 @@ export default class HoverHelper {
             if (func.docBlock) {
               doc += func.docBlock + "\n";
             }
-            return doc + func.codeBlock;
+            return doc + func.codeBlock.split("\n")[0];
           }
         }
       }
@@ -202,7 +190,7 @@ export default class HoverHelper {
         if (struct.docBlock) {
           docs = struct.docBlock;
         }
-        return docs + struct.codeBlock;
+        return docs + struct.codeBlock.split("\n")[0];
       }
     }
     return "";
@@ -268,7 +256,7 @@ export default class HoverHelper {
   }
 
   wordAtCaret(line: string, line2: string): string {
-    const current = line2.split(/[\s({[^]/);
+    const current = line2.split(/[\s({[^!]/);
     return current.pop() ?? "";
   }
 }

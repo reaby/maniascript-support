@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 export interface includeType {
   includeName: string;
   variableName: string;
-  range?: vscode.Range;
+  range: vscode.Range;
 }
 
 export interface nameType {
@@ -17,16 +17,16 @@ export interface structureType {
   members: nameType[];
   codeBlock: string;
   docBlock?: string;
-  range?: vscode.Range;
+  range: vscode.Range;
   ext: boolean;
-  extType?: string;
+  extType: string;
 }
 
 export interface structureTypeExternal {
   file: string;
   var: string;
   structs: structureType[];
-  range?: vscode.Range;
+  range: vscode.Range;
 }
 
 export interface functionType {
@@ -35,12 +35,12 @@ export interface functionType {
   params: nameType[];
   docBlock?: string;
   codeBlock: string;
-  range?: vscode.Range;
+  range: vscode.Range;
 }
 
 export interface functionTypeExternal {
   file: string;
   var: string;
   functions: functionType[];
-  range?: vscode.Range;
+  range: vscode.Range;
 }

@@ -1,7 +1,7 @@
 {
     "name": "maniascript-support",
     "description": "Maniascript support for vscode",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "publisher": "reaby",
     "license": "MIT",
     "engines": {
@@ -111,7 +111,7 @@
                     "description": "Set to use Maniaplanet doc.h format, othervice will use the new Trackmania api"
                 }
             }
-        }
+        }    
     },
     "icon": "images/ms.png",
     "scripts": {

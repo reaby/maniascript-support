@@ -149,6 +149,14 @@
     ],
     "description": "Struct"
   },
+  "requirecontext": {
+    "prefix": "#RequireContext",
+    "body": [
+      "#RequireContext C${1:Context}",
+      "$0"
+    ],
+    "description": "RequireContext"
+  },
   "new_struct": {
     "prefix": "new",
     "body": [

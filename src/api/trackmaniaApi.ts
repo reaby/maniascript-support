@@ -15,7 +15,7 @@ export default class TrackmaniaApiParser implements ApiParser {
     if (fs.existsSync(fileName)) {
       try {
         completions = completionsTemplate;
-        const file = fs.readFileSync(fileName).toString();        
+        const file = fs.readFileSync(fileName).toString();
         const fileArray = file.split("\n");
 
         const regexNamespaces = /^namespace\s+(.*?)\s*\{/gm;
@@ -177,7 +177,7 @@ export default class TrackmaniaApiParser implements ApiParser {
 
   parseProperties(data: string[]): any {
     const out: any = {};
-    const regex = /\s*(const){0,1}\s*([\w[\]<>]+?)\s+\b(\w+)\b;/g;
+    const regex = /\s*(const){0,1}\s*([\w[\]<>:]+?)\s+\b(\w+)\b;/g;
     regex.lastIndex = -1;
     for (const idx in data) {
       const line = data[idx];

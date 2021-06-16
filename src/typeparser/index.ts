@@ -47,11 +47,13 @@ export default class TypeParser {
       this.structuresExternal.push({
         file: include.includeName,
         var: include.variableName,
+        range: include.range,
         structs: struct.parse(this.getExternalFile(include.includeName)),
       });
       this.functionsExternal.push({
         file: include.includeName,
         var: include.variableName,
+        range: include.range,
         functions: functions.parse(this.getExternalFile(include.includeName)),
       });
     }

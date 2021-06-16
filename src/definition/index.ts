@@ -7,22 +7,19 @@ export default class SymbolHelper {
     this.typeParser = typeParser;
   }
 
-  provideDefinitions(
+  async provideDefinitions(
     document: vscode.TextDocument,
     position: vscode.Position
-  ): vscode.Location | undefined {
-    const line = document.getText(
-      new vscode.Range(
-        new vscode.Position(position.line, 0),
-        new vscode.Position(position.line + 1, 0)
-      )
-    );
+  ): Promise<vscode.Location | undefined> {
+    const range = document.getWordRangeAtPosition(position, /(\b\w+\b)/);
+    if (!range) return;
 
     const caret = document.getText(
-      new vscode.Range(new vscode.Position(position.line, 0), position)
+      new vscode.Range(new vscode.Position(position.line, 0), range.end)
     );
 
-    const search = document.getText(document.getWordRangeAtPosition(position));
+    const search = document.getText(range);
+    const word = this.wordAtCaret(caret);
 
     let found = false;
     let out = new vscode.Location(document.uri, new vscode.Position(0, 0));
@@ -68,8 +65,40 @@ export default class SymbolHelper {
     for (const struct of this.typeParser.structures) {
       if (struct.range) {
         if (struct.structName == search) {
+          if (struct.ext) {
+            const parts = struct.extType.split("::");
+            for (const ext of this.typeParser.structuresExternal) {
+              if (ext.var == parts[0]) {
+                const files = await vscode.workspace.findFiles(
+                  ext.file,
+                  null,
+                  1
+                );
+                for (const struct of ext.structs) {
+                  if (struct.structName == parts[1]) {
+                    return new vscode.Location(files[0], struct.range);
+                  }
+                }
+                return new vscode.Location(files[0], new vscode.Position(0, 0));
+              }
+            }
+          }
           if (position.line >= struct.range.start.line) {
             return new vscode.Location(document.uri, struct.range);
+          }
+        }
+      }
+    }
+
+    if (word.indexOf("::") != -1) {
+      const parts = word.split("::");
+      for (const ext of this.typeParser.functionsExternal) {
+        if (ext.var == parts[0]) {
+          for (const func of ext.functions) {
+            if (func.name == parts[1]) {
+              const files = await vscode.workspace.findFiles(ext.file, null, 1);
+              return new vscode.Location(files[0], func.range);
+            }
           }
         }
       }
@@ -79,6 +108,14 @@ export default class SymbolHelper {
       if (include.range) {
         if (include.variableName == search) {
           if (position.line >= include.range.start.line) {
+            if (include.includeName.endsWith(".Script.txt")) {
+              const files = await vscode.workspace.findFiles(
+                include.includeName,
+                null,
+                1
+              );
+              return new vscode.Location(files[0], new vscode.Position(0, 0));
+            }
             return new vscode.Location(document.uri, include.range);
           }
         }
@@ -88,18 +125,8 @@ export default class SymbolHelper {
     return;
   }
 
-  wordAtCaret(line: string, text: string): string {
-    const current = text.split(/[ ([]/).length - 1;
-    const tokens = line.split(/[ ([]/);
-
-    if (tokens.length - 1 >= current) {
-      const re = /\w+/.exec(tokens[current]);
-      if (re != null) {
-        return re[0];
-      }
-      return "";
-    }
-
-    return "";
+  wordAtCaret(line: string): string {
+    const current = line.split(/[\s({[^!]/);
+    return current.pop() ?? "";
   }
 }

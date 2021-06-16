@@ -1,3 +1,8 @@
+# version 0.0.14
+* Enhance typeparsers and variable resolving.
+* Enhance Goto definition: you can now jump between libraries and external files with ctlr-click on external functions and structs.
+* add new snippet for #RequireContext
+
 # version 0.0.13
 * Enhance: variable resolving.
 
