@@ -1,3 +1,9 @@
+# version 0.0.15
+* Fixed typeParsing numerous cases with files of \r\n lineseparators
+* Fixed parsing functions with function body defined different line than function declaration
+* New snippets for manialink xml files to insert manialink body and xml-mode validation string.
+* Fixed extension not to crash when external library files are not found in workspace
+
 # version 0.0.14
 * Enhance typeparsers and variable resolving.
 * Enhance Goto definition: you can now jump between libraries and external files with ctlr-click on external functions and structs.

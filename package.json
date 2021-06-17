@@ -1,7 +1,7 @@
 {
     "name": "maniascript-support",
     "description": "Maniascript support for vscode",
-    "version": "0.0.14",
+    "version": "0.0.15",
     "publisher": "reaby",
     "license": "MIT",
     "engines": {
@@ -50,6 +50,10 @@
             {
                 "language": "maniascript",
                 "path": "./snippets/maniascript.json"
+            },
+            {
+                "language": "xml",
+                "path": "./snippets/manialink.json"
             }
         ],
         "grammars": [

@@ -70,7 +70,7 @@ export default class TypeParser {
       for (const path of workspace.workspaceFolders ?? []) {
         const file = path.uri.fsPath + "/" + filename;
         if (fs.existsSync(file)) {
-          return fs.readFileSync(path.uri.fsPath + "/" + filename).toString();
+          return fs.readFileSync(path.uri.fsPath + "/" + filename).toString().replace(/\r/g, "");
         }
       }
     } catch (e) {
@@ -81,7 +81,7 @@ export default class TypeParser {
 
   parseIncludes(text: string): includeType[] {
     const includes: includeType[] = [];
-    const allLines = text.split("\n");
+    const allLines = text.replace(/\r/g, "").split("\n");
     const namespacesMatch = text.match(/^\s*#Include "(\S+)" as (\w+)/gm);
     const matches = [...new Set(namespacesMatch)];
 

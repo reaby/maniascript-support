@@ -173,7 +173,8 @@ export default class HoverHelper {
 
   getStruct(structName: string, word: string): string {
     for (const struct of this.typeParser.structures) {
-      if (struct.structName == structName.replace(/\[.*?\]/, "")) {
+      //if (struct.structName == structName.replace(/\[.*?\]/, "")) {
+        if (struct.structName == structName) {
         if (struct.ext) {
           const m = struct.extType?.split("::");
           if (m) {

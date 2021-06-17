@@ -23,6 +23,7 @@ export default class SymbolHelper {
 
     let found = false;
     let out = new vscode.Location(document.uri, new vscode.Position(0, 0));
+
     for (const func of this.typeParser.functions) {
       if (func.range) {
         if (func.name == search) {
@@ -69,17 +70,25 @@ export default class SymbolHelper {
             const parts = struct.extType.split("::");
             for (const ext of this.typeParser.structuresExternal) {
               if (ext.var == parts[0]) {
-                const files = await vscode.workspace.findFiles(
-                  ext.file,
-                  null,
-                  1
-                );
-                for (const struct of ext.structs) {
-                  if (struct.structName == parts[1]) {
-                    return new vscode.Location(files[0], struct.range);
+                try {
+                  const files = await vscode.workspace.findFiles(
+                    ext.file,
+                    null,
+                    1
+                  );
+                  if (files.length < 1) return;
+                  for (const struct of ext.structs) {
+                    if (struct.structName == parts[1]) {
+                      return new vscode.Location(files[0], struct.range);
+                    }
                   }
+                  return new vscode.Location(
+                    files[0],
+                    new vscode.Position(0, 0)
+                  );
+                } catch (e) {
+                  return;
                 }
-                return new vscode.Location(files[0], new vscode.Position(0, 0));
               }
             }
           }
@@ -96,8 +105,17 @@ export default class SymbolHelper {
         if (ext.var == parts[0]) {
           for (const func of ext.functions) {
             if (func.name == parts[1]) {
-              const files = await vscode.workspace.findFiles(ext.file, null, 1);
-              return new vscode.Location(files[0], func.range);
+              try {
+                const files = await vscode.workspace.findFiles(
+                  ext.file,
+                  null,
+                  1
+                );
+                if (files.length < 1) return;
+                return new vscode.Location(files[0], func.range);
+              } catch (e) {
+                return;
+              }
             }
           }
         }
@@ -114,6 +132,7 @@ export default class SymbolHelper {
                 null,
                 1
               );
+              if (files.length < 1) return;
               return new vscode.Location(files[0], new vscode.Position(0, 0));
             }
             return new vscode.Location(document.uri, include.range);

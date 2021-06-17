@@ -37,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideHover(document, position, token) {
-          typeParser.update(document.getText()||"");
+          typeParser.update(document.getText().replace(/\r/g, "")||"");
           return hoverHelper.onHover(document, position);
         },
       }
@@ -65,9 +65,9 @@ export function activate(context: vscode.ExtensionContext) {
             position
           );
 
-          const text = document.getText(line);
+          const text = document.getText(line).replace(/\r/g, "");
           const idx = context.activeSignatureHelp?.activeSignature ?? 0;
-          typeParser.update(document.getText());
+          typeParser.update(document.getText().replace(/\r/g, ""));
           return signatureHelper.provideHelp(text, idx);
         },
       },
@@ -80,7 +80,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideDefinition(document, position, token) {
-          typeParser.update(document.getText());
+          typeParser.update(document.getText().replace(/\r/g, ""));
           return definitionHelper.provideDefinitions(document, position);
         },
       }
@@ -92,7 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "xml", scheme: "file" },
       {
         provideDefinition(document, position, token) {
-          typeParser.update(document.getText());
+          typeParser.update(document.getText().replace(/\r/g, ""));
           return definitionHelper.provideDefinitions(document, position);
         },
       }
@@ -150,7 +150,7 @@ export function activate(context: vscode.ExtensionContext) {
             new vscode.Position(0, 0),
             new vscode.Position(position.line + 1, 0)
           );
-          const text2 = document.getText(docStartToCurrentLine); //limit reading file from start to current line, so variables gets parsed right
+          const text2 = document.getText(docStartToCurrentLine).replace(/\r/g, ""); //limit reading file from start to current line, so variables gets parsed right
           typeParser.update(text2);
 
           const text = document
@@ -187,6 +187,7 @@ export function activate(context: vscode.ExtensionContext) {
           const text = document
             .getText(range)
             .replace(/^\s*/, "")
+            .replace(/\r/g, "")
             .split(/([ |(])/);
           const text2 = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
           typeParser.update(text2);
@@ -221,6 +222,7 @@ export function activate(context: vscode.ExtensionContext) {
           const text = document
             .getText(range)
             .replace(/^\s*/, "")
+            .replace(/\r/g, "")
             .split(/([ |(])/);
           const text2 = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
           typeParser.update(text2);

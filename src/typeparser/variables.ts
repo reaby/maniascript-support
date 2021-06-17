@@ -5,7 +5,7 @@ export class VariableParser {
   parse(text: string): nameType[] {
     if (text == undefined) return [];
     const output: nameType[] = [];
-    const allLines = text.split("\n");
+    const allLines = text.replace(/\r/g, "").split("\n");
     const regex =
       /(\s+)?declare\s+(metadata\s+|netread\s+|netwrite\s+|persistent\s+){0,1}([\w[\]:]+)\s+(\w+)\s*(for\s+\w+){0,1}\s*(=|;)/g;
 
@@ -30,7 +30,7 @@ export class VariableParser {
   parseForeach(text: string): nameType[] {
     if (text == undefined) return [];
     const output: nameType[] = [];
-    const allLines = text.split("\n");
+    const allLines = text.replace(/\r/g, "").split("\n");
     const foreachRegex =
       /foreach\s*\(\s*(?:(\w+)\s*=>\s*)?(\w+)\s+in\s+(.*)\s*\)/gm;
     for (const match of text.match(foreachRegex) ?? []) {
@@ -42,7 +42,6 @@ export class VariableParser {
         const type = mArray[3];
         const offset = text.indexOf(match.trim());
         const lines = text.slice(0, offset).split("\n");
-        const allLines = text.split("\n");
         const i = lines.length - 1;
         
         if (keyName) {

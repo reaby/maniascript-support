@@ -1,0 +1,18 @@
+{
+  "model": {
+    "prefix": "Insert Manialink XML-model for validation",
+    "body": [
+      "<?xml-model href=\"https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3.xsd\"?>"
+    ],
+    "description": "Xml-model for manialink validation"
+  },
+  "manialink": {
+    "prefix": "Manialink",
+    "body": [     
+      "<manialink version=\"3\" name=\"untitled\">",
+      "   <!-- craft your manialink here -->",
+      "</manialink>"
+    ],
+    "description": "Manialink body"
+  }  
+}

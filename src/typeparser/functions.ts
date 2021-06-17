@@ -12,8 +12,9 @@ export class FunctionParser {
 
     if (lines == null) return [];
 
-    for (const line of lines) {
+    for (let line of lines) {
       if (line == null) continue;
+      if (line.indexOf("\n") != -1) line = line.split("\n")[0];
       const method = line.replace(/^s*/, "").match(/\b([^()]+)\((.*)\)/);
       if (method == null) continue;
       if (method.length == 3) {
@@ -27,8 +28,8 @@ export class FunctionParser {
 
         const offset = docText.indexOf(line.trim());
         const lines = docText.slice(0, offset).split("\n");
-        const i = lines.length - 1;
-        //const start = docArray[i].indexOf(funcName);
+        let i = lines.length - 1;
+        if (i < 0) i = 0;
         const start = lineNb;
         const range = new Range(i, start, i, start + funcName.length);
 
@@ -78,7 +79,7 @@ export class FunctionParser {
     if (line != -1) {
       for (let i = 0; i <= 5; i++) {
         out += docLines[line + i] + "\n";
-        if (docLines[line + i].trim() == "}") return out;
+        if (docLines[line + i]??"".trim() == "}") return out;
       }
       return out;
     }

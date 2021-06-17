@@ -5,7 +5,7 @@ import { removeDuplicates } from "../utils";
 export class StructureParser {
   parse(docText: string): structureType[] {
     const output: structureType[] = [];
-    const allLines = docText.split("\n");
+    const allLines = docText.replace(/\r/g, "").split("\n");
     for (const line of allLines) {
       const regex = /#Struct\s*([\w:]+)\s*(as\s+(\w+)\s*){0,1}(\{){0,1}/;
       const m = regex.exec(line);
