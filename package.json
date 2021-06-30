@@ -1,7 +1,7 @@
 {
     "name": "maniascript-support",
     "description": "Maniascript support for vscode",
-    "version": "0.0.15",
+    "version": "0.1.0",
     "publisher": "reaby",
     "license": "MIT",
     "engines": {
@@ -21,6 +21,21 @@
     },
     "main": "./out/extension.js",
     "contributes": {
+        "menus": {
+            "editor/context": [
+                {     
+                    "when": "editorLangId==xml",             
+                    "command": "manialink.preview"                    
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "manialink.preview",
+                "title": "Preview Manialink",
+                "category": "Maniascript"
+            }
+        ],
         "languages": [
             {
                 "id": "maniascript",
@@ -115,7 +130,7 @@
                     "description": "Set to use Maniaplanet doc.h format, othervice will use the new Trackmania api"
                 }
             }
-        }    
+        }
     },
     "icon": "images/ms.png",
     "scripts": {

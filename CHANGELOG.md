@@ -1,3 +1,6 @@
+# version 0.1.0 
+* Added Manialink Preview
+
 # version 0.0.15
 * Fixed typeParsing numerous cases with files of \r\n lineseparators
 * Fixed parsing functions with function body defined different line than function declaration

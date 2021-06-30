@@ -7,8 +7,19 @@ import RenameHelper from "./rename";
 import DefinitionHelper from "./definition";
 import HoverHelper from "./hover";
 import FoldingHelper from "./folding";
+import ManialinkPreview from "./ManialinkPreview";
 import Api from "./api";
 import FoldingRangeHelper from "./folding";
+
+function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
+  return {
+    // Enable javascript in the webview
+    enableScripts: true,
+
+    // And restrict the webview to only loading content from our extension's `media` directory.
+    localResourceRoots: [vscode.Uri.joinPath(extensionUri, "resources")],
+  };
+}
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -25,19 +36,51 @@ export function activate(context: vscode.ExtensionContext) {
   const definitionHelper = new DefinitionHelper(typeParser);
   const hoverHelper = new HoverHelper(typeParser, api, completions);
   const foldingHelper = new FoldingRangeHelper();
-
   let activeEditor: vscode.TextEditor | undefined =
     vscode.window.activeTextEditor;
 
   if (activeEditor) {
     triggerUpdateDocument();
   }
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("manialink.preview", () => {
+      if (vscode.window.activeTextEditor) {
+        ManialinkPreview.createOrShow(
+          vscode.window.activeTextEditor.document.getText(),
+          context.extensionUri
+        );
+      }
+    })
+  );
+
+  /*if (vscode.window.registerWebviewPanelSerializer) {
+    // Make sure we register a serializer in activation event
+    vscode.window.registerWebviewPanelSerializer(ManialinkPreview.viewType, {
+      async deserializeWebviewPanel(
+        webviewPanel: vscode.WebviewPanel,
+        state: any
+      ) {
+        console.log(`Got state: ${state}`);
+        // Reset the webview options so we use latest uri for `localResourceRoots`.
+        webviewPanel.webview.options = getWebviewOptions(context.extensionUri);
+        if (vscode.window.activeTextEditor) {
+          ManialinkPreview.revive(
+            webviewPanel,
+            context.extensionUri,
+            vscode.window.activeTextEditor.document.getText()
+          );
+        }
+      },
+    });
+  } */
+
   context.subscriptions.push(
     vscode.languages.registerHoverProvider(
       { language: "maniascript", scheme: "file" },
       {
         provideHover(document, position, token) {
-          typeParser.update(document.getText().replace(/\r/g, "")||"");
+          typeParser.update(document.getText().replace(/\r/g, "") || "");
           return hoverHelper.onHover(document, position);
         },
       }
@@ -54,7 +97,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );*/
-  
+
   context.subscriptions.push(
     vscode.languages.registerSignatureHelpProvider(
       { language: "maniascript", scheme: "file" },
@@ -150,7 +193,9 @@ export function activate(context: vscode.ExtensionContext) {
             new vscode.Position(0, 0),
             new vscode.Position(position.line + 1, 0)
           );
-          const text2 = document.getText(docStartToCurrentLine).replace(/\r/g, ""); //limit reading file from start to current line, so variables gets parsed right
+          const text2 = document
+            .getText(docStartToCurrentLine)
+            .replace(/\r/g, ""); //limit reading file from start to current line, so variables gets parsed right
           typeParser.update(text2);
 
           const text = document

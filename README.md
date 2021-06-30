@@ -21,7 +21,7 @@ trackmania.exe /generatescriptdoc=c:\tmdev\doc.h
 ## Configuration
 
 Next thing is to configure the extension.
-1. Easiest way to get settings is to Ctrl-P and start typing "> settings", other way around is from File->Preferences->Settings->Extensions->ManiaScript.
+1. Easiest way to get settings is to `Ctrl + P` and start typing `> settings`, other way around is from File->Preferences->Settings->Extensions->ManiaScript.
 2. Add following lines to the settings.json:
 
 ```json
@@ -32,6 +32,9 @@ Next thing is to configure the extension.
 3. All done!
 
 ## Features
+
+### Manialink preview
+You can use context menu at xml files to preview the manialink, and as well use the command: `Ctrl + P` -> `> Maniascript: Preview Manialink`
 
 ### Code snipplets
 List of prefixes what you can expand with tab-key, most of them are quite obvious:
