@@ -73,90 +73,95 @@ function walk(rootNode, html) {
         if (filter.indexOf(i) !== -1) continue;
         let node = rootNode.childNodes[i];
         if (node == null || typeof node === "text") continue;
-        switch (node.nodeName) {
-            case "quad": {
-                html.appendChild(genImage(node));
-                break;
-            }
-            case "label": {
-                let prefix = "";
-                if (getAttribute("textprefix", node)) {
-                    prefix = getAttribute("textprefix", node);
+        try {
+            switch (node.nodeName) {
+                case "quad": {
+                    html.appendChild(genImage(node));
+                    break;
                 }
-                let text = getAttribute("text", node);
-                if (!text) {
-                    text = "&nbsp;";
-                } else {
-                    text = text.replace("&", "&amp;");
-                }
-                let outHtml = document.createElement("span");
-				let inHtml = document.createElement("div");
-				
-                inHtml.innerText = prefix + text;
-                outHtml.setAttribute("style", genStyle(node));
-                outHtml.setAttribute("id", getAttribute("id", node));
-                const fhcolor = getAttribute("focusareacolor2", node);
-                if (fhcolor && getAttribute("scriptevents", node) == "1") {
-                    const uid = uuid();
-                    outHtml.classList.add(uid);
-                    document.head.insertAdjacentHTML('beforeend', `<style> span.${uid}:hover{ background-color: #${fhcolor} !important; }</style>`);
-                }
-				outHtml.appendChild(inHtml);
-                html.appendChild(outHtml);
-                break;
-            }
-            case "entry": {
-                let outHtml = document.createElement("input");
-                outHtml.setAttribute("style", "color: white;" + genStyle(node) + "border: none;");
-                outHtml.setAttribute("id", getAttribute("id", node));
-                outHtml.setAttribute("value", getAttribute("default", node));
-                html.appendChild(outHtml);
-                break;
-            }
-			case "textedit": {
-                let outHtml = document.createElement("textarea");
-                outHtml.setAttribute("style", "color: white;" + genStyle(node) + "border: none;");
-                outHtml.setAttribute("id", getAttribute("id", node));
-                outHtml.innerHTML = getAttribute("default", node);
-                html.appendChild(outHtml);
-                break;
-            }
-            case "frame": {
-                let outHtml = document.createElement("div");
-                outHtml.setAttribute("style", genStyle(node));
-                outHtml.setAttribute("id", getAttribute("id", node));
-                frameNode = walk(node, outHtml, false);
-                html.insertBefore(frameNode, html.lastNode);
-                break;
-            }
-            case "framemodel": {
-                let name = getAttribute("id", node);
-                framemodels[name] = node;
-                break;
-            }
-            case "stylesheet": {
-                walk(node, html, false);
-                break;
-            }
-            case "style": {
-                let id = node.getAttribute("id");
-                let cls = node.getAttribute("class");
-                if (id) styleid[id] = node;
-                if (cls) styleclass[cls] = node;
-                break;
-            }
+                case "label": {
+                    let prefix = "";
+                    if (getAttribute("textprefix", node)) {
+                        prefix = getAttribute("textprefix", node);
+                    }
+                    let text = getAttribute("text", node);
+                    if (!text) {
+                        text = "&nbsp;";
+                    } else {
+                        text = text.replace("&", "&amp;");
+                    }
+                    let outHtml = document.createElement("span");
+                    let inHtml = document.createElement("div");
 
-            case "frameinstance": {
-                let modelNode = framemodels[getAttribute("modelid", node)] || {};
-                let outHtml = document.createElement("div");
-                outHtml.setAttribute("style", genStyle(node, false));
-                outHtml.setAttribute("id", getAttribute("id", modelNode));
-                frameNode = walk(modelNode, outHtml, false);
-                html.insertBefore(frameNode, html.lastNode);
-                break;
+                    inHtml.innerText = prefix + text;
+                    outHtml.setAttribute("style", genStyle(node));
+                    outHtml.setAttribute("id", getAttribute("id", node));
+                    const fhcolor = getAttribute("focusareacolor2", node);
+                    if (fhcolor && getAttribute("scriptevents", node) == "1") {
+                        const uid = uuid();
+                        outHtml.classList.add(uid);
+                        document.head.insertAdjacentHTML('beforeend', `<style> span.${uid}:hover{ background-color: #${fhcolor} !important; }</style>`);
+                    }
+                    outHtml.appendChild(inHtml);
+                    html.appendChild(outHtml);
+                    break;
+                }
+                case "entry": {
+                    let outHtml = document.createElement("input");
+                    outHtml.setAttribute("style", "color: white;" + genStyle(node) + "border: none;");
+                    outHtml.setAttribute("id", getAttribute("id", node));
+                    outHtml.setAttribute("value", getAttribute("default", node));
+                    html.appendChild(outHtml);
+                    break;
+                }
+                case "textedit": {
+                    let outHtml = document.createElement("textarea");
+                    outHtml.setAttribute("style", "color: white;" + genStyle(node) + "border: none;");
+                    outHtml.setAttribute("id", getAttribute("id", node));
+                    outHtml.innerHTML = getAttribute("default", node);
+                    html.appendChild(outHtml);
+                    break;
+                }
+                case "frame": {
+                    let outHtml = document.createElement("div");
+                    outHtml.setAttribute("style", genStyle(node));
+                    outHtml.setAttribute("id", getAttribute("id", node));
+                    frameNode = walk(node, outHtml, false);
+                    html.insertBefore(frameNode, html.lastNode);
+                    break;
+                }
+                case "framemodel": {
+                    let name = getAttribute("id", node);
+                    framemodels[name] = node;
+                    break;
+                }
+                case "stylesheet": {
+                    walk(node, html, false);
+                    break;
+                }
+                case "style": {
+                    let id = node.getAttribute("id");
+                    let cls = node.getAttribute("class");
+                    if (id) styleid[id] = node;
+                    if (cls) styleclass[cls] = node;
+                    break;
+                }
+
+                case "frameinstance": {
+                    let modelNode = framemodels[getAttribute("modelid", node)] || {};
+                    let outHtml = document.createElement("div");
+                    outHtml.setAttribute("style", genStyle(node, false));
+                    outHtml.setAttribute("id", getAttribute("id", modelNode));
+                    frameNode = walk(modelNode, outHtml, false);
+                    html.insertBefore(frameNode, html.lastNode);
+                    break;
+                }
             }
+        } catch (err) {
+           // console.log(err); silent exception
         }
     }
+
     return html;
 }
 
@@ -335,12 +340,12 @@ function genStyle(node) {
         out += "display: none;";
     }
     const z = getAttribute("z-index", node) || 0;
-    
+
     if (version == 3) {
-        out += "position: absolute; z-index: " + (index-z) + ";";
+        out += "position: absolute; z-index: " + (index - z) + ";";
         index -= 1;
     } else {
-        out += "position: absolute; z-index: " + (index+z) + ";";
+        out += "position: absolute; z-index: " + (index + z) + ";";
         index += 1;
     }
 

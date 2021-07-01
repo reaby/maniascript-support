@@ -11,16 +11,6 @@ import ManialinkPreview from "./ManialinkPreview";
 import Api from "./api";
 import FoldingRangeHelper from "./folding";
 
-function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
-  return {
-    // Enable javascript in the webview
-    enableScripts: true,
-
-    // And restrict the webview to only loading content from our extension's `media` directory.
-    localResourceRoots: [vscode.Uri.joinPath(extensionUri, "resources")],
-  };
-}
-
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
   console.log("ManiaScript support is enabled.");
@@ -285,10 +275,18 @@ export function activate(context: vscode.ExtensionContext) {
       clearTimeout(timeout);
       timeout = undefined;
     }
+    
     timeout = setTimeout(() => {
       typeParser.updateStructs(activeEditor?.document.getText() ?? "");
       decorator.update(activeEditor);
-    }, 500);
+      if (activeEditor?.document.languageId == "xml" && ManialinkPreview.currentPanel) {        
+        ManialinkPreview.update(
+          activeEditor.document.getText(),
+          context.extensionUri
+        );   
+      }
+    }, 1000);
+    
   }
 
   vscode.window.onDidChangeActiveTextEditor(

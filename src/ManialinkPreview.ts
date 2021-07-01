@@ -24,7 +24,18 @@ export default class ManialinkPreview {
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
   public doc: string;
+  
+  public static update(text: string, extensionUri: vscode.Uri) {
+    if (
+      vscode.window.activeTextEditor?.document.languageId !== "xml"
+    ) return;
 
+    if (ManialinkPreview.currentPanel) {
+      ManialinkPreview.currentPanel.doc = text;
+      ManialinkPreview.currentPanel._update();          
+    }
+  }
+  
   public static createOrShow(text: string, extensionUri: vscode.Uri) {
     if (
       vscode.window.activeTextEditor?.document.languageId !== "xml"
@@ -36,7 +47,8 @@ export default class ManialinkPreview {
     // If we already have a panel, show it.
     if (ManialinkPreview.currentPanel) {
       ManialinkPreview.currentPanel.doc = text;
-      ManialinkPreview.currentPanel._panel.reveal(column);
+      ManialinkPreview.currentPanel._update();
+      ManialinkPreview.currentPanel._panel.reveal(column, true);      
       return;
     }
 
