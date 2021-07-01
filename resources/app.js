@@ -11,6 +11,25 @@ window.onerror = function (msg, url, line) {
     elem.innerHTML = `<div style="min-height: 2rem; min-width: 50%; background: red; color:white;">${msg}</div>`;
 };
 
+function readfile() {
+    const file = document.getElementById('file').files[0];
+    if (file) {
+        processFile(file);
+    }
+}
+
+const processFile = (file) => {
+    // we define fr as a new instance of FileReader
+    const fr = new FileReader();
+
+    fr.readAsText(file);
+    // Handle progress, success, and errors
+    // fr.onprogress = updateProgress;
+    fr.onloadend = () => {
+        renderManialink(fr.result);
+    };
+};
+
 function renderManialink(contents) {
     try {
         let doc = new DOMParser().parseFromString(contents, "text/xml");
@@ -19,7 +38,7 @@ function renderManialink(contents) {
         let rootNode = doc.evaluate('//manialink', doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
         version = rootNode.getAttribute("version") || 3;
-        index = 999;
+        index = 9999;
         framemodels = {};
         styleid = {};
         styleclass = {};
@@ -41,6 +60,12 @@ function renderManialink(contents) {
 
 }
 
+function uuid() {
+    return 'Uxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
 
 function walk(rootNode, html) {
     let filter = ['lentgh', 'item', 'toString'];
@@ -65,9 +90,18 @@ function walk(rootNode, html) {
                     text = text.replace("&", "&amp;");
                 }
                 let outHtml = document.createElement("span");
-                outHtml.innerHTML = prefix + text;
+				let inHtml = document.createElement("div");
+				
+                inHtml.innerText = prefix + text;
                 outHtml.setAttribute("style", genStyle(node));
                 outHtml.setAttribute("id", getAttribute("id", node));
+                const fhcolor = getAttribute("focusareacolor2", node);
+                if (fhcolor && getAttribute("scriptevents", node) == "1") {
+                    const uid = uuid();
+                    outHtml.classList.add(uid);
+                    document.head.insertAdjacentHTML('beforeend', `<style> span.${uid}:hover{ background-color: #${fhcolor} !important; }</style>`);
+                }
+				outHtml.appendChild(inHtml);
                 html.appendChild(outHtml);
                 break;
             }
@@ -76,6 +110,14 @@ function walk(rootNode, html) {
                 outHtml.setAttribute("style", "color: white;" + genStyle(node) + "border: none;");
                 outHtml.setAttribute("id", getAttribute("id", node));
                 outHtml.setAttribute("value", getAttribute("default", node));
+                html.appendChild(outHtml);
+                break;
+            }
+			case "textedit": {
+                let outHtml = document.createElement("textarea");
+                outHtml.setAttribute("style", "color: white;" + genStyle(node) + "border: none;");
+                outHtml.setAttribute("id", getAttribute("id", node));
+                outHtml.innerHTML = getAttribute("default", node);
                 html.appendChild(outHtml);
                 break;
             }
@@ -162,14 +204,8 @@ function genStyle(node) {
     let rotox = "0%";
     let rotoy = "0%";
     let out = "";
-    //if (node.nodeName == "frame") valign = null;
-    //if (node.nodeName == "frame") halign = null;
 
     switch (valign) {
-        case "top":
-            out = `display: flex; align-items: start;`;
-            break;
-
         case "center":
         case "center2":
             py -= (sy / 2);
@@ -177,18 +213,17 @@ function genStyle(node) {
             out = `display: flex; align-items: center;`;
             break;
         case "bottom":
+            py -= sy;
             rotoy = "100%";
-            out = `display: flex; align-items: end;`;
+            out = `display: flex; align-items: flex-end;`;
             break;
+        case "top":
         default:
             out = `display: flex; align-items: start;`;
             break;
     }
 
     switch (halign) {
-        case "left":
-            out += "display: flex; justify-content: start;";
-            break;
         case "center":
         case "center2":
             px -= (sx / 2);
@@ -199,6 +234,10 @@ function genStyle(node) {
             rotox = "100%";
             px -= sx;
             out += "display: flex; justify-content: flex-end;";
+            break;
+        case "left":
+        default:
+            out += "display: flex; justify-content: start;";
             break;
     }
 
@@ -228,7 +267,7 @@ function genStyle(node) {
         }
         out += `font-size: ${textsize * sl}vw;`;
     } else {
-        out += `font-size: ${2 * 0.5}vw;`;
+        out += `font-size: ${1.5 * 0.5}vw;`;
     }
 
     let bgcolor = getAttribute("bgcolor", node);
@@ -256,7 +295,8 @@ function genStyle(node) {
     if (font) {
         switch (font) {
             case "Oswald":
-                out += "font-family: 'Oswald';";
+            case "OswaldMono":
+                out += "font-family: 'Oswald', 'KenneyIcons', 'FontAwesome';";
                 break;
             case "Gotham/Gotham-Medium":
                 out += "font-weight: 500;";
@@ -267,9 +307,13 @@ function genStyle(node) {
             case "Gotham/Gotham-Bold":
                 out += "font-weight: 700;";
                 break;
+            case "file://Media/Font/BiryaniDemiBold.Font.gbx":
+            case "BiryaniDemiBold":
+                out += "font-family: 'Biryani', 'KenneyIcons', 'FontAwesome';font-weight: 600;";
+                break;
             case "Rajdhani":
             case "RajdhaniMono":
-                out += "font-family: 'Rajdhani';font-weight: 700;";
+                out += "font-family: 'Rajdhani', 'KenneyIcons', 'FontAwesome';font-weight: 700;";
                 break;
         }
     }
@@ -290,11 +334,13 @@ function genStyle(node) {
     if (hidden && hidden === "1") {
         out += "display: none;";
     }
-
-    out += "position: absolute; z-index: " + index + ";";
+    const z = getAttribute("z-index", node) || 0;
+    
     if (version == 3) {
+        out += "position: absolute; z-index: " + (index-z) + ";";
         index -= 1;
     } else {
+        out += "position: absolute; z-index: " + (index+z) + ";";
         index += 1;
     }
 

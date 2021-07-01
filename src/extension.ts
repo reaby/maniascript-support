@@ -45,12 +45,12 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("manialink.preview", () => {
-      if (vscode.window.activeTextEditor) {
-        ManialinkPreview.createOrShow(
-          vscode.window.activeTextEditor.document.getText(),
-          context.extensionUri
-        );
-      }
+      if (vscode.window.activeTextEditor) {        
+          ManialinkPreview.createOrShow(
+            vscode.window.activeTextEditor.document.getText(),
+            context.extensionUri
+          );
+        }      
     })
   );
 

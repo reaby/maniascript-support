@@ -1,3 +1,6 @@
+# version 0.1.1
+* Better Manialink Preview rendering...
+
 # version 0.1.0 
 * Added Manialink Preview
 

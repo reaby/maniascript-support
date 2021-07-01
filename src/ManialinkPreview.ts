@@ -26,6 +26,9 @@ export default class ManialinkPreview {
   public doc: string;
 
   public static createOrShow(text: string, extensionUri: vscode.Uri) {
+    if (
+      vscode.window.activeTextEditor?.document.languageId !== "xml"
+    ) return;
     const column = vscode.window.activeTextEditor
       ? vscode.ViewColumn.Two
       : undefined;
@@ -175,9 +178,13 @@ export default class ManialinkPreview {
 	<meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; style-src-elem ${
-    webview.cspSource
-  } ;img-src ${webview.cspSource} https: http:; script-src 'nonce-${nonce}';">
+	<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self'; 
+  style-src 'unsafe-inline';
+  style-src-elem 'unsafe-inline' ${webview.cspSource} https:; 
+  img-src ${webview.cspSource} https: http:; 
+  font-src ${webview.cspSource} https:; 
+  script-src 'nonce-${nonce}';">
     <title>Preview</title>
     <script nonce="${nonce}" src="https://maniaplanet.github.io/maniaplanet-style-js-parser/bin/mp-style-parser.js"></script>
    	<link href="${stylesUri}" rel="stylesheet">
@@ -185,10 +192,8 @@ export default class ManialinkPreview {
 </head>
 
 <body>
-	<textarea id="data" style="display:none";>${addslashes(content)}</textarea>
-    <div id="manialink">
-
-    </div>
+  	<textarea id="data" style="display:none";>${addslashes(content)}</textarea>
+    <div id="manialink"></div>
 
 
 	<script nonce="${nonce}">
