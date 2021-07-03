@@ -1,3 +1,7 @@
+# version 0.1.2
+* Fixes and optimizations for Manialink preview
+* Auto update preview window on document change
+
 # version 0.1.1
 * Better Manialink Preview rendering...
 

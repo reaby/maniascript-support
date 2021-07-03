@@ -5,6 +5,7 @@ let version = 3;
 let framemodels = {};
 let styleid = {};
 let styleclass = {};
+let colorclasses = {};
 
 window.onerror = function (msg, url, line) {
     let elem = document.querySelector("#manialink");
@@ -42,7 +43,7 @@ function renderManialink(contents) {
         framemodels = {};
         styleid = {};
         styleclass = {};
-
+        colorclasses = {};
 
         walk(rootNode, html);
         elem.innerHTML = "";
@@ -91,18 +92,20 @@ function walk(rootNode, html) {
                         text = text.replace("&", "&amp;");
                     }
                     let outHtml = document.createElement("span");
-                    let inHtml = document.createElement("div");
-
-                    inHtml.innerText = prefix + text;
+                    outHtml.innerText = prefix + text;
                     outHtml.setAttribute("style", genStyle(node));
                     outHtml.setAttribute("id", getAttribute("id", node));
                     const fhcolor = getAttribute("focusareacolor2", node);
                     if (fhcolor && getAttribute("scriptevents", node) == "1") {
-                        const uid = uuid();
-                        outHtml.classList.add(uid);
-                        document.head.insertAdjacentHTML('beforeend', `<style> span.${uid}:hover{ background-color: #${fhcolor} !important; }</style>`);
+                        if (colorclasses[fhcolor]) {
+                            outHtml.classList.add(colorclasses[fhcolor]);
+                        } else {
+                            const uid = uuid();
+                            colorclasses[fhcolor] = uid;
+                            outHtml.classList.add(uid);
+                            document.head.insertAdjacentHTML('beforeend', `<style> span.${uid}:hover{ background-color: #${fhcolor} !important; }</style>`);
+                        }
                     }
-                    outHtml.appendChild(inHtml);
                     html.appendChild(outHtml);
                     break;
                 }
@@ -158,7 +161,7 @@ function walk(rootNode, html) {
                 }
             }
         } catch (err) {
-           // console.log(err); silent exception
+            // console.log(err); silent exception
         }
     }
 
@@ -314,11 +317,11 @@ function genStyle(node) {
                 break;
             case "file://Media/Font/BiryaniDemiBold.Font.gbx":
             case "BiryaniDemiBold":
-                out += "font-family: 'Biryani', 'KenneyIcons', 'FontAwesome';font-weight: 600;";
+                out += "font-family: 'Biryani', 'KenneyIcons', 'FontAwesome'; font-weight: 600;";
                 break;
             case "Rajdhani":
             case "RajdhaniMono":
-                out += "font-family: 'Rajdhani', 'KenneyIcons', 'FontAwesome';font-weight: 700;";
+                out += "font-family: 'Rajdhani', 'KenneyIcons', 'FontAwesome'; font-weight: 700;";
                 break;
         }
     }
