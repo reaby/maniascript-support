@@ -1,5 +1,5 @@
 # version 0.1.3
-* Change autocomplete array methods to have return types
+* Change autocomplete array methods to have proper return types
 * Add `.count` property to array autocomplete
 * Include alias `<=>` as well as `=` for `declare` clauses
 * Allow `<Maniascript>` tag-support for manialinks 
