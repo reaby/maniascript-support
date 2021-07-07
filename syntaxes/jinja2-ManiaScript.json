@@ -8,7 +8,7 @@
 	],
 	"repository": {
 		"maniascript-block": {
-            "name": "meta.embedded.script.block.ms",
+            "name": "meta.embedded.script.block",
                     "begin": "(<script>)\\s*(<!--|\\<\\!\\[CDATA\\[)",
                     "beginCaptures": {
                         "0": {

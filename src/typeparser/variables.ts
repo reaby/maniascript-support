@@ -7,7 +7,7 @@ export class VariableParser {
     const output: nameType[] = [];
     const allLines = text.replace(/\r/g, "").split("\n");
     const regex =
-      /(\s+)?declare\s+(metadata\s+|netread\s+|netwrite\s+|persistent\s+){0,1}([\w[\]:]+)\s+(\w+)\s*(for\s+\w+){0,1}\s*(=|;)/g;
+      /(\s+)?declare\s+(metadata\s+|netread\s+|netwrite\s+|persistent\s+){0,1}([\w[\]:]+)\s+(\w+)\s*(for\s+\w+){0,1}\s*(=|<=>|;)/g;
 
     for (const line in allLines) {
       let m;

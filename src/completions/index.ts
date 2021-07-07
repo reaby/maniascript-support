@@ -96,32 +96,40 @@ export default class Completer {
     const methods: CompletionItem[] = [];
     const methodCompletions = [
       // filter value, display value, completion
-      ["add", "add(value)", "add(${1:value})"],
-      ["addfirst", "addfirst(value)", "add(${1:value})"],
-      ["clear", "clear()", "clear()"],
-      ["sort", "sort()", "sort()"],
-      ["sortreverse", "sortreverse()", "sortreverse()"],
-      ["sortkey", "sortkey()", "sortkey()"],
-      ["sortkeyreverse", "sortkeyreverse()", "sortkeyreverse()"],
-      ["removekey", "removekey(index)", "removekey(${1:index})"],
-      ["remove", "remove()", "remove(${1:value})"],
-      ["existskey", "existskey(key)", "existskey(${1:key})"],
-      ["exists", "exists()", "exists(${1:value})"],
-      ["keyof", "keyof(value)", "keyof(${1:value})"],
-      ["containsonly", "containsonly(value)", "containsonly(${1:value})"],
-      ["containsoneof", "containsoneof(value)", "containsoneof(${1:value})"],
-      ["slice", "slice(start,count)", "slice(${1:start}, ${2:count}"],
-      ["tojson", "tojson() : Text", "tojson()"],
-      ["fromjson", "fromjson(value) : Text", "fromjson(${1:value})"],
-      ["get", "get(key, defaultValue)", "get(${1:key}, ${2:value})"],
+      ["add", "add(value)", "add(${1:value})", "Void"],
+      ["addfirst", "addfirst(value)", "add(${1:value})", "Void"],
+      ["clear", "clear()", "clear()", "Void"],
+      ["sort", "sort()", "sort()", "Void"],
+      ["sortreverse", "sortreverse()", "sortreverse()", "any"],
+      ["sortkey", "sortkey()", "sortkey()", "any"],
+      ["sortkeyreverse", "sortkeyreverse()", "sortkeyreverse()", "any"],
+      ["removekey", "removekey(index)", "removekey(${1:index})", ""],
+      ["remove", "remove()", "remove(${1:value})", ""],
+      ["existskey", "existskey(key)", "existskey(${1:key})", "Boolean"],
+      ["exists", "exists()", "exists(${1:value})", "Boolean"],
+      ["keyof", "keyof(value)", "keyof(${1:value})", "any"],
+      ["containsonly", "containsonly(value)", "containsonly(${1:value})", "Boolean"],
+      ["containsoneof", "containsoneof(value)", "containsoneof(${1:value})", "Boolean"],
+      ["slice", "slice(start,count)", "slice(${1:start}, ${2:count}", "any"],
+      ["tojson", "tojson()", "tojson()", "Text"],
+      ["fromjson", "fromjson(value)", "fromjson(${1:value})", "Boolean"],
+      ["get", "get(key, defaultValue)", "get(${1:key}, ${2:value})", "any"],
     ];
+
+    const item = new CompletionItem("count", CompletionItemKind.Property);
+    item.insertText = new SnippetString("count");
+    item.filterText = "count";
+    item.detail = "Interger";
+    methods.push(item);
 
     methodCompletions.forEach((method) => {
       const item = new CompletionItem(method[1], CompletionItemKind.Function);
       item.insertText = new SnippetString(method[2]);
       item.filterText = method[0];
+      item.detail = method[3];
       methods.push(item);
     });
+
 
     return methods;
   }

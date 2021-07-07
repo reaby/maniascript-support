@@ -21,6 +21,7 @@
                     "name": "meta.embedded.tag.script.close.ms"
                 }
             },
+            "name": "meta.embedded.script.block",
             "patterns": [
                 {
                     "include": "source.ms"

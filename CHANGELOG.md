@@ -1,3 +1,12 @@
+# version 0.1.3
+* Change autocomplete array methods to have return types
+* Add `.count` property to array autocomplete
+* Include alias `<=>` as well as `=` for `declare` clauses
+* Allow `<Maniascript>` tag-support for manialinks 
+  * this is to support ubitn titlepack engine scripts
+  * and some other tmlanguage highlite changes
+* update npm dependencies to more recent versions
+
 # version 0.1.2
 * Fixes and optimizations for Manialink preview
 * Auto update preview window on document change

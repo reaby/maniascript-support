@@ -1,7 +1,7 @@
 {
     "name": "maniascript-support",
     "description": "Maniascript support for vscode",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "publisher": "reaby",
     "license": "MIT",
     "engines": {
@@ -23,9 +23,9 @@
     "contributes": {
         "menus": {
             "editor/context": [
-                {     
-                    "when": "editorLangId==xml",             
-                    "command": "manialink.preview"                    
+                {
+                    "when": "editorLangId==xml",
+                    "command": "manialink.preview"
                 }
             ]
         },
@@ -69,6 +69,10 @@
             {
                 "language": "xml",
                 "path": "./snippets/manialink.json"
+            },
+            {
+                "language": "jinja-xml",
+                "path": "./snippets/manialink.json"
             }
         ],
         "grammars": [
@@ -79,7 +83,7 @@
                     "text.xml.jinja"
                 ],
                 "embeddedLanguages": {
-                    "meta.embedded.script.block.ms": "maniascript"
+                    "meta.embedded.script.block": "maniascript"
                 }
             },
             {
@@ -89,10 +93,7 @@
                     "text.xml"
                 ],
                 "embeddedLanguages": {
-                    "meta.embedded.script.block.ms": "maniascript"
-                },
-                "tokenTypes": {
-                    "meta.embedded.script.block.ms": "other"
+                    "meta.embedded.script.block": "maniascript"
                 }
             },
             {
@@ -107,7 +108,7 @@
                     "source.ms"
                 ],
                 "embeddedLanguages": {
-                    "string.templatestring.ms": "maniascript"
+                    "meta.embedded.script.block": "maniascript"
                 }
             }
         ],
@@ -140,11 +141,11 @@
         "watch": "tsc -watch -p ./"
     },
     "devDependencies": {
-        "@types/node": "^12.12.0",
-        "@typescript-eslint/eslint-plugin": "^3.0.2",
-        "@typescript-eslint/parser": "^3.0.2",
-        "eslint": "^7.1.0",
-        "typescript": "^4.0.2",
-        "@types/vscode": "^1.52.0"
+        "@types/node": "^16.0.0",
+        "@typescript-eslint/eslint-plugin": "^4.28.2",
+        "@typescript-eslint/parser": "^4.28.2",
+        "eslint": "^7.30.0",
+        "typescript": "^4.3.5",
+        "@types/vscode": "^1.57.1"
     }
 }

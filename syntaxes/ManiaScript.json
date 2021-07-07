@@ -130,40 +130,6 @@
                 }
             ]
         },
-        "keyword-language": {
-            "patterns": [
-                {
-                    "comment": "Common control keywords found in various C style languages",
-                    "match": "\\b(break|continue|do|for|foreach|sleep|yield|return|while|meanwhile|wait)\\b",
-                    "name": "keyword.control.flow.ms"
-                },
-                {
-                    "comment": "Common control keywords found in various C style languages",
-                    "match": "\\b(case|else|if)\\b",
-                    "name": "keyword.control.conditional.ms"
-                },
-                {
-                    "comment": "Keywords specific to maniascript",
-                    "match": "#\\b(Command|RequireContext|Setting|Const|Extends)\\b",
-                    "name": "keyword.control.ms"
-                },
-                {
-                    "match": "(#\\bInclude\\b)\\s+(\".*?\")(\\s+as\\s+\\b(\\w+)\\b){0,1}",
-                    "captures": {
-                        "1": {
-                            "name": "keyword.control.ms"
-                        },
-                        "2": {
-                            "name": "string.quoted.ms"
-                        },
-                        "4": {
-                            "name": "support.class.ms"
-                        }
-                    },
-                    "name": "meta.include.ms"
-                }
-            ]
-        },
         "storage-types": {
             "patterns": [
                 {
@@ -208,36 +174,45 @@
                 }
             ]
         },
+        "keyword-language": {
+            "patterns": [
+                {
+                    "comment": "Common control keywords found in various C style languages",
+                    "match": "\\b(break|continue|do|for|foreach|sleep|yield|return|while|meanwhile|wait)\\b",
+                    "name": "keyword.control.flow.ms"
+                },
+                {
+                    "comment": "Common control keywords found in various C style languages",
+                    "match": "\\b(case|else|if)\\b",
+                    "name": "keyword.control.conditional.ms"
+                },
+                {
+                    "comment": "Keywords specific to maniascript",
+                    "match": "#\\b(Command|RequireContext|Setting|Const|Extends)\\b",
+                    "name": "keyword.control.ms"
+                },
+                {
+                    "match": "(#\\bInclude\\b)\\s+(\".*?\")(\\s+as\\s+\\b(\\w+)\\b){0,1}",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.ms"
+                        },
+                        "2": {
+                            "name": "string.quoted.ms"
+                        },
+                        "4": {
+                            "name": "support.class.ms"
+                        }
+                    },
+                    "name": "meta.include.ms"
+                }
+            ]
+        },
         "keyword-storage": {
             "patterns": [
                 {
                     "match": "(?<!\\.)\\b(persistent|netread|netwrite|declare|metadata)\\b",
                     "name": "storage.type.ms"
-                }
-            ]
-        },
-        "language-constant": {
-            "patterns": [
-                {
-                    "match": "(?<!\\.)\\bTrue\\b",
-                    "name": "constant.language.boolean.true.ms"
-                },
-                {
-                    "match": "(?<!\\.)\\bFalse\\b",
-                    "name": "constant.language.boolean.false.ms"
-                },
-                {
-                    "match": "(?<!\\.)\\bNull\\b",
-                    "name": "constant.language.null.ms"
-                },
-                {
-                    "match": "(?<!\\.)\\bNullId\\b",
-                    "name": "constant.language.null.ms"
-                },
-                {
-                    "comment": "Match numbers",
-                    "match": "\\b((0(x|X)[0-9a-fA-F]+)|([0-9]+(\\.[0-9]+)?))\\b",
-                    "name": "constant.numeric.decimal.ms"
                 }
             ]
         },
@@ -329,11 +304,28 @@
                 }
             ]
         },
-        "support-classes": {
+        "language-constant": {
             "patterns": [
                 {
-                    "match": "\\b(TimeLib|MathLib|TextLib|AnimLib|CAchievementsAchievement|CAchievementsAchievementDesc|CAchievementsEvent|CAchievementsManager|CAchievementsStat|CAchievementsStatDesc|CAction|CActionInterface|CActionManager|CAnchorData|CAnimManager|CAnyEditorPlugin|CAudioManager|CAudioSource|CAudioSourceMusic|CBadge|CBadgeEditor|CBadgeManager|CBaseConstEvent|CBaseEvent|CBlock|CBlockClip|CBlockClipList|CBlockModel|CBlockModelClip|CBlockModelVariant|CBlockModelVariantAir|CBlockModelVariantGround|CBlockUnit|CBlockUnitModel|CCampaign|CClient|CCollector|CDataFileMgr|CEditorAsset|CEditorBase|CEditorEditor|CEditorEvent|CEditorMainPlugin|CEditorMesh|CEditorModule|CEditorPluginHandle|CEditorPluginModuleEvent|CEntity|CGhost|CHighScoreComparison|CHighScoreComparisonSummary|CHttpEvent|CHttpManager|CHttpRequest|CImage|CInputEvent|CInputManager|CInputPad|CItemAnchor|CMacroblockInstance|CMacroblockModel|CManiaApp|CManiaAppBase|CManiaAppBrowser|CManiaAppEvent|CManiaAppPlayground|CManiaAppPlaygroundCommon|CManiaAppPlaygroundEvent|CManiaAppStation|CManiaAppTitle|CManiaAppTitleLayer|CMap|CMapBotPath|CMapBotSpawn|CMapEditorPlugin|CMapEditorPluginEvent|CMapEditorPluginLayer|CMapGroup|CMapInfo|CMapLandmark|CMapObjectAnchor|CMapSector|CMapSpawn|CMapType|CMapWaypoint|CMatchSettings|CMatchSettingsManager|CMatchSettingsPlaylistItem|CMlBrowser|CMlCamera|CMlControl|CMlEntry|CMlFileEntry|CMlFrame|CMlGauge|CMlGraph|CMlGraphCurve|CMlLabel|CMlMediaPlayer|CMlMinimap|CMlPage|CMlQuad|CMlScript|CMlScriptEvent|CMlScriptIngame|CMlStation|CMlTextEdit|CMode|CModeTurret|CModeTurretManager|CModeVehicle|CModeVehicleManager|CModuleMenu|CModuleMenuComponent|CModuleMenuFileBrowser|CModuleMenuLayer|CModuleMenuModel|CModuleMenuPageModel|CModulePlayground|CModulePlaygroundChrono|CModulePlaygroundHud|CModulePlaygroundHudModel|CModulePlaygroundInventory|CModulePlaygroundPlayerState|CModulePlaygroundScoresTable|CModulePlaygroundSpeedMeter|CModulePlaygroundStore|CModulePlaygroundTeamState|CNaturalLeaderBoardInfo|CNod|CNotificationsConsumer|CNotificationsConsumerEvent|CNotificationsConsumerNotification|CPackCreator|CPackCreatorPack|CPackCreatorRecipient|CPackCreatorTitleInfo|CParsingDocument|CParsingManager|CParsingNode|CPlayer|CPlaygroundClient|CPlug|CRealLeaderBoardInfo|CReplayInfo|CScore|CScoreMgr|CServerAdmin|CServerInfo|CServerPlugin|CServerPluginEvent|CSmAction|CSmActionEvent|CSmBase|CSmBlock|CSmBlockPole|CSmGauge|CSmLandmark|CSmMapBase|CSmMapGate|CSmMapGauge|CSmMapLandmark|CSmMapType|CSmMlScriptIngame|CSmMode|CSmModeEvent|CSmObject|CSmPlayer|CSmPlayerDriver|CSmScore|CSmSector|CStation|CSystemPlatform|CTaskResult|CTaskResult_BuddiesChallengeRecord|CTaskResult_BuddiesChallengeRecordsComparison|CTaskResult_BuddyChallengeRecordsComparison|CTaskResult_FileList|CTaskResult_GameModeList|CTaskResult_Ghost|CTaskResult_GhostList|CTaskResult_MapList|CTaskResult_MapRecord|CTaskResult_MapRecordList|CTaskResult_ModeInfo|CTaskResult_NaturalLeaderBoardInfoList|CTaskResult_PlayerMapRecords|CTaskResult_RealLeaderBoardInfoList|CTaskResult_ReplayList|CTaskResult_StringIntList|CTeam|CTitle|CTitleControl|CTitleEdition|CTmMapType|CTmMlPlayer|CTmMlScriptIngame|CTmMode|CTmModeEvent|CTmPlayer|CTmRaceClientEvent|CTmResult|CTmScore|CTrackManiaScore|CUIConfig|CUIConfigEvent|CUIConfigMgr|CUILayer|CUser|CUserV2Manager|CUserV2Profile|CVehicleSettings|CVideo|CVideoManager|CXmlRpc|CXmlRpcEvent|CIdent|CInt3|CInteger|CReal|CSHudModule|CText|CVec2|CVec3|CVoid|This)\\b",
-                    "name": "support.class.buildin.ms"
+                    "match": "(?<!\\.)\\bTrue\\b",
+                    "name": "constant.language.boolean.true.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bFalse\\b",
+                    "name": "constant.language.boolean.false.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bNull\\b",
+                    "name": "constant.language.null.ms"
+                },
+                {
+                    "match": "(?<!\\.)\\bNullId\\b",
+                    "name": "constant.language.null.ms"
+                },
+                {
+                    "comment": "Match numbers",
+                    "match": "\\b((0(x|X)[0-9a-fA-F]+)|([0-9]+(\\.[0-9]+)?))\\b",
+                    "name": "constant.numeric.decimal.ms"
                 }
             ]
         },
@@ -349,6 +341,14 @@
                 }
             ]
         },
+        "support-classes": {
+            "patterns": [
+                {
+                    "match": "\\b(TimeLib|MathLib|TextLib|AnimLib|CAchievementsAchievement|CAchievementsAchievementDesc|CAchievementsEvent|CAchievementsManager|CAchievementsStat|CAchievementsStatDesc|CAction|CActionInterface|CActionManager|CAnchorData|CAnimManager|CAnyEditorPlugin|CAudioManager|CAudioSource|CAudioSourceMusic|CBadge|CBadgeEditor|CBadgeManager|CBaseConstEvent|CBaseEvent|CBlock|CBlockClip|CBlockClipList|CBlockModel|CBlockModelClip|CBlockModelVariant|CBlockModelVariantAir|CBlockModelVariantGround|CBlockUnit|CBlockUnitModel|CCampaign|CClient|CCollector|CDataFileMgr|CEditorAsset|CEditorBase|CEditorEditor|CEditorEvent|CEditorMainPlugin|CEditorMesh|CEditorModule|CEditorPluginHandle|CEditorPluginModuleEvent|CEntity|CGhost|CHighScoreComparison|CHighScoreComparisonSummary|CHttpEvent|CHttpManager|CHttpRequest|CImage|CInputEvent|CInputManager|CInputPad|CItemAnchor|CMacroblockInstance|CMacroblockModel|CManiaApp|CManiaAppBase|CManiaAppBrowser|CManiaAppEvent|CManiaAppPlayground|CManiaAppPlaygroundCommon|CManiaAppPlaygroundEvent|CManiaAppStation|CManiaAppTitle|CManiaAppTitleLayer|CMap|CMapBotPath|CMapBotSpawn|CMapEditorPlugin|CMapEditorPluginEvent|CMapEditorPluginLayer|CMapGroup|CMapInfo|CMapLandmark|CMapObjectAnchor|CMapSector|CMapSpawn|CMapType|CMapWaypoint|CMatchSettings|CMatchSettingsManager|CMatchSettingsPlaylistItem|CMlBrowser|CMlCamera|CMlControl|CMlEntry|CMlFileEntry|CMlFrame|CMlGauge|CMlGraph|CMlGraphCurve|CMlLabel|CMlMediaPlayer|CMlMinimap|CMlPage|CMlQuad|CMlScript|CMlScriptEvent|CMlScriptIngame|CMlStation|CMlTextEdit|CMode|CModeTurret|CModeTurretManager|CModeVehicle|CModeVehicleManager|CModuleMenu|CModuleMenuComponent|CModuleMenuFileBrowser|CModuleMenuLayer|CModuleMenuModel|CModuleMenuPageModel|CModulePlayground|CModulePlaygroundChrono|CModulePlaygroundHud|CModulePlaygroundHudModel|CModulePlaygroundInventory|CModulePlaygroundPlayerState|CModulePlaygroundScoresTable|CModulePlaygroundSpeedMeter|CModulePlaygroundStore|CModulePlaygroundTeamState|CNaturalLeaderBoardInfo|CNod|CNotificationsConsumer|CNotificationsConsumerEvent|CNotificationsConsumerNotification|CPackCreator|CPackCreatorPack|CPackCreatorRecipient|CPackCreatorTitleInfo|CParsingDocument|CParsingManager|CParsingNode|CPlayer|CPlaygroundClient|CPlug|CRealLeaderBoardInfo|CReplayInfo|CScore|CScoreMgr|CServerAdmin|CServerInfo|CServerPlugin|CServerPluginEvent|CSmAction|CSmActionEvent|CSmBase|CSmBlock|CSmBlockPole|CSmGauge|CSmLandmark|CSmMapBase|CSmMapGate|CSmMapGauge|CSmMapLandmark|CSmMapType|CSmMlScriptIngame|CSmMode|CSmModeEvent|CSmObject|CSmPlayer|CSmPlayerDriver|CSmScore|CSmSector|CStation|CSystemPlatform|CTaskResult|CTaskResult_BuddiesChallengeRecord|CTaskResult_BuddiesChallengeRecordsComparison|CTaskResult_BuddyChallengeRecordsComparison|CTaskResult_FileList|CTaskResult_GameModeList|CTaskResult_Ghost|CTaskResult_GhostList|CTaskResult_MapList|CTaskResult_MapRecord|CTaskResult_MapRecordList|CTaskResult_ModeInfo|CTaskResult_NaturalLeaderBoardInfoList|CTaskResult_PlayerMapRecords|CTaskResult_RealLeaderBoardInfoList|CTaskResult_ReplayList|CTaskResult_StringIntList|CTeam|CTitle|CTitleControl|CTitleEdition|CTmMapType|CTmMlPlayer|CTmMlScriptIngame|CTmMode|CTmModeEvent|CTmPlayer|CTmRaceClientEvent|CTmResult|CTmScore|CTrackManiaScore|CUIConfig|CUIConfigEvent|CUIConfigMgr|CUILayer|CUser|CUserV2Manager|CUserV2Profile|CVehicleSettings|CVideo|CVideoManager|CXmlRpc|CXmlRpcEvent|CIdent|CInt3|CInteger|CReal|CSHudModule|CText|CVec2|CVec3|CVoid|This)\\b",
+                    "name": "support.class.buildin.ms"
+                }
+            ]
+        },
         "support-functions": {
             "patterns": [
                 {
@@ -358,6 +358,41 @@
                 {
                     "match": "\\b(log|assert|dump)\\b",
                     "name": "support.function.ms"
+                }
+            ]
+        },
+        "operators": {
+            "patterns": [
+                {
+                    "match": "\\s+\\b(as|in|for)\\b(?!\\s*\\()",
+                    "name": "keyword.operator.ms"
+                },
+                {
+                    "match": "!(?!=)|&&|[|]{2}",
+                    "name": "keyword.operator.logical.ms"
+                },
+                {
+                    "match": "=(?!=)",
+                    "name": "keyword.operator.assignment.ms"
+                },
+                {
+                    "match": "%=|&=|\\*=|\\+=|-=|/=|\\^|\\^=|\\|=|<<=|>>=|>>>=",
+                    "name": "keyword.operator.assignment.augmented.ms"
+                },
+                {
+                    "match": "<=|>=|<|>",
+                    "name": "keyword.operator.relational.ms"
+                },
+                {
+                    "match": "==|!=",
+                    "name": "keyword.operator.comparison.ms"
+                },
+                {
+                    "match": "/|%{1}|(?<!\\*)\\*{1}(?!\\*)|(?<!\\+)\\+{1}(?!\\+)|(?<!-)-{1}(?!-)",
+                    "name": "keyword.operator.arithmetic.ms"
+                },
+                {
+                    "match": "::"
                 }
             ]
         },
@@ -408,38 +443,80 @@
                 }
             ]
         },
-        "operators": {
+        "template-string-content": {
             "patterns": [
                 {
-                    "match": "\\s+\\b(as|in|for)\\b(?!\\s*\\()",
-                    "name": "keyword.operator.ms"
+                    "name": "entity.templatestring.element.ms",
+                    "begin": "{{{",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "meta.embedded.tag.script.open.ms"
+                        }
+                    },
+                    "end": "}}}",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.embedded.tag.script.close.ms"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#expression"
+                        }
+                    ]
                 },
                 {
-                    "match": "!(?!=)|&&|[|]{2}",
-                    "name": "keyword.operator.logical.ms"
-                },
+                    "name": "meta.embedded.script.block.ms",
+                    "begin": "(\\<script>|\\<Maniascript>)\\s*(<!--|\\<\\!\\[CDATA\\[)",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "meta.embedded.tag.script.open.ms"
+                        },
+                        "1": {
+                            "name": "meta.embedded.tag.comment.open.ms"
+                        }
+                    },
+                    "end": "(-->|\\]\\]>)\\s*(\\<\\/script>|\\<\\/Maniascript>)",
+                    "endCaptures": {
+                        "0": {
+                            "name": "meta.embedded.tag.comment.close.ms"
+                        },
+                        "1": {
+                            "name": "meta.embedded.tag.script.close.ms"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "$self"
+                        }
+                    ]
+                }
+            ]
+        },
+        "literal-string": {
+            "patterns": [
                 {
-                    "match": "=(?!=)",
-                    "name": "keyword.operator.assignment.ms"
-                },
-                {
-                    "match": "%=|&=|\\*=|\\+=|-=|/=|\\^|\\^=|\\|=|<<=|>>=|>>>=",
-                    "name": "keyword.operator.assignment.augmented.ms"
-                },
-                {
-                    "match": "<=|>=|<|>",
-                    "name": "keyword.operator.relational.ms"
-                },
-                {
-                    "match": "==|!=",
-                    "name": "keyword.operator.comparison.ms"
-                },
-                {
-                    "match": "/|%{1}|(?<!\\*)\\*{1}(?!\\*)|(?<!\\+)\\+{1}(?!\\+)|(?<!-)-{1}(?!-)",
-                    "name": "keyword.operator.arithmetic.ms"
-                },
-                {
-                    "match": "::"
+                    "begin": "(?<!\")\"{1}(?!\"\")",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.string.begin.ms"
+                        }
+                    },
+                    "end": "(\"{1})|([\\n])",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.string.end.ms"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.string.end.illegal.ms"
+                        }
+                    },
+                    "name": "string.quoted.ms",
+                    "patterns": [
+                        {
+                            "include": "#string-content"
+                        }
+                    ]
                 }
             ]
         },
@@ -495,83 +572,6 @@
                 }
             ]
         },
-        "template-string-content": {
-            "patterns": [
-                {
-                    "name": "entity.templatestring.element.ms",
-                    "begin": "{{{",
-                    "beginCaptures": {
-                        "0": {
-                            "name": "meta.embedded.tag.script.open.ms"
-                        }
-                    },
-                    "end": "}}}",
-                    "endCaptures": {
-                        "0": {
-                            "name": "meta.embedded.tag.script.close.ms"
-                        }
-                    },
-                    "patterns": [
-                        {
-                            "include": "#expression"
-                        }
-                    ]
-                },
-                {
-                    "name": "meta.embedded.script.block.ms",
-                    "begin": "(<script>)(<!--|\\<\\!\\[CDATA\\[)",
-                    "beginCaptures": {
-                        "0": {
-                            "name": "meta.embedded.tag.script.open.ms"
-                        },
-                        "1": {
-                            "name": "meta.embedded.tag.comment.open.ms"
-                        }
-                    },
-                    "end": "(-->|\\]\\]>)(\\<\\/script>)",
-                    "endCaptures": {
-                        "0": {
-                            "name": "meta.embedded.tag.comment.close.ms"
-                        },
-                        "1": {
-                            "name": "meta.embedded.tag.script.close.ms"
-                        }
-                    },
-                    "patterns": [
-                        {
-                            "include": "$self"
-                        }
-                    ]
-                }
-            ]
-        },
-        "literal-string": {
-            "patterns": [
-                {
-                    "begin": "(?<!\")\"{1}(?!\"\")",
-                    "beginCaptures": {
-                        "1": {
-                            "name": "punctuation.definition.string.begin.ms"
-                        }
-                    },
-                    "end": "(\"{1})|([\\n])",
-                    "endCaptures": {
-                        "1": {
-                            "name": "punctuation.definition.string.end.ms"
-                        },
-                        "2": {
-                            "name": "punctuation.definition.string.end.illegal.ms"
-                        }
-                    },
-                    "name": "string.quoted.ms",
-                    "patterns": [
-                        {
-                            "include": "#string-content"
-                        }
-                    ]
-                }
-            ]
-        },
         "function-declaration-parameters": {
             "patterns": [
                 {
@@ -615,28 +615,6 @@
                             "include": "#comments"
                         }
                     ]
-                }
-            ]
-        },
-        "language-label": {
-            "patterns": [
-                {
-                    "captures": {
-                        "1": {
-                            "name": "support.type.label.ms"
-                        }
-                    },
-                    "match": "\\+{3}\\s*(\\w+)\\s*\\+{3}|\\-{3}\\s*(\\w+)\\s*\\-{3}",
-                    "name": "meta.label.entry.ms"
-                },
-                {
-                    "captures": {
-                        "1": {
-                            "name": "support.type.label.ms"
-                        }
-                    },
-                    "match": "\\*{3}\\s*(\\w+)\\s*\\*{3}",
-                    "name": "meta.label.injector.ms"
                 }
             ]
         },
@@ -710,6 +688,28 @@
                     },
                     "match": "(\\$<%)([\\d])(\\$>)",
                     "name": "meta.string.format.ms"
+                }
+            ]
+        },
+        "language-label": {
+            "patterns": [
+                {
+                    "captures": {
+                        "1": {
+                            "name": "support.type.label.ms"
+                        }
+                    },
+                    "match": "\\+{3}\\s*(\\w+)\\s*\\+{3}|\\-{3}\\s*(\\w+)\\s*\\-{3}",
+                    "name": "meta.label.entry.ms"
+                },
+                {
+                    "captures": {
+                        "1": {
+                            "name": "support.type.label.ms"
+                        }
+                    },
+                    "match": "\\*{3}\\s*(\\w+)\\s*\\*{3}",
+                    "name": "meta.label.injector.ms"
                 }
             ]
         },
@@ -812,13 +812,6 @@
                 }
             ]
         },
-        "core": {
-            "patterns": [
-                {
-                    "include": "#expression"
-                }
-            ]
-        },
         "literal-function-call": {
             "patterns": [
                 {
@@ -841,6 +834,13 @@
                     },
                     "match": "(?x)  \\.?([_$a-zA-Z][$\\w]*)\\s* (?=\\()",
                     "name": "meta.function-call.with-arguments.ms"
+                }
+            ]
+        },
+        "core": {
+            "patterns": [
+                {
+                    "include": "#expression"
                 }
             ]
         }

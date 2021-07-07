@@ -35,12 +35,12 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("manialink.preview", () => {
-      if (vscode.window.activeTextEditor) {        
-          ManialinkPreview.createOrShow(
-            vscode.window.activeTextEditor.document.getText(),
-            context.extensionUri
-          );
-        }      
+      if (vscode.window.activeTextEditor) {
+        ManialinkPreview.createOrShow(
+          vscode.window.activeTextEditor.document.getText(),
+          context.extensionUri
+        );
+      }
     })
   );
 
@@ -71,6 +71,58 @@ export function activate(context: vscode.ExtensionContext) {
       {
         provideHover(document, position, token) {
           typeParser.update(document.getText().replace(/\r/g, "") || "");
+          return hoverHelper.onHover(document, position);
+        },
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.languages.registerHoverProvider(
+      { language: "xml", scheme: "file" },
+      {
+        provideHover(document, position, token) {
+          let startToCurrent = new vscode.Range(
+            new vscode.Position(0, 0),
+            new vscode.Position(position.line, 0)
+          );
+          const index = document.getText(startToCurrent).indexOf("<script>");
+          if (index == -1) return null;
+
+          startToCurrent = new vscode.Range(
+            document.positionAt(index),
+            new vscode.Position(position.line, 0)
+          );
+
+          typeParser.update(
+            document.getText(startToCurrent).replace(/\r/g, "") || ""
+          );
+          return hoverHelper.onHover(document, position);
+        },
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.languages.registerHoverProvider(
+      { language: "jinja-xml", scheme: "file" },
+      {
+        provideHover(document, position, token) {
+          let startToCurrent = new vscode.Range(
+            new vscode.Position(0, 0),
+            new vscode.Position(position.line, 0)
+          );
+          const index = document.getText(startToCurrent).indexOf("<script>");
+          if (index == -1) return null;
+
+          startToCurrent = new vscode.Range(
+            document.positionAt(index),
+            new vscode.Position(position.line, 0)
+          );
+
+          typeParser.update(
+            document.getText(startToCurrent).replace(/\r/g, "") || ""
+          );
           return hoverHelper.onHover(document, position);
         },
       }
@@ -133,6 +185,18 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
+    vscode.languages.registerDefinitionProvider(
+      { language: "jinja-xml", scheme: "file" },
+      {
+        provideDefinition(document, position, token) {
+          typeParser.update(document.getText().replace(/\r/g, ""));
+          return definitionHelper.provideDefinitions(document, position);
+        },
+      }
+    )
+  );
+
+  context.subscriptions.push(
     vscode.languages.registerRenameProvider(
       { language: "maniascript", scheme: "file" },
       {
@@ -183,17 +247,17 @@ export function activate(context: vscode.ExtensionContext) {
             new vscode.Position(0, 0),
             new vscode.Position(position.line + 1, 0)
           );
-          const text2 = document
+          const searchFor = document
             .getText(docStartToCurrentLine)
             .replace(/\r/g, ""); //limit reading file from start to current line, so variables gets parsed right
-          typeParser.update(text2);
+          typeParser.update(searchFor);
 
           const text = document
             .getText(line)
             .replace(/^\s*/, "")
             .split(/([ |(])/);
 
-          return completions.complete(text, text2);
+          return completions.complete(text, searchFor);
         },
       },
       "."
@@ -224,9 +288,9 @@ export function activate(context: vscode.ExtensionContext) {
             .replace(/^\s*/, "")
             .replace(/\r/g, "")
             .split(/([ |(])/);
-          const text2 = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
-          typeParser.update(text2);
-          const completionItems = completions.complete(text, text2);
+          const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
+          typeParser.update(searchFor);
+          const completionItems = completions.complete(text, searchFor);
 
           return completionItems;
         },
@@ -259,9 +323,9 @@ export function activate(context: vscode.ExtensionContext) {
             .replace(/^\s*/, "")
             .replace(/\r/g, "")
             .split(/([ |(])/);
-          const text2 = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
-          typeParser.update(text2);
-          const completionItems = completions.complete(text, text2);
+          const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
+          typeParser.update(searchFor);
+          const completionItems = completions.complete(text, searchFor);
 
           return completionItems;
         },
@@ -275,18 +339,20 @@ export function activate(context: vscode.ExtensionContext) {
       clearTimeout(timeout);
       timeout = undefined;
     }
-    
+
     timeout = setTimeout(() => {
       typeParser.updateStructs(activeEditor?.document.getText() ?? "");
       decorator.update(activeEditor);
-      if (activeEditor?.document.languageId == "xml" && ManialinkPreview.currentPanel) {        
+      if (
+        activeEditor?.document.languageId == "xml" &&
+        ManialinkPreview.currentPanel
+      ) {
         ManialinkPreview.update(
           activeEditor.document.getText(),
           context.extensionUri
-        );   
+        );
       }
     }, 1000);
-    
   }
 
   vscode.window.onDidChangeActiveTextEditor(
