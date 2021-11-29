@@ -7,15 +7,15 @@ export class FunctionParser {
     const docArray = docText.split("\n");
     const output: functionType[] = [];
     const lines = docText.match(
-      /^(\t| )*\b(.*?)\b \b([a-zA-Z_][a-zA-Z0-9_]*)\((.*)\)\s*\{(\t| )*/gm
+      /^(\t| )*([a-zA-Z_][a-zA-Z0-9_[\]]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)\((.*)\)\s*\{(\t| )*/gm
     );
 
     if (lines == null) return [];
 
     for (let line of lines) {
-      if (line == null) continue;
+      if (line == null) continue; 
       if (line.indexOf("\n") != -1) line = line.split("\n")[0];
-      const method = line.replace(/^s*/, "").match(/\b([^()]+)\((.*)\)/);
+      const method = line.trimStart().match(/\b([^()]+)\((.*)\)/);
       if (method == null) continue;
       if (method.length == 3) {
         const returnType = method[1].split(" ")[0];
@@ -30,7 +30,7 @@ export class FunctionParser {
         const lines = docText.slice(0, offset).split("\n");
         let i = lines.length - 1;
         if (i < 0) i = 0;
-        const start = lineNb;
+        const start = docArray[i].indexOf(funcName);
         const range = new Range(i, start, i, start + funcName.length);
 
         if (method[2].replace(/^\s*/, "") == "") {

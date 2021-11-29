@@ -1,3 +1,8 @@
+# version 0.1.4
+* enhance parsers to work better with tabs
+* fix function parsers so it can parse arrays and structs as function return type
+* allow cltr-click to find any variable, function, etc anywhere
+  
 # version 0.1.3
 * Change autocomplete array methods to have proper return types
 * Add `.count` property to array autocomplete

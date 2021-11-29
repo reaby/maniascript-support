@@ -24,8 +24,7 @@ export default class Completer {
     this.requireContext = requireContext;
 
     if (
-      searchFor.includes("#RequireContext") ||
-      searchFor.includes("@context")
+      searchFor.includes("#RequireContext") || searchFor.includes("@context")
     ) {
       return [...this.getClasses()];
     }

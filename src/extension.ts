@@ -10,6 +10,7 @@ import FoldingHelper from "./folding";
 import ManialinkPreview from "./ManialinkPreview";
 import Api from "./api";
 import FoldingRangeHelper from "./folding";
+import formatDocument from "./formatter";
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -44,27 +45,6 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  /*if (vscode.window.registerWebviewPanelSerializer) {
-    // Make sure we register a serializer in activation event
-    vscode.window.registerWebviewPanelSerializer(ManialinkPreview.viewType, {
-      async deserializeWebviewPanel(
-        webviewPanel: vscode.WebviewPanel,
-        state: any
-      ) {
-        console.log(`Got state: ${state}`);
-        // Reset the webview options so we use latest uri for `localResourceRoots`.
-        webviewPanel.webview.options = getWebviewOptions(context.extensionUri);
-        if (vscode.window.activeTextEditor) {
-          ManialinkPreview.revive(
-            webviewPanel,
-            context.extensionUri,
-            vscode.window.activeTextEditor.document.getText()
-          );
-        }
-      },
-    });
-  } */
-
   context.subscriptions.push(
     vscode.languages.registerHoverProvider(
       { language: "maniascript", scheme: "file" },
@@ -86,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
             new vscode.Position(0, 0),
             new vscode.Position(position.line, 0)
           );
-          const index = document.getText(startToCurrent).indexOf("<script>");
+          const index = document.getText().indexOf("<script>");
           if (index == -1) return null;
 
           startToCurrent = new vscode.Range(
@@ -95,7 +75,7 @@ export function activate(context: vscode.ExtensionContext) {
           );
 
           typeParser.update(
-            document.getText(startToCurrent).replace(/\r/g, "") || ""
+            document.getText().replace(/\r/g, "") || ""
           );
           return hoverHelper.onHover(document, position);
         },
@@ -112,7 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
             new vscode.Position(0, 0),
             new vscode.Position(position.line, 0)
           );
-          const index = document.getText(startToCurrent).indexOf("<script>");
+          const index = document.getText().indexOf("<script>");
           if (index == -1) return null;
 
           startToCurrent = new vscode.Range(
@@ -121,7 +101,7 @@ export function activate(context: vscode.ExtensionContext) {
           );
 
           typeParser.update(
-            document.getText(startToCurrent).replace(/\r/g, "") || ""
+            document.getText().replace(/\r/g, "") || ""
           );
           return hoverHelper.onHover(document, position);
         },
@@ -152,7 +132,7 @@ export function activate(context: vscode.ExtensionContext) {
 
           const text = document.getText(line).replace(/\r/g, "");
           const idx = context.activeSignatureHelp?.activeSignature ?? 0;
-          typeParser.update(document.getText().replace(/\r/g, ""));
+          typeParser.update(document.getText().replace(/\r/g, "") || "");
           return signatureHelper.provideHelp(text, idx);
         },
       },
@@ -165,7 +145,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideDefinition(document, position, token) {
-          typeParser.update(document.getText().replace(/\r/g, ""));
+          typeParser.update(document.getText().replace(/\r/g, "") || "");
           return definitionHelper.provideDefinitions(document, position);
         },
       }
@@ -177,7 +157,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "xml", scheme: "file" },
       {
         provideDefinition(document, position, token) {
-          typeParser.update(document.getText().replace(/\r/g, ""));
+          typeParser.update(document.getText().replace(/\r/g, "") || "");
           return definitionHelper.provideDefinitions(document, position);
         },
       }
@@ -250,10 +230,11 @@ export function activate(context: vscode.ExtensionContext) {
           const searchFor = document
             .getText(docStartToCurrentLine)
             .replace(/\r/g, ""); //limit reading file from start to current line, so variables gets parsed right
-          typeParser.update(searchFor);
+            typeParser.update(document.getText().replace(/\r/g, "") || "");
 
           const text = document
             .getText(line)
+            .replace(/\r/g, "")
             .replace(/^\s*/, "")
             .split(/([ |(])/);
 
@@ -289,7 +270,7 @@ export function activate(context: vscode.ExtensionContext) {
             .replace(/\r/g, "")
             .split(/([ |(])/);
           const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
-          typeParser.update(searchFor);
+          typeParser.update(document.getText().replace(/\r/g, "") || "");
           const completionItems = completions.complete(text, searchFor);
 
           return completionItems;
@@ -324,7 +305,7 @@ export function activate(context: vscode.ExtensionContext) {
             .replace(/\r/g, "")
             .split(/([ |(])/);
           const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
-          typeParser.update(searchFor);
+          typeParser.update(document.getText().replace(/\r/g, "") || "");
           const completionItems = completions.complete(text, searchFor);
 
           return completionItems;
@@ -375,4 +356,14 @@ export function activate(context: vscode.ExtensionContext) {
     null,
     context.subscriptions
   );
+  /*context.subscriptions.push(
+    vscode.languages.registerDocumentFormattingEditProvider("maniascript", {
+      provideDocumentFormattingEdits(
+        document: vscode.TextDocument
+      ): vscode.TextEdit[] {
+        return formatDocument(document);
+      },
+    })
+  ); */
+
 }

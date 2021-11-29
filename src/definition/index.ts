@@ -26,12 +26,11 @@ export default class SymbolHelper {
 
     for (const func of this.typeParser.functions) {
       if (func.range) {
-        if (func.name == search) {
-          if (position.line >= func.range.start.line) {
-            return new vscode.Location(document.uri, func.range);
-          }
+        if (func.name == search) {       
+            return new vscode.Location(document.uri, func.range);       
         }
       }
+
       for (const param of func.params) {
         if (param.name == search) {
           if (

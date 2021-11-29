@@ -31,8 +31,7 @@ export class VariableParser {
     if (text == undefined) return [];
     const output: nameType[] = [];
     const allLines = text.replace(/\r/g, "").split("\n");
-    const foreachRegex =
-      /foreach\s*\(\s*(?:(\w+)\s*=>\s*)?(\w+)\s+in\s+(.*)\s*\)/gm;
+    const foreachRegex = /foreach\s*\(\s*(?:(\w+)\s*=>\s*)?(\w+)\s+in\s+(.*)\s*\)/gm;
     for (const match of text.match(foreachRegex) ?? []) {
       foreachRegex.lastIndex = -1;
       const mArray = foreachRegex.exec(match);

@@ -42,7 +42,7 @@ export default class TypeParser {
 
     this.structures = struct.parse(text);
     this.structuresExternal = [];
-    this.functionsExternal = [];
+    this.functionsExternal = [];    
     for (const include of this.includes) {
       this.structuresExternal.push({
         file: include.includeName,
@@ -50,6 +50,7 @@ export default class TypeParser {
         range: include.range,
         structs: struct.parse(this.getExternalFile(include.includeName)),
       });
+
       this.functionsExternal.push({
         file: include.includeName,
         var: include.variableName,
@@ -57,10 +58,9 @@ export default class TypeParser {
         functions: functions.parse(this.getExternalFile(include.includeName)),
       });
     }
-
     this.functions = functions.parse(text);
     this.variables = variables.parse(text);
-    this._foreach = variables.parseForeach(text);
+    this._foreach = variables.parseForeach(text);    
   }
 
   getExternalFile(filename: string): string {
@@ -70,7 +70,10 @@ export default class TypeParser {
       for (const path of workspace.workspaceFolders ?? []) {
         const file = path.uri.fsPath + "/" + filename;
         if (fs.existsSync(file)) {
-          return fs.readFileSync(path.uri.fsPath + "/" + filename).toString().replace(/\r/g, "");
+          return fs
+            .readFileSync(path.uri.fsPath + "/" + filename)
+            .toString()
+            .replace(/\r/g, "");
         }
       }
     } catch (e) {
@@ -82,20 +85,20 @@ export default class TypeParser {
   parseIncludes(text: string): includeType[] {
     const includes: includeType[] = [];
     const allLines = text.replace(/\r/g, "").split("\n");
-    const namespacesMatch = text.match(/^\s*#Include "(\S+)" as (\w+)/gm);
+    const namespacesMatch = text.match(/(\t| )*#Include\s+"(\S+)"\s+as\s+(\w+)/gm);
     const matches = [...new Set(namespacesMatch)];
 
     matches.forEach((definition) => {
-      const regex = /#Include "(\S+)" as (\w+)/.exec(definition);
+      const regex = /\s*#Include\s+"(\S+)"\s+as\s+(\w+)/.exec(definition);
       if (regex) {
         const offset = text.indexOf(definition.trim());
         const lines = text.slice(0, offset).split("\n");
         const i = lines.length - 1;
         const start = definition.indexOf(
           regex[2],
-          regex[0].length - regex[2].length
+          regex[0].length - regex[2].length-1
         );
-        const range = new Range(i, start, i, start + regex[2].length);
+        const range = new Range(i, start, i, (start + regex[2].length));
 
         includes.push({
           includeName: regex[1],
