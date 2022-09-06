@@ -1,13 +1,28 @@
 {
     "filetypes": [],
     "scopeName": "templateString.injection",
-    "injectionSelector": "L:string.quoted.double",
+    "injectionSelector": "L:source.ms -comment -(string -meta.embedded)",
     "patterns": [
         {
             "include": "#templateString"
         }
     ],
     "repository": {
+        "maniascript-xml": {
+            "name": "meta.embedded.script.xml",
+            "begin": "\"\"\"",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.template-string.begin.ms"
+                }
+            },
+            "end": "\"\"\"",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.template-string.end.ms"
+                }
+            }
+        },
         "templateString": {
             "begin": "{{{",
             "beginCaptures": {

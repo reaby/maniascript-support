@@ -26,8 +26,8 @@ export default class SymbolHelper {
 
     for (const func of this.typeParser.functions) {
       if (func.range) {
-        if (func.name == search) {       
-            return new vscode.Location(document.uri, func.range);       
+        if (func.name == search) {
+          return new vscode.Location(document.uri, func.range);
         }
       }
 
@@ -100,6 +100,26 @@ export default class SymbolHelper {
 
     if (word.indexOf("::") != -1) {
       const parts = word.split("::");
+      for (const ext of this.typeParser.structuresExternal) {
+        if (ext.var == parts[0]) {
+          for (const func of ext.structs) {
+            if (func.structName == parts[1]) {
+              try {
+                const files = await vscode.workspace.findFiles(
+                  ext.file,
+                  null,
+                  1
+                );
+                if (files.length < 1) return;
+                return new vscode.Location(files[0], func.range);
+              } catch (e) {
+                return;
+              }
+            }
+          }
+        }
+      }
+
       for (const ext of this.typeParser.functionsExternal) {
         if (ext.var == parts[0]) {
           for (const func of ext.functions) {
@@ -112,6 +132,29 @@ export default class SymbolHelper {
                 );
                 if (files.length < 1) return;
                 return new vscode.Location(files[0], func.range);
+              } catch (e) {
+                return;
+              }
+            }
+          }
+        }
+      }
+
+      for (const ext of this.typeParser.constExternal) {
+        if (ext.var == parts[0]) {
+          for (const _const of ext.const) {
+            if (_const.name == parts[1]) {
+              try {
+                const files = await vscode.workspace.findFiles(
+                  ext.file,
+                  null,
+                  1
+                );
+                if (files.length < 1) return;
+                if (_const.range) {
+                  return new vscode.Location(files[0], _const.range);
+                }
+                return;
               } catch (e) {
                 return;
               }

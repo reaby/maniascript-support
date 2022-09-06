@@ -356,6 +356,7 @@ export function activate(context: vscode.ExtensionContext) {
     null,
     context.subscriptions
   );
+
   /*context.subscriptions.push(
     vscode.languages.registerDocumentFormattingEditProvider("maniascript", {
       provideDocumentFormattingEdits(

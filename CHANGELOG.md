@@ -1,13 +1,17 @@
+# version 0.1.5
+* add `#Const` and `#Setting` as variables for autocomplete
+* add external library `#Const` and `#Struct` to resolvers and autocomplete
+
 # version 0.1.4
 * enhance parsers to work better with tabs
 * fix function parsers so it can parse arrays and structs as function return type
 * allow cltr-click to find any variable, function, etc anywhere
-  
+
 # version 0.1.3
 * Change autocomplete array methods to have proper return types
 * Add `.count` property to array autocomplete
 * Include alias `<=>` as well as `=` for `declare` clauses
-* Allow `<Maniascript>` tag-support for manialinks 
+* Allow `<Maniascript>` tag-support for manialinks
   * this is to support ubitn titlepack engine scripts
   * and some other tmlanguage highlite changes
 * update npm dependencies to more recent versions
@@ -19,7 +23,7 @@
 # version 0.1.1
 * Better Manialink Preview rendering...
 
-# version 0.1.0 
+# version 0.1.0
 * Added Manialink Preview
 
 # version 0.0.15
@@ -47,15 +51,15 @@
 
 Note: it resolves variable type, but doesn't resolve the level of variable array:
 	```typescript
-	#Struct M_struct { 
+	#Struct M_struct {
 		Text test
 	}
-	
+
 	declare M_struct[text][integer] G_mytest;
 	...
 	main() {
 		foreach (test in G_Mytest['test']) {
-			test[0]._ // autocompleting don't work here, since test is considered M_struct[text][integer]... instead of M_struct[integer] what it should be.			
+			test[0]._ // autocompleting don't work here, since test is considered M_struct[text][integer]... instead of M_struct[integer] what it should be.
 		}
 	}
 	```

@@ -6,7 +6,7 @@ import {
 } from "vscode";
 import Api from "../api";
 import TypeParser from "../typeparser";
-import { functionType, structureType } from "../typeparser/types/typeClasses";
+import { functionType, nameType, structureType } from "../typeparser/types/typeClasses";
 
 export default class Completer {
   readonly typeParser: TypeParser;
@@ -495,6 +495,13 @@ export default class Completer {
         out = [...out, ...this.getFunctions(extFunc.functions)];
       }
     }
+
+    for (const extFunc of this.typeParser.constExternal) {
+      if (extFunc.var == search) {
+        out = [...out, ...this.getConst(extFunc.const)];
+      }
+    }
+
     return out;
   }
 
@@ -662,6 +669,19 @@ export default class Completer {
       doc += "}";
       item.documentation = new MarkdownString();
       item.documentation.appendCodeblock(doc, "maniascript");
+      out.push(item);
+    }
+    return out;
+  }
+
+  getConst(stucture: nameType[]): CompletionItem[] {
+    const out: CompletionItem[] = [];
+    for (const _const of stucture) {
+      const item = new CompletionItem(
+        _const.name,
+        CompletionItemKind.Constant
+      );
+      item.detail = _const.type;
       out.push(item);
     }
     return out;

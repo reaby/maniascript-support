@@ -7,6 +7,7 @@ import {
   functionType,
   functionTypeExternal,
   nameType,
+  constTypeExternal
 } from "./types/typeClasses";
 import { StructureParser } from "./structs";
 import { FunctionParser } from "./functions";
@@ -17,6 +18,7 @@ export default class TypeParser {
   structures: structureType[] = [];
   structuresExternal: structureTypeExternal[] = [];
   functionsExternal: functionTypeExternal[] = [];
+  constExternal:  constTypeExternal[] = [];
   functions: functionType[] = [];
   variables: nameType[] = [];
   _foreach: nameType[] = [];
@@ -42,7 +44,10 @@ export default class TypeParser {
 
     this.structures = struct.parse(text);
     this.structuresExternal = [];
-    this.functionsExternal = [];    
+    this.functionsExternal = [];
+    this.constExternal = [];
+    this.variables = variables.parse(text);
+
     for (const include of this.includes) {
       this.structuresExternal.push({
         file: include.includeName,
@@ -57,10 +62,16 @@ export default class TypeParser {
         range: include.range,
         functions: functions.parse(this.getExternalFile(include.includeName)),
       });
+
+      this.constExternal.push({
+        file: include.includeName,
+        var: include.variableName,
+        range: include.range,
+        const: variables.parseExternal(this.getExternalFile(include.includeName)),
+      });
     }
     this.functions = functions.parse(text);
-    this.variables = variables.parse(text);
-    this._foreach = variables.parseForeach(text);    
+    this._foreach = variables.parseForeach(text);
   }
 
   getExternalFile(filename: string): string {

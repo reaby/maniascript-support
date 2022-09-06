@@ -29,6 +29,13 @@ export interface structureTypeExternal {
   range: vscode.Range;
 }
 
+export interface constTypeExternal {
+  file: string;
+  var: string;
+  const: nameType[];
+  range: vscode.Range;
+}
+
 export interface functionType {
   name: string;
   returnValue: string;
