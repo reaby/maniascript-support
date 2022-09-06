@@ -1,6 +1,6 @@
 {
     "fileTypes": [],
-    "injectionSelector": "L:text.xml -comment -(string -meta.embedded)",
+    "injectionSelector": "L:text.xml",
     "patterns": [
         {
             "include": "#maniascript-block"
@@ -18,7 +18,7 @@
                     "name": "meta.embedded.tag.comment.open.ms"
                 }
             },
-            "end": "(-->|\\]\\]>)\\s*(<\\/script>|<\\/Maniascript>)",
+            "end": "(-->|\\]\\]>)\\s*(\\<\\/script>|<\\/Maniascript>)",
             "endCaptures": {
                 "0": {
                     "name": "meta.embedded.tag.comment.close.ms"
@@ -32,7 +32,7 @@
                     "include": "source.ms"
                 }
             ]
-        },
-        "scopeName": "xml.maniascript"
-    }
+        }
+    },
+    "scopeName": "xml.maniascript"
 }

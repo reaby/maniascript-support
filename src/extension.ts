@@ -74,9 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
             new vscode.Position(position.line, 0)
           );
 
-          typeParser.update(
-            document.getText().replace(/\r/g, "") || ""
-          );
+          typeParser.update(document.getText().replace(/\r/g, "") || "");
           return hoverHelper.onHover(document, position);
         },
       }
@@ -100,9 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
             new vscode.Position(position.line, 0)
           );
 
-          typeParser.update(
-            document.getText().replace(/\r/g, "") || ""
-          );
+          typeParser.update(document.getText().replace(/\r/g, "") || "");
           return hoverHelper.onHover(document, position);
         },
       }
@@ -230,7 +226,7 @@ export function activate(context: vscode.ExtensionContext) {
           const searchFor = document
             .getText(docStartToCurrentLine)
             .replace(/\r/g, ""); //limit reading file from start to current line, so variables gets parsed right
-            typeParser.update(document.getText().replace(/\r/g, "") || "");
+          typeParser.update(document.getText().replace(/\r/g, "") || "");
 
           const text = document
             .getText(line)
@@ -366,5 +362,4 @@ export function activate(context: vscode.ExtensionContext) {
       },
     })
   ); */
-
 }

@@ -5,3 +5,8 @@
 tslint.json
 tsconfig.json
 src/**
+node_modules
+out/
+src/
+tsconfig.json
+webpack.config.js
