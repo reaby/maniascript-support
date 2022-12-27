@@ -1,3 +1,9 @@
+# version 0.1.7
+* doc.h format has changed for trackmania2020, fixed parser to work with the new version.
+
+# version 0.1.6
+* fixes
+
 # version 0.1.5
 * add `#Const` and `#Setting` as variables for autocomplete
 * add external library `#Const` and `#Struct` to resolvers and autocomplete

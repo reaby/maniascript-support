@@ -177,21 +177,41 @@ export default class TrackmaniaApiParser implements ApiParser {
 
   parseProperties(data: string[]): any {
     const out: any = {};
-    const regex = /\s*(const){0,1}\s*([\w[\]<>:]+?)\s+\b(\w+)\b;/g;
+    const regex = /\s*([\w:*]+)\s*[*]{0,1}\s*(const){0,1}\s*([\w[\]<>:]+?);/;
     regex.lastIndex = -1;
+    const regex2 = /Array<([\w:]+)\s*[*]{0,1}\s*(const){0,1}\s*>\s+([\w[\]<>:]+?);/;
+    regex2.lastIndex = -1;
     for (const idx in data) {
-      const line = data[idx];
+      const line = data[idx].trim();
+      if (line.startsWith("Array")){
+        regex2.lastIndex = -1;
+        const value = regex2.exec(line);
+        if (value !== null) {
+          if (
+            !Object.prototype.hasOwnProperty.call(out, value[1]+"[]")
+          ) {
+            out[value[1]+"[]"] = [];
+          }
+          const readOnly = value[2] !== undefined ? true : false;
+          out[value[1]+"[]"].push({
+            name: value[3],
+            readonly: readOnly,
+            documentation: this.parseDoc(data, idx),
+          });
+        }
+        continue;
+      }
+
       regex.lastIndex = -1;
       const value = regex.exec(line);
       if (value !== null) {
         if (
-          !Object.prototype.hasOwnProperty.call(out, this.fixArrays(value[2]))
+          !Object.prototype.hasOwnProperty.call(out, value[1])
         ) {
-          out[this.fixArrays(value[2])] = [];
+          out[value[1]] = [];
         }
-
-        const readOnly = value[1] !== undefined ? true : false;
-        out[this.fixArrays(value[2])].push({
+        const readOnly = value[2] !== undefined ? true : false;
+        out[value[1]].push({
           name: value[3],
           readonly: readOnly,
           documentation: this.parseDoc(data, idx),

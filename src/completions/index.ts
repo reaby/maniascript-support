@@ -79,16 +79,24 @@ export default class Completer {
       }
     }
 
-    return [
+
+    const everything = [
       ...(this.find(requireContext) ?? []),
-      ...this.getClasses(),
       ...this.getStructs(this.typeParser.structures),
-      ...this.getNamespaces(),
       ...this.getKeywords(),
       ...this.getVariables(),
       ...this.getFunctions(this.typeParser.functions),
       ...this.getPrimitives(),
     ];
+
+    if (caret?.startsWith("C")) {
+      everything.push(...this.getClasses());
+      return everything;
+    }
+
+    return everything;
+
+
   }
 
   getArrayMethods(): CompletionItem[] {
