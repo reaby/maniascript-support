@@ -43,7 +43,7 @@ export default class TrackmaniaApiParser implements ApiParser {
             line += 1;
           }
 
-          completions = this.processClasses(scopeArray, completions);
+          completions = this.processClasses(scopeArray, fileArray, completions);
         }
       } catch (err: any) {
         console.log("doc.h read error: " + err);
@@ -66,14 +66,14 @@ export default class TrackmaniaApiParser implements ApiParser {
     if (name) {
       const namespaceObj = {
         enums: this.parseEnums(data) ?? {},
-        methods: this.parseMethods(data) ?? [],
+        methods: this.parseMethods(data) ?? []
       };
       completions.namespaces[name[1]] = namespaceObj;
     }
     return completions;
   }
 
-  processClasses(data: string[], completions: any): any {
+  processClasses(data: string[], fileArray: string[], completions: any): any {
     const regex = /class\s+\b(.*?)\b\s+(:\s+public\s+\b(.*?)\b\s+){0,1}/g;
     regex.lastIndex = -1;
     const value = regex.exec(data[0]) ?? null;
@@ -83,6 +83,7 @@ export default class TrackmaniaApiParser implements ApiParser {
         enums: this.parseEnums(data) ?? {},
         props: this.parseProperties(data) ?? {},
         methods: this.parseMethods(data) ?? [],
+        documentation: this.parseDoc(fileArray, data[0]) ?? "",
       };
       completions.classes[value[1]] = classObj;
     }
@@ -162,10 +163,10 @@ export default class TrackmaniaApiParser implements ApiParser {
     const lines = [];
     for (let i = 0; i <= 20; i++) {
       const lineData = data[parseInt(line) - 1 - i];
-      if (lineData.match(regex)) {
+      if (lineData && lineData.match(regex)) {
         return lines.reverse().join("\n");
       }
-      const docLine = lineData
+      const docLine = (lineData ?? "")
         .replace(/(\s*\/\*!)|(\s*\*\/)|(\s*\*)/g, "")
         .trim();
       if (docLine !== "") {

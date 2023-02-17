@@ -20,8 +20,8 @@ export function activate(context: vscode.ExtensionContext) {
   const api = new Api();
   api.init();
   const typeParser = new TypeParser();
-  const decorator = new Decorator(typeParser);
   const completions = new Completer(typeParser, api);
+  const decorator = new Decorator(typeParser, api, completions);
   const signatureHelper = new SignatureHelper(typeParser, api, completions);
   const renameHelper = new RenameHelper(typeParser);
   const definitionHelper = new DefinitionHelper(typeParser);
@@ -223,6 +223,11 @@ export function activate(context: vscode.ExtensionContext) {
             new vscode.Position(0, 0),
             new vscode.Position(position.line + 1, 0)
           );
+          const fullLine = new vscode.Range(
+            new vscode.Position(position.line, 0),
+            new vscode.Position(position.line + 1, 0)
+          );
+
           const searchFor = document
             .getText(docStartToCurrentLine)
             .replace(/\r/g, ""); //limit reading file from start to current line, so variables gets parsed right
@@ -234,7 +239,11 @@ export function activate(context: vscode.ExtensionContext) {
             .replace(/^\s*/, "")
             .split(/([ |(])/);
 
-          return completions.complete(text, searchFor);
+          return completions.complete(
+            text,
+            searchFor,
+            document.getText(fullLine)
+          );
         },
       },
       "."
@@ -248,7 +257,10 @@ export function activate(context: vscode.ExtensionContext) {
         provideCompletionItems(document, position, token) {
           const start = new vscode.Position(position.line, 0);
           const range = new vscode.Range(start, position);
-
+          const fullLine = new vscode.Range(
+            new vscode.Position(position.line, 0),
+            new vscode.Position(position.line + 1, 0)
+          );
           let startToCurrent = new vscode.Range(
             new vscode.Position(0, 0),
             new vscode.Position(position.line, 0)
@@ -267,7 +279,11 @@ export function activate(context: vscode.ExtensionContext) {
             .split(/([ |(])/);
           const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
           typeParser.update(document.getText().replace(/\r/g, "") || "");
-          const completionItems = completions.complete(text, searchFor);
+          const completionItems = completions.complete(
+            text,
+            searchFor,
+            document.getText(fullLine)
+          );
 
           return completionItems;
         },
@@ -283,7 +299,10 @@ export function activate(context: vscode.ExtensionContext) {
         provideCompletionItems(document, position, token) {
           const start = new vscode.Position(position.line, 0);
           const range = new vscode.Range(start, position);
-
+          const fullLine = new vscode.Range(
+            new vscode.Position(position.line, 0),
+            new vscode.Position(position.line + 1, 0)
+          );
           let startToCurrent = new vscode.Range(
             new vscode.Position(0, 0),
             new vscode.Position(position.line, 0)
@@ -302,7 +321,7 @@ export function activate(context: vscode.ExtensionContext) {
             .split(/([ |(])/);
           const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
           typeParser.update(document.getText().replace(/\r/g, "") || "");
-          const completionItems = completions.complete(text, searchFor);
+          const completionItems = completions.complete(text, searchFor, document.getText(fullLine));
 
           return completionItems;
         },

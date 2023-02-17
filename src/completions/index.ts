@@ -6,7 +6,11 @@ import {
 } from "vscode";
 import Api from "../api";
 import TypeParser from "../typeparser";
-import { functionType, nameType, structureType } from "../typeparser/types/typeClasses";
+import {
+  functionType,
+  nameType,
+  structureType,
+} from "../typeparser/types/typeClasses";
 
 export default class Completer {
   readonly typeParser: TypeParser;
@@ -18,13 +22,14 @@ export default class Completer {
     this.api = api;
   }
 
-  complete(searchFor: string[], docText: string) {
+  complete(searchFor: string[], docText: string, line: string) {
     const requireContext = this.typeParser.requireContext;
 
     this.requireContext = requireContext;
 
     if (
-      searchFor.includes("#RequireContext") || searchFor.includes("@context")
+      searchFor.includes("#RequireContext") ||
+      searchFor.includes("@context")
     ) {
       return [...this.getClasses()];
     }
@@ -32,10 +37,15 @@ export default class Completer {
     // Check variables
     const caret = searchFor.pop();
 
+
     if (caret != null) {
       // if is namespace or enum
       if (caret.indexOf("::") > -1) {
         let search: string = caret.slice(0, caret.indexOf("::"));
+
+        const re = new RegExp("\\s+("+search+"::(.*?))\\s+");
+        const match = re.exec(line) ?? [""];
+
         if (caret == "::") {
           search = requireContext;
         }
@@ -43,7 +53,7 @@ export default class Completer {
         return [
           ...this.getNamespaceContents(search),
           ...this.getExternals(search),
-          ...this.getEnums(search),
+          ...this.getEnums(search, caret, match[0]),
         ];
       }
 
@@ -73,12 +83,13 @@ export default class Completer {
           ...this.getClasses(),
           ...this.getStructs(this.typeParser.structures),
           new CompletionItem("persistent", CompletionItemKind.Keyword),
+          new CompletionItem("netread", CompletionItemKind.Keyword),
+          new CompletionItem("netwrite", CompletionItemKind.Keyword),
         ];
       } else {
         return [];
       }
     }
-
 
     const everything = [
       ...(this.find(requireContext) ?? []),
@@ -95,8 +106,6 @@ export default class Completer {
     }
 
     return everything;
-
-
   }
 
   getArrayMethods(): CompletionItem[] {
@@ -115,8 +124,18 @@ export default class Completer {
       ["existskey", "existskey(key)", "existskey(${1:key})", "Boolean"],
       ["exists", "exists()", "exists(${1:value})", "Boolean"],
       ["keyof", "keyof(value)", "keyof(${1:value})", "any"],
-      ["containsonly", "containsonly(value)", "containsonly(${1:value})", "Boolean"],
-      ["containsoneof", "containsoneof(value)", "containsoneof(${1:value})", "Boolean"],
+      [
+        "containsonly",
+        "containsonly(value)",
+        "containsonly(${1:value})",
+        "Boolean",
+      ],
+      [
+        "containsoneof",
+        "containsoneof(value)",
+        "containsoneof(${1:value})",
+        "Boolean",
+      ],
       ["slice", "slice(start,count)", "slice(${1:start}, ${2:count}", "any"],
       ["tojson", "tojson()", "tojson()", "Text"],
       ["fromjson", "fromjson(value)", "fromjson(${1:value})", "Boolean"],
@@ -136,7 +155,6 @@ export default class Completer {
       item.detail = method[3];
       methods.push(item);
     });
-
 
     return methods;
   }
@@ -318,12 +336,12 @@ export default class Completer {
         Object.keys(groupEnum).forEach((groupName) => {
           groupEnum[groupName].forEach((enumValue: string) => {
             const item = new CompletionItem(
-              className + "::" + groupName + "::" + enumValue,
+              groupName + "::" + enumValue,
               CompletionItemKind.Enum
             );
             item.detail = className;
-            item.filterText = groupName + "::" + enumValue;
-            item.insertText = className + "::" + groupName + "::" + enumValue;
+            item.filterText = groupName;
+            item.insertText = groupName + "::" + enumValue;
             out.push(item);
           });
         });
@@ -337,7 +355,7 @@ export default class Completer {
                 CompletionItemKind.Field
               );
               item.detail =
-                groupName + (prop.readonly == true ? " (readonly)" : "");
+                groupName + (prop.readonly == true ? " *readonly*" : "");
               item.insertText = prop.name;
               item.filterText = prop.name;
               const docs = new MarkdownString();
@@ -397,7 +415,7 @@ export default class Completer {
               CompletionItemKind.Field
             );
             item.detail =
-              groupName + (prop.readonly == true ? " (readonly)" : "");
+              groupName + (prop.readonly == true ? " *readonly*" : "");
             item.insertText = prop.name;
             item.filterText = prop.name;
             const docs = new MarkdownString();
@@ -513,22 +531,45 @@ export default class Completer {
     return out;
   }
 
-  getEnums(className: string): CompletionItem[] {
+  getEnums(className: string, caret = "", variable=""): CompletionItem[] {
     const out: CompletionItem[] = [];
+    const count = caret.split("::").length-1;
+    const parts = variable.trim().replace(/[,;\n\r]/,"").split("::",3);
+    let filter = "";
+    if (count >= 2) {
+      filter = parts[1] ?? "";
+    }
+    if (count == 1) {
+      filter = parts[0] ?? "";
+    }
+
+
     const classes = this.api.get().classes;
     if (Object.prototype.hasOwnProperty.call(classes, className)) {
       do {
         const groupEnum = classes[className].enums || {};
         Object.keys(groupEnum).forEach((groupName) => {
           groupEnum[groupName].forEach((enumValue: string) => {
-            const item = new CompletionItem(
-              className + "::" + groupName + "::" + enumValue,
-              CompletionItemKind.Enum
-            );
-            item.detail = className;
-            item.filterText = groupName + "::" + enumValue;
-            item.insertText = groupName + "::" + enumValue;
-            out.push(item);
+            if (count > 1) {
+              if (groupName.startsWith(filter)) {
+                const item = new CompletionItem(
+                 className + "::" + groupName + "::" + enumValue,
+                  CompletionItemKind.Enum
+                );
+                item.detail = className;
+                item.insertText = enumValue;
+                out.push(item);
+              }
+            } else {
+              const item = new CompletionItem(
+                className + "::" + groupName + "::" + enumValue,
+                CompletionItemKind.Enum
+              );
+              item.detail = className;
+              item.filterText = groupName;
+              item.insertText = groupName + "::" + enumValue;
+              out.push(item);
+            }
           });
         });
         className = classes[className].inherit;
@@ -685,10 +726,7 @@ export default class Completer {
   getConst(stucture: nameType[]): CompletionItem[] {
     const out: CompletionItem[] = [];
     for (const _const of stucture) {
-      const item = new CompletionItem(
-        _const.name,
-        CompletionItemKind.Constant
-      );
+      const item = new CompletionItem(_const.name, CompletionItemKind.Constant);
       item.detail = _const.type;
       out.push(item);
     }

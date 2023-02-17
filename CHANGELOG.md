@@ -1,3 +1,12 @@
+# version 0.1.9
+ * Changed highlighter to not hardcoded support classes, instead it parses the classes from doc.h and dynamically highilights them
+ * Added colors for consts and settings, as well as build-ins for the required context
+ * changed `(readonly)` to `*readonly*` so the colorizer doesn't think them as functions
+ * fixed autocomplete on enums
+
+# version 0.1.8
+Added notation `"""//!` to start a template string with maniascript-only content.
+
 # version 0.1.7
 * doc.h format has changed for trackmania2020, fixed parser to work with the new version.
 
@@ -35,8 +44,7 @@
 # version 0.0.15
 * Fixed typeParsing numerous cases with files of \r\n lineseparators
 * Fixed parsing functions with function body defined different line than function declaration
-* New snippets for manialink xml files to insert manialink body and xml-mode validation string.
-* Fixed extension not to crash when external library files are not found in workspace
+* New snippets for manialink xml files to insert manialink body and xml-mode validation string.* Fixed extension not to crash when external library files are not found in workspace
 
 # version 0.0.14
 * Enhance typeparsers and variable resolving.

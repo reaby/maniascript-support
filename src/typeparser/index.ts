@@ -29,14 +29,18 @@ export default class TypeParser {
     this.structures = struct.parse(text);
   }
 
-  update(text: string) {
+  getRequireContext(text:string): string {
     const match = text.match(/(#RequireContext\s+\w+)|(@context\s+\w+)/m);
     let requireContext = "";
     if (match) {
       requireContext = match[0]?.split(" ")?.pop() ?? "";
     }
     this.requireContext = requireContext;
+    return this.requireContext;
+  }
 
+  update(text: string) {
+    this.requireContext = this.getRequireContext(text);
     this.includes = this.parseIncludes(text);
     const struct = new StructureParser();
     const functions = new FunctionParser();
@@ -67,7 +71,7 @@ export default class TypeParser {
         file: include.includeName,
         var: include.variableName,
         range: include.range,
-        const: variables.parseExternal(this.getExternalFile(include.includeName)),
+        const: variables.parseConstAndSettings(this.getExternalFile(include.includeName)),
       });
     }
     this.functions = functions.parse(text);

@@ -1,7 +1,7 @@
 {
     "name": "maniascript-support",
     "description": "Maniascript support for vscode",
-    "version": "0.1.7",
+    "version": "0.1.9",
     "publisher": "reaby",
     "license": "MIT",
     "engines": {
@@ -11,7 +11,6 @@
         "Programming Languages"
     ],
     "activationEvents": [
-        "onLanguage:maniascript",
         "onLanguage:xml",
         "onLanguage:jinja-xml"
     ],
@@ -19,7 +18,7 @@
         "type": "git",
         "url": "https://github.com/reaby/maniascript-support"
     },
-    "main": "./app/extension.js",
+    "main": "./out/extension.js",
     "contributes": {
         "menus": {
             "editor/context": [
@@ -57,7 +56,16 @@
                 "defaults": {
                     "dark": "#4ec9b0",
                     "light": "#4ec9b0",
-                    "highContrast": "#000"
+                    "highContrast": "#ffffff"
+                }
+            },
+            {
+                "id": "maniascript.constColor",
+                "description": "Const color",
+                "defaults": {
+                    "dark": "#4FC1FF",
+                    "light": "#4FC1FF",
+                    "highContrast": "#4FC1FF"
                 }
             }
         ],

@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { nameType } from "./types/typeClasses";
 
 export class VariableParser {
-  parseExternal(text: string): nameType[] {
+  parseConstAndSettings(text: string): nameType[] {
     if (text == undefined) return [];
     const output: nameType[] = [];
     const allLines = text.replace(/\r/g, "").split("\n");
@@ -30,7 +30,7 @@ export class VariableParser {
     const output: nameType[] = [];
     const allLines = text.replace(/\r/g, "").split("\n");
     const regex =
-      /(\s+)?declare\s+(metadata\s+|netread\s+|netwrite\s+|persistent\s+){0,1}([\w[\]:]+)\s+(\w+)\s*(for\s+\w+){0,1}\s*(=|<=>|;)/g;
+      /(\s+)?declare\s+(metadata\s+|netread\s+|netwrite\s+|persistent\s+)?([\w[\]:]+)\s+(\w+)\s*(for\s+.+?){0,1}\s*(=|<=>|;)/g;
     const regex2 = /(\s+)?(#Const|#Setting)\s+(\w+)/g;
 
     for (const line in allLines) {

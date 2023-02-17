@@ -1,6 +1,6 @@
 # ManiaScript-Support
 
-VSCode Grammar / Autocompletion support for `".Script.txt"` files.  
+VSCode Grammar / Autocompletion support for `".Script.txt"` files.
 For more information about ManiaScript, see https://doc.maniaplanet.com/maniascript and https://wiki.trackmania.io
 
 This is rewritten for typescript and enhanced which bases on [MattMcFarland/vscode-maniascript](https://github.com/MattMcFarland/vscode-maniascript).
@@ -10,7 +10,7 @@ This is rewritten for typescript and enhanced which bases on [MattMcFarland/vsco
 You need to extract `doc.h` from Trackmania to get the latest ManiaScript API completions working with the extension.
 
 1. Create a new folder: use `c:\tmdev` for example to hold the documentation, but it can be anywhere.
-2. Make a new shortcut for the game executable (you find it in your uplay folder) and give it some fancy name (like "trackmania - gendocs") set the starting parameters to following: 
+2. Make a new shortcut for the game executable (you find it in your uplay folder) and give it some fancy name (like "trackmania - gendocs") set the starting parameters to following:
 ```
 trackmania.exe /generatescriptdoc=c:\tmdev\doc.h
 ```
@@ -78,8 +78,9 @@ You can set the autocomplete namespace root using two ways:
 
 ### Template Strings
 I added background color change for template strings, so it's easier to spot where templates starts and ends.
-TemplateStrings `"""stringcontent {{{variable}}}"""` are considered as xml for color tokenizer, and scripts in a templatestring xml will autocomplete as well.
-just be sure to have `<script><!--` at same line, the regex parser can't figureout if the comment block is next line..sorry for this inconvienience.
+TemplateStrings `"""stringcontent {{{variable}}}"""` are considered as xml for color tokenizer, and scripts in a templatestring xml will autocomplete as well. Just be sure to have `<script><!--` at same line, the regex parser can't figureout if the comment block is next line..sorry for this inconvienience.
+
+New feature is being added: use exactly `"""//!` to start template string with pure maniascript content.
 
 ### External libraries
 Just add folder to workspace to get libraries load relatively from those directories.
@@ -90,7 +91,7 @@ so if you have
 be sure that MyLib is folder inside workspace library.
 
 AutoCompleting from structure aliasses works as well, example:
-``` 
+```
 #Struct externalLib::myStruct as structAlias
 ```
 
@@ -118,7 +119,7 @@ Twig and jinja2 syntaxes are so close to same, so you can use jinja2-html for tw
 
 ## Contributing
 you can find the most recent version of the plugin at https://github.com/reaby/maniascript-support
-colorizer, currently at patch#4 branch: 
+colorizer, currently at patch#4 branch:
 https://github.com/reaby/ManiaScript.tmLanguage
 
 ## License

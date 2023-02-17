@@ -5,9 +5,25 @@ export interface completionsType {
 }
 
 export const completionsTemplate: completionsType = {
-  primitives: [],
+  primitives: [
+    "Text",
+    "Vec2",
+    "Vec3",
+    "Void",
+    "Real",
+    "Integer",
+    "Boolean",
+    "Int3",
+    "Int2",
+  ],
   namespaces: {},
   classes: {
+    This: {
+      inherit: "",
+      enums: {},
+      methods: [],
+      props: {},
+    },
     Int2: {
       inherit: "",
       enums: {},

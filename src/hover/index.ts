@@ -99,6 +99,20 @@ export default class HoverHelper {
       return null;
     }
 
+    for(const key in this.api.completions.classes) {
+       if (variable == key) {
+        const elem = this.api.completions.classes[key];
+        let doc = "";
+        if (elem.documentation) {
+          doc += elem.documentation + "\n";
+         }
+
+        const out = new vscode.MarkdownString();
+        out.appendCodeblock(doc + key);
+        return new vscode.Hover(out);
+       }
+    }
+
     return null;
   }
 
@@ -191,7 +205,7 @@ export default class HoverHelper {
         if (struct.docBlock) {
           docs = struct.docBlock;
         }
-        return docs + struct.codeBlock.split("\n")[0];
+        return docs + struct.codeBlock;
       }
     }
     return "";
@@ -211,7 +225,7 @@ export default class HoverHelper {
                 docs = "/**\n" + prop.documentation + "\n*/\n";
               }
               out =
-                docs + groupName + (prop.readonly == true ? " (readonly)" : "");
+                docs + groupName + (prop.readonly == true ? " *readonly*" : "");
             }
           });
         });
