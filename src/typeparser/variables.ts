@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
-import { nameType } from "./types/typeClasses";
+import { nameType, nameTypeRange } from "./types/typeClasses";
 
 export class VariableParser {
-  parseConstAndSettings(text: string): nameType[] {
+  parseConstAndSettings(text: string): nameTypeRange[] {
     if (text == undefined) return [];
-    const output: nameType[] = [];
+    const output: nameTypeRange[] = [];
     const allLines = text.replace(/\r/g, "").split("\n");
     const regex2 = /(\s+)?(#Const|#Setting)\s+(\w+)/g;
     for (const line in allLines) {

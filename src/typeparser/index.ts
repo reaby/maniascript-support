@@ -7,7 +7,8 @@ import {
   functionType,
   functionTypeExternal,
   nameType,
-  constTypeExternal
+  constTypeExternal,
+  nameTypeRange
 } from "./types/typeClasses";
 import { StructureParser } from "./structs";
 import { FunctionParser } from "./functions";
@@ -19,6 +20,7 @@ export default class TypeParser {
   structuresExternal: structureTypeExternal[] = [];
   functionsExternal: functionTypeExternal[] = [];
   constExternal:  constTypeExternal[] = [];
+  consts: nameTypeRange[] = [];
   functions: functionType[] = [];
   variables: nameType[] = [];
   _foreach: nameType[] = [];
@@ -51,6 +53,7 @@ export default class TypeParser {
     this.functionsExternal = [];
     this.constExternal = [];
     this.variables = variables.parse(text);
+    this.consts = variables.parseConstAndSettings(text);
 
     for (const include of this.includes) {
       this.structuresExternal.push({

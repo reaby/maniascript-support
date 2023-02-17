@@ -1,7 +1,7 @@
 import TypeParser from "../typeparser";
 import * as vscode from "vscode";
 
-export default class SymbolHelper {
+export default class DefinitionHelper {
   typeParser: TypeParser;
   constructor(typeParser: TypeParser) {
     this.typeParser = typeParser;

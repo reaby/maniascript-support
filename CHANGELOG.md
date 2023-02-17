@@ -1,8 +1,9 @@
 # version 0.1.9
  * Changed highlighter to not hardcoded support classes, instead it parses the classes from doc.h and dynamically highilights them
  * Added colors for consts and settings, as well as build-ins for the required context
- * changed `(readonly)` to `*readonly*` so the colorizer doesn't think them as functions
- * fixed autocomplete on enums
+ * Changed `(readonly)` to `*readonly*` so the colorizer doesn't think them as functions
+ * Fixed autocomplete on enums
+ * Added outline aka Symbols Provider
 
 # version 0.1.8
 Added notation `"""//!` to start a template string with maniascript-only content.
@@ -20,7 +21,7 @@ Added notation `"""//!` to start a template string with maniascript-only content
 # version 0.1.4
 * enhance parsers to work better with tabs
 * fix function parsers so it can parse arrays and structs as function return type
-* allow cltr-click to find any variable, function, etc anywhere
+* allow ctrl-click to find any variable, function, etc anywhere
 
 # version 0.1.3
 * Change autocomplete array methods to have proper return types

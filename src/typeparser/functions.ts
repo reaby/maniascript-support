@@ -1,5 +1,5 @@
 import { Range } from "vscode";
-import { functionType, nameType } from "./types/typeClasses";
+import { functionType, nameType, nameTypeRange } from "./types/typeClasses";
 
 export class FunctionParser {
   parse(docText: string): functionType[] {
@@ -13,7 +13,7 @@ export class FunctionParser {
     if (lines == null) return [];
 
     for (let line of lines) {
-      if (line == null) continue; 
+      if (line == null) continue;
       if (line.indexOf("\n") != -1) line = line.split("\n")[0];
       const method = line.trimStart().match(/\b([^()]+)\((.*)\)/);
       if (method == null) continue;
@@ -44,7 +44,7 @@ export class FunctionParser {
           });
           continue;
         }
-        const outParam: nameType[] = [];
+        const outParam: nameTypeRange[] = [];
         const params = method[2].match(/([^,]+\(.+?\))|([^,]+)/g);
         let counter = 0;
         if (params != null) {

@@ -11,6 +11,9 @@ import ManialinkPreview from "./ManialinkPreview";
 import Api from "./api";
 import FoldingRangeHelper from "./folding";
 import formatDocument from "./formatter";
+import SymbolHelper from "./symbols";
+import SymbolsHelper from "./symbols";
+
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -27,6 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
   const definitionHelper = new DefinitionHelper(typeParser);
   const hoverHelper = new HoverHelper(typeParser, api, completions);
   const foldingHelper = new FoldingRangeHelper();
+  const SymbolHelper = new SymbolsHelper(typeParser);
   let activeEditor: vscode.TextEditor | undefined =
     vscode.window.activeTextEditor;
 
@@ -82,6 +86,17 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
+    vscode.languages.registerDocumentSymbolProvider(
+      { language: "maniascript", scheme: "file" },
+      {
+        provideDocumentSymbols(document, token) {
+         return SymbolHelper.update(document.getText().replace(/\r/g, "") || "");
+        }
+      }
+    )
+  );
+
+  context.subscriptions.push(
     vscode.languages.registerHoverProvider(
       { language: "jinja-xml", scheme: "file" },
       {
@@ -104,6 +119,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
+
 
   /*context.subscriptions.push(
     vscode.languages.registerFoldingRangeProvider(
