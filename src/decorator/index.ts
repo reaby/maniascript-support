@@ -4,8 +4,7 @@ import Api from "../api";
 import Completer from "../completions";
 import { VariableParser } from "../typeparser/variables";
 
-export default class Decorator {
-  // create a decorator type that we use to decorate small numbers
+export default class Decorator {  
   typeParser: TypeParser;
   api: Api;
   completer: Completer;
@@ -16,9 +15,8 @@ export default class Decorator {
       isWholeLine: false,
       backgroundColor: { id: "textCodeBlock.background" },
     });
+    
   /**
-   *
-   *
    * @type {vscode.TextEditorDecorationType}
    * @memberof Decorator
    */
@@ -29,6 +27,7 @@ export default class Decorator {
       isWholeLine: true,
       backgroundColor: { id: "textCodeBlock.background" },
     });
+
   structColor = vscode.window.createTextEditorDecorationType({
     color: { id: "maniascript.structColor" },
   });

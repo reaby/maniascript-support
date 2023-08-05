@@ -79,7 +79,7 @@ export class FunctionParser {
     if (line != -1) {
       for (let i = 0; i <= 5; i++) {
         out += docLines[line + i] + "\n";
-        if (docLines[line + i]??"".trim() == "}") return out;
+        if (docLines[line + i] ?? "".trim() == "}") return out;
       }
       return out;
     }
@@ -88,19 +88,18 @@ export class FunctionParser {
 
   parseDocBlock(docLines: string[], line: number): string {
     let out = "";
-    if (line != -1) {
-      if (
-        docLines[line - 1].includes("*/") ||
-        docLines[line - 2].includes("*/")
-      ) {
-        for (let i = 1; i < 30; i++) {
-          if (line - i > 0) {
-            out = docLines[line - i] + "\n" + out;
-            if (docLines[line - i].includes("/**")) return out;
-          }
-        }
+    let process = false;
+    for (let i = 1; i < 30; i++) {
+      const loc = line - i;
+      if (loc >= 0) {
+        if (docLines[loc].includes("*/")) process = true;
+        out = docLines[loc] + "\n" + out;
+        if (docLines[loc].includes("/**")) return out;
       }
+      if (loc < 0) break;
     }
     return "";
   }
+
 }
+

@@ -6,13 +6,13 @@ export class VariableParser {
     if (text == undefined) return [];
     const output: nameTypeRange[] = [];
     const allLines = text.replace(/\r/g, "").split("\n");
-    const regex2 = /(\s+)?(#Const|#Setting)\s+(\w+)/g;
+    const regex = /(\s+)?(#Const|#Setting)\s+(\w+)/g;
     for (const line in allLines) {
       let m2;
-      while ((m2 = regex2.exec(allLines[line])) !== null) {
+      while ((m2 = regex.exec(allLines[line])) !== null) {
         // This is necessary to avoid infinite loops with zero-width matches
-        if (m2.index === regex2.lastIndex) {
-          regex2.lastIndex++;
+        if (m2.index === regex.lastIndex) {
+          regex.lastIndex++;
         }
 
         const i = Number.parseInt(line);

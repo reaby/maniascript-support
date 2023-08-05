@@ -1,3 +1,7 @@
+# version 0.1.10
+ * Minor changes for color highlighter
+ * Fixed function doc block parser
+ 
 # version 0.1.9
  * Changed highlighter to not hardcoded support classes, instead it parses the classes from doc.h and dynamically highilights them
  * Added colors for consts and settings, as well as build-ins for the required context

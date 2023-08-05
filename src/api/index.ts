@@ -20,6 +20,7 @@ export default class Api {
     }
 
     this.completions = api.parse(apiFile);
+    
   }
 
   get(): completionsType {

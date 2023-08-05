@@ -88,6 +88,18 @@
         }
       ]
     },
+    "punctuation": {
+      "patterns": [
+        {
+          "match": "[;]",
+          "name": "punctuation.terminator.statement.ms"
+        },
+        {
+          "match": ",",
+          "name": "meta.delimiter.comma.ms"
+        }
+      ]
+    },
     "comments": {
       "patterns": [
         {
@@ -268,18 +280,6 @@
         }
       ]
     },
-    "punctuation": {
-      "patterns": [
-        {
-          "match": "[;]",
-          "name": "punctuation.terminator.statement.ms"
-        },
-        {
-          "match": ",",
-          "name": "meta.delimiter.comma.ms"
-        }
-      ]
-    },
     "language-constant": {
       "patterns": [
         {
@@ -320,7 +320,7 @@
     "operators": {
       "patterns": [
         {
-          "match": "\\s+\\b(as|in|for)\\b(?!\\s*\\()",
+          "match": "\\s+\\b(as|in|is|for)\\b(?!\\s*\\()",
           "name": "keyword.operator.ms"
         },
         {
@@ -350,52 +350,6 @@
         {
           "match": "::",
           "name": "keyword.operator.accessor.method.ms"
-        }
-      ]
-    },
-    "function-declaration-parameters": {
-      "patterns": [
-        {
-          "begin": "\\(",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.definition.parameters.begin.ms"
-            }
-          },
-          "end": "\\)",
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.definition.parameters.end.ms"
-            }
-          },
-          "patterns": [
-            {
-              "match": "[_$a-zA-Z][$\\w]*",
-              "name": "variable.parameter.function.ms"
-            },
-            {
-              "match": ",",
-              "name": "punctuation.separator.parameter.function.ms"
-            },
-            {
-              "begin": "=",
-              "beginCaptures": {
-                "0": {
-                  "name": "keyword.operator.assignment.ms"
-                }
-              },
-              "end": "(?=[,)])",
-              "name": "meta.parameter.optional.ms",
-              "patterns": [
-                {
-                  "include": "#expression"
-                }
-              ]
-            },
-            {
-              "include": "#comments"
-            }
-          ]
         }
       ]
     },
@@ -445,51 +399,47 @@
         }
       ]
     },
-    "template-string-content": {
+    "function-declaration-parameters": {
       "patterns": [
         {
-          "name": "entity.templatestring.element.ms",
-          "begin": "{{{",
+          "begin": "\\(",
           "beginCaptures": {
             "0": {
-              "name": "meta.embedded.tag.script.open.ms"
+              "name": "punctuation.definition.parameters.begin.ms"
             }
           },
-          "end": "}}}",
+          "end": "\\)",
           "endCaptures": {
             "0": {
-              "name": "meta.embedded.tag.script.close.ms"
+              "name": "punctuation.definition.parameters.end.ms"
             }
           },
           "patterns": [
             {
-              "include": "$self"
-            }
-          ]
-        },
-        {
-          "name": "meta.embedded.script.block.ms",
-          "begin": "(<script>|<Maniascript>)\\s*(<!--|<\\!\\[CDATA\\[)",
-          "beginCaptures": {
-            "0": {
-              "name": "meta.embedded.tag.script.open.ms"
+              "match": "[_$a-zA-Z][$\\w]*",
+              "name": "variable.parameter.function.ms"
             },
-            "1": {
-              "name": "meta.embedded.tag.comment.open.ms"
-            }
-          },
-          "end": "(-->|\\]\\]>)\\s*(<\\/script>|<\\/Maniascript>)",
-          "endCaptures": {
-            "0": {
-              "name": "meta.embedded.tag.comment.close.ms"
-            },
-            "1": {
-              "name": "meta.embedded.tag.script.close.ms"
-            }
-          },
-          "patterns": [
             {
-              "include": "$self"
+              "match": ",",
+              "name": "punctuation.separator.parameter.function.ms"
+            },
+            {
+              "begin": "=",
+              "beginCaptures": {
+                "0": {
+                  "name": "keyword.operator.assignment.ms"
+                }
+              },
+              "end": "(?=[,)])",
+              "name": "meta.parameter.optional.ms",
+              "patterns": [
+                {
+                  "include": "#expression"
+                }
+              ]
+            },
+            {
+              "include": "#comments"
             }
           ]
         }
@@ -534,6 +484,56 @@
             }
           },
           "name": "meta.embedded.ms",
+          "patterns": [
+            {
+              "include": "$self"
+            }
+          ]
+        }
+      ]
+    },
+    "template-string-content": {
+      "patterns": [
+        {
+          "name": "entity.templatestring.element.ms",
+          "begin": "{{{",
+          "beginCaptures": {
+            "0": {
+              "name": "meta.embedded.tag.script.open.ms"
+            }
+          },
+          "end": "}}}",
+          "endCaptures": {
+            "0": {
+              "name": "meta.embedded.tag.script.close.ms"
+            }
+          },
+          "patterns": [
+            {
+              "include": "$self"
+            }
+          ]
+        },
+        {
+          "name": "meta.embedded.script.block.ms",
+          "begin": "(<script>|<Maniascript>)\\s*(<!--|<\\!\\[CDATA\\[)",
+          "beginCaptures": {
+            "0": {
+              "name": "meta.embedded.tag.script.open.ms"
+            },
+            "1": {
+              "name": "meta.embedded.tag.comment.open.ms"
+            }
+          },
+          "end": "(-->|\\]\\]>)\\s*(<\\/script>|<\\/Maniascript>)",
+          "endCaptures": {
+            "0": {
+              "name": "meta.embedded.tag.comment.close.ms"
+            },
+            "1": {
+              "name": "meta.embedded.tag.script.close.ms"
+            }
+          },
           "patterns": [
             {
               "include": "$self"
@@ -704,31 +704,6 @@
         }
       ]
     },
-    "literal-function-call": {
-      "patterns": [
-        {
-          "captures": {
-            "1": {
-              "name": "entity.name.function.ms"
-            },
-            "2": {
-              "name": "meta.group.braces.round.function.arguments.ms"
-            }
-          },
-          "match": "(?x)  \\.?([_$a-zA-Z][$\\w]*)\\s*  (\\(\\s*\\))",
-          "name": "meta.function-call.without-arguments.ms"
-        },
-        {
-          "captures": {
-            "1": {
-              "name": "entity.name.function.ms"
-            }
-          },
-          "match": "(?x)  \\.?([_$a-zA-Z][$\\w]*)\\s* (?=\\()",
-          "name": "meta.function-call.with-arguments.ms"
-        }
-      ]
-    },
     "expression": {
       "patterns": [
         {
@@ -778,6 +753,31 @@
         },
         {
           "include": "#punctuation"
+        }
+      ]
+    },
+    "literal-function-call": {
+      "patterns": [
+        {
+          "captures": {
+            "1": {
+              "name": "entity.name.function.ms"
+            },
+            "2": {
+              "name": "meta.group.braces.round.function.arguments.ms"
+            }
+          },
+          "match": "(?x)  \\.?([_$a-zA-Z][$\\w]*)\\s*  (\\(\\s*\\))",
+          "name": "meta.function-call.without-arguments.ms"
+        },
+        {
+          "captures": {
+            "1": {
+              "name": "entity.name.function.ms"
+            }
+          },
+          "match": "(?x)  \\.?([_$a-zA-Z][$\\w]*)\\s* (?=\\()",
+          "name": "meta.function-call.with-arguments.ms"
         }
       ]
     },
