@@ -2,13 +2,11 @@ import * as vscode from "vscode";
 import TypeParser from "../typeparser";
 import Api from "../api";
 import Completer from "../completions";
-import { VariableParser } from "../typeparser/variables";
 
 export default class Decorator {  
   typeParser: TypeParser;
   api: Api;
-  completer: Completer;
-  varParser: VariableParser;
+  completer: Completer;  
 
   templatestringColor: vscode.TextEditorDecorationType =
     vscode.window.createTextEditorDecorationType({
@@ -40,8 +38,6 @@ export default class Decorator {
     this.typeParser = type;
     this.api = api;
     this.completer = completer;
-    this.varParser = new VariableParser();
-
   }
 
   getContextProperties(className: string): string[] {
@@ -124,7 +120,7 @@ export default class Decorator {
       structs.push(decoration);
     }
 
-    const _consts = this.varParser.parseConstAndSettings(text);
+    const _consts = this.typeParser.consts;
     for(const obj of _consts) {
       const re = new RegExp(`\\b(${obj.name})\\b`, "g");
       let line;

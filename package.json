@@ -1,7 +1,7 @@
 {
     "name": "maniascript-support",
     "description": "Maniascript support for vscode",
-    "version": "0.1.10",
+    "version": "0.2.0",
     "publisher": "reaby",
     "license": "MIT",
     "engines": {
@@ -142,11 +142,9 @@
         "compile": "tsc -p ./",
         "lint": "eslint . --ext .ts,.tsx",
         "watch": "tsc -watch -p ./"
-    },
-    "dependencies": {
-        "@maniascript/parser": "12.1.0"
-    },
+    },    
     "devDependencies": {        
+        "@maniascript/parser": "12.1.0",
         "@types/node": "^16.0.0",
         "@types/vscode": "^1.66.0",
         "@typescript-eslint/eslint-plugin": "^4.28.2",

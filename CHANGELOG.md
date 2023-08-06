@@ -1,3 +1,6 @@
+# version 0.2
+ * Major refactoring... uses now @maniascript/parser
+
 # version 0.1.10
  * Minor changes for color highlighter
  * Fixed function doc block parser
