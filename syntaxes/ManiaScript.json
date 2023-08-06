@@ -231,6 +231,31 @@
         }
       ]
     },
+    "language-constant": {
+      "patterns": [
+        {
+          "match": "(?<!\\.)\\bTrue\\b",
+          "name": "constant.language.boolean.true.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bFalse\\b",
+          "name": "constant.language.boolean.false.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bNull\\b",
+          "name": "constant.language.null.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bNullId\\b",
+          "name": "constant.language.null.ms"
+        },
+        {
+          "comment": "Match numbers",
+          "match": "\\b((0(x|X)[0-9a-fA-F]+)|([0-9]+(\\.[0-9]+)?))\\b",
+          "name": "constant.numeric.decimal.ms"
+        }
+      ]
+    },
     "literal-struct": {
       "patterns": [
         {
@@ -280,43 +305,6 @@
         }
       ]
     },
-    "language-constant": {
-      "patterns": [
-        {
-          "match": "(?<!\\.)\\bTrue\\b",
-          "name": "constant.language.boolean.true.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bFalse\\b",
-          "name": "constant.language.boolean.false.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bNull\\b",
-          "name": "constant.language.null.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bNullId\\b",
-          "name": "constant.language.null.ms"
-        },
-        {
-          "comment": "Match numbers",
-          "match": "\\b((0(x|X)[0-9a-fA-F]+)|([0-9]+(\\.[0-9]+)?))\\b",
-          "name": "constant.numeric.decimal.ms"
-        }
-      ]
-    },
-    "support-functions": {
-      "patterns": [
-        {
-          "match": "(?<=\\.)\\b(clear|count|containsonly|containsoneof|slice|exists|existskey|remove|removekey|add|addfirst|sort|sortreverse|sortkey|sortkeyreverse|keyof|tojson|fromjson)\\b(?:\\()",
-          "name": "support.function.ms"
-        },
-        {
-          "match": "\\b(log|assert|dump)\\b",
-          "name": "support.function.ms"
-        }
-      ]
-    },
     "operators": {
       "patterns": [
         {
@@ -350,52 +338,6 @@
         {
           "match": "::",
           "name": "keyword.operator.accessor.method.ms"
-        }
-      ]
-    },
-    "string-content": {
-      "patterns": [
-        {
-          "match": "\\\\\\s*\\n",
-          "name": "constant.character.escape.newline.ms"
-        },
-        {
-          "match": "\\\\(x[\\da-fA-F]{2}|u[\\da-fA-F]{4}|.)",
-          "name": "constant.character.escape.ms"
-        },
-        {
-          "captures": {
-            "1": {
-              "name": "constant.character.escape.ms"
-            },
-            "2": {
-              "name": "entity.name.format.string.argument.ms"
-            },
-            "3": {
-              "name": "constant.character.escape.ms"
-            }
-          },
-          "match": "(\\$<%)([\\d])(\\$>)",
-          "name": "meta.string.format.ms"
-        },
-        {
-          "begin": "{{{",
-          "beginCaptures": {
-            "0": {
-              "name": "meta.embedded.tag.script.open.ms"
-            }
-          },
-          "end": "}}}",
-          "endCaptures": {
-            "0": {
-              "name": "meta.embedded.tag.script.close.ms"
-            }
-          },
-          "patterns": [
-            {
-              "include": "#expression"
-            }
-          ]
         }
       ]
     },
@@ -440,6 +382,52 @@
             },
             {
               "include": "#comments"
+            }
+          ]
+        }
+      ]
+    },
+    "string-content": {
+      "patterns": [
+        {
+          "match": "\\\\\\s*\\n",
+          "name": "constant.character.escape.newline.ms"
+        },
+        {
+          "match": "\\\\(x[\\da-fA-F]{2}|u[\\da-fA-F]{4}|.)",
+          "name": "constant.character.escape.ms"
+        },
+        {
+          "captures": {
+            "1": {
+              "name": "constant.character.escape.ms"
+            },
+            "2": {
+              "name": "entity.name.format.string.argument.ms"
+            },
+            "3": {
+              "name": "constant.character.escape.ms"
+            }
+          },
+          "match": "(\\$<%)([\\d])(\\$>)",
+          "name": "meta.string.format.ms"
+        },
+        {
+          "begin": "{{{",
+          "beginCaptures": {
+            "0": {
+              "name": "meta.embedded.tag.script.open.ms"
+            }
+          },
+          "end": "}}}",
+          "endCaptures": {
+            "0": {
+              "name": "meta.embedded.tag.script.close.ms"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#expression"
             }
           ]
         }
@@ -492,6 +480,45 @@
         }
       ]
     },
+    "support-functions": {
+      "patterns": [
+        {
+          "match": "(?<=\\.)\\b(clear|count|containsonly|containsoneof|slice|exists|existskey|remove|removekey|add|addfirst|sort|sortreverse|sortkey|sortkeyreverse|keyof|tojson|fromjson)\\b(?:\\()",
+          "name": "support.function.ms"
+        },
+        {
+          "match": "\\b(log|assert|dump)\\b",
+          "name": "support.function.ms"
+        }
+      ]
+    },
+    "literal-string": {
+      "patterns": [
+        {
+          "begin": "(?<!\")\"{1}(?!\"\")",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.string.begin.ms"
+            }
+          },
+          "end": "(\"{1})|([\\n])",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.string.end.ms"
+            },
+            "2": {
+              "name": "punctuation.definition.string.end.illegal.ms"
+            }
+          },
+          "name": "string.quoted.ms",
+          "patterns": [
+            {
+              "include": "#string-content"
+            }
+          ]
+        }
+      ]
+    },
     "template-string-content": {
       "patterns": [
         {
@@ -537,33 +564,6 @@
           "patterns": [
             {
               "include": "$self"
-            }
-          ]
-        }
-      ]
-    },
-    "literal-string": {
-      "patterns": [
-        {
-          "begin": "(?<!\")\"{1}(?!\"\")",
-          "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.string.begin.ms"
-            }
-          },
-          "end": "(\"{1})|([\\n])",
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.definition.string.end.ms"
-            },
-            "2": {
-              "name": "punctuation.definition.string.end.illegal.ms"
-            }
-          },
-          "name": "string.quoted.ms",
-          "patterns": [
-            {
-              "include": "#string-content"
             }
           ]
         }
@@ -663,6 +663,31 @@
         }
       ]
     },
+    "literal-function-call": {
+      "patterns": [
+        {
+          "captures": {
+            "1": {
+              "name": "entity.name.function.ms"
+            },
+            "2": {
+              "name": "meta.group.braces.round.function.arguments.ms"
+            }
+          },
+          "match": "(?x)  \\.?([_$a-zA-Z][$\\w]*)\\s*  (\\(\\s*\\))",
+          "name": "meta.function-call.without-arguments.ms"
+        },
+        {
+          "captures": {
+            "1": {
+              "name": "entity.name.function.ms"
+            }
+          },
+          "match": "(?x)  \\.?([_$a-zA-Z][$\\w]*)\\s* (?=\\()",
+          "name": "meta.function-call.with-arguments.ms"
+        }
+      ]
+    },
     "literal-for": {
       "patterns": [
         {
@@ -753,31 +778,6 @@
         },
         {
           "include": "#punctuation"
-        }
-      ]
-    },
-    "literal-function-call": {
-      "patterns": [
-        {
-          "captures": {
-            "1": {
-              "name": "entity.name.function.ms"
-            },
-            "2": {
-              "name": "meta.group.braces.round.function.arguments.ms"
-            }
-          },
-          "match": "(?x)  \\.?([_$a-zA-Z][$\\w]*)\\s*  (\\(\\s*\\))",
-          "name": "meta.function-call.without-arguments.ms"
-        },
-        {
-          "captures": {
-            "1": {
-              "name": "entity.name.function.ms"
-            }
-          },
-          "match": "(?x)  \\.?([_$a-zA-Z][$\\w]*)\\s* (?=\\()",
-          "name": "meta.function-call.with-arguments.ms"
         }
       ]
     },

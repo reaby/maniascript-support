@@ -31,7 +31,7 @@ export default class HoverHelper {
 
     const variable = this.wordAtCaret(line, line2);
     this.completions.requireContext = this.typeParser.requireContext;
-
+    this.completions.genVars(position);
     if (variable.indexOf("::") === -1) {
       try {
         // functions
@@ -39,9 +39,10 @@ export default class HoverHelper {
           if (func.name == word) {
             const doc = new vscode.MarkdownString();
             if (func.docBlock) {
-              doc.appendCodeblock(func.docBlock + "\n", "javascript");
+              doc.appendCodeblock(func.docBlock + "\n", "typescript");
             }
-            doc.appendCodeblock(func.codeBlock.split("\n")[0], "maniascript");
+            const body = document.getText(func.range).split("\n").slice(0,1).join("\n");            
+            doc.appendCodeblock(body, "maniascript");
             return new vscode.Hover(doc);
           }
           for (const param of func.params) {
@@ -66,6 +67,15 @@ export default class HoverHelper {
             out.appendCodeblock(doc, "maniascript");
             return new vscode.Hover(out);
           }
+        }
+        
+        for(const cons of this.typeParser.consts) {        
+          if (cons.name == variable) {
+            const out = new vscode.MarkdownString();
+            const doc = `${cons.name} ${cons.value} (${cons.type})`;
+            out.appendCodeblock(doc, "maniascript");
+            return new vscode.Hover(out);
+          }        
         }
 
         // variables

@@ -3,6 +3,9 @@ import {
   CompletionItemKind,
   MarkdownString,
   SnippetString,
+  TextDocument,
+  Position,
+  Range
 } from "vscode";
 import Api from "../api";
 import TypeParser from "../typeparser";
@@ -11,21 +14,33 @@ import {
   nameType,
   structureType,
 } from "../typeparser/types/typeClasses";
+import { getRange, getValue } from "../utils";
+import * as parser from "@maniascript/parser";
 
 export default class Completer {
   readonly typeParser: TypeParser;
   readonly api: Api;
   requireContext = "";
+  availableVars: nameType[] = [];
+  foreach: nameType[] = [];
 
   constructor(parser: TypeParser, api: Api) {
     this.typeParser = parser;
     this.api = api;
+    this.availableVars = [];
+    this.foreach = [];
   }
 
-  complete(searchFor: string[], docText: string, line: string) {
+  complete(document: TextDocument, position: Position) {
     const requireContext = this.typeParser.requireContext;
-
     this.requireContext = requireContext;
+    this.typeParser.update(document);
+    this.genVars(position);
+    const line = document.getText(new Range(position.line, 0, position.line + 1, 0));
+    const searchFor = document.getText(new Range(position.line, 0, position.line, position.character))
+      .replace(/^\s*/, "")
+      .replace(/\r/g, "")
+      .split(/([ |(])/);
 
     if (
       searchFor.includes("#RequireContext") ||
@@ -37,13 +52,12 @@ export default class Completer {
     // Check variables
     const caret = searchFor.pop();
 
-
     if (caret != null) {
       // if is namespace or enum
       if (caret.indexOf("::") > -1) {
         let search: string = caret.slice(0, caret.indexOf("::"));
 
-        const re = new RegExp("\\s+("+search+"::(.*?))\\s+");
+        const re = new RegExp("\\s+(" + search + "::(.*?))\\s+");
         const match = re.exec(line) ?? [""];
 
         if (caret == "::") {
@@ -106,6 +120,45 @@ export default class Completer {
     }
 
     return everything;
+  }
+
+
+  genVars(position: Position) {
+    const vars = [];
+    const foreach: nameType[] = [];
+    for (const scope of this.typeParser.scopemanager.scopes) {
+      if (position.line >= scope.node.source.loc.start.line && position.line <= scope.node.source.loc.end.line) {
+        for (const vari of scope.variables) {
+          if (vari[1].node.parent?.kind == "ForeachStatement") {
+            const fore = vari[1].node.parent as parser.ForeachStatement;            
+            foreach.push({
+              name: vari[1].name,
+              type: this.ParseExression(fore.expression),
+              range: getRange(vari[1].node.source.loc)
+            });
+          } else {
+            vars.push({
+              name: vari[1].name,
+              type: getValue((vari[1].node.parent as parser.VariableDeclaration).type),
+              range: getRange(vari[1].node.source.loc)
+            });
+          }
+        }
+      }
+    }
+    this.foreach = foreach;
+    this.availableVars = vars;
+  }
+
+  ParseExression(expression: parser.Expression): string {    
+    if (expression.kind == "Identifier") {
+      return (expression as parser.Identifier).name;
+    }
+    if (expression.kind == "DotAccessExpression") {
+      const temp = (expression as parser.DotAccessExpression);
+      return (temp.object as parser.Identifier).name + "." + (temp.member as parser.Identifier).name;
+    }
+    return "";
   }
 
   getArrayMethods(): CompletionItem[] {
@@ -244,24 +297,19 @@ export default class Completer {
         "";
     }
 
+
     return { resolved, searchChain };
   }
 
   getTypeVariable(search: string): string | null {
-    for (const elem of this.typeParser.functions) {
-      for (const param of elem.params) {
-        if (search == param.name) return param.type;
-      }
-    }
-
-    for (const elem of this.typeParser.variables) {
+    for (const elem of this.availableVars) {
       if (search == elem.name) {
-        const type = elem.type;
+        const type = elem.type;        
         return type;
       }
     }
 
-    for (const elem of this.typeParser._foreach) {
+    for (const elem of this.foreach) {
       if (search == elem.name) {
         const { resolved, arrChain } = this.searchVariableType(elem.type + ".");
         let type =
@@ -269,7 +317,6 @@ export default class Completer {
           this.findTypesInContext(elem.type, this.requireContext) ??
           elem.type;
         type = type.replace("[]", "");
-
         return type;
       }
     }
@@ -315,7 +362,13 @@ export default class Completer {
 
   getVariables(): CompletionItem[] {
     const out: CompletionItem[] = [];
-    for (const vari of this.typeParser.variables) {
+    for (const vari of this.availableVars) {
+      const item = new CompletionItem(vari.name, CompletionItemKind.Variable);
+      item.detail = vari.type;
+      out.push(item);
+    }
+    
+    for (const vari of this.foreach) {
       const item = new CompletionItem(vari.name, CompletionItemKind.Variable);
       item.detail = vari.type;
       out.push(item);
@@ -531,10 +584,10 @@ export default class Completer {
     return out;
   }
 
-  getEnums(className: string, caret = "", variable=""): CompletionItem[] {
+  getEnums(className: string, caret = "", variable = ""): CompletionItem[] {
     const out: CompletionItem[] = [];
-    const count = caret.split("::").length-1;
-    const parts = variable.trim().replace(/[,;\n\r]/,"").split("::",3);
+    const count = caret.split("::").length - 1;
+    const parts = variable.trim().replace(/[,;\n\r]/, "").split("::", 3);
     let filter = "";
     if (count >= 2) {
       filter = parts[1] ?? "";
@@ -553,7 +606,7 @@ export default class Completer {
             if (count > 1) {
               if (groupName.startsWith(filter)) {
                 const item = new CompletionItem(
-                 className + "::" + groupName + "::" + enumValue,
+                  className + "::" + groupName + "::" + enumValue,
                   CompletionItemKind.Enum
                 );
                 item.detail = className;
@@ -656,10 +709,10 @@ export default class Completer {
     return false;
   }
 
-  getExtStructElems(file: string, name: string): CompletionItem[] {
+  getExtStructElems(namespace: string, name: string): CompletionItem[] {
     const out: CompletionItem[] = [];
     for (const structs of this.typeParser.structuresExternal) {
-      if (structs.var == file) {
+      if (structs.var == namespace) {
         for (const struct of structs.structs) {
           if (struct.structName == name) {
             for (const member of struct.members) {

@@ -1,10 +1,14 @@
 import TypeParser from "../typeparser";
+import Completer from "../completions";
 import * as vscode from "vscode";
 
 export default class DefinitionHelper {
   typeParser: TypeParser;
-  constructor(typeParser: TypeParser) {
+  completer: Completer;
+
+  constructor(typeParser: TypeParser, completor: Completer) {
     this.typeParser = typeParser;
+    this.completer = completor;
   }
 
   async provideDefinitions(
@@ -46,9 +50,10 @@ export default class DefinitionHelper {
     }
 
     if (found) return out;
-
+    this.completer.genVars(position);
+    
     out = new vscode.Location(document.uri, new vscode.Position(0, 0));
-    for (const variable of this.typeParser.variables) {
+    for (const variable of this.completer.availableVars) {
       if (variable.name == search) {
         if (
           variable.range &&

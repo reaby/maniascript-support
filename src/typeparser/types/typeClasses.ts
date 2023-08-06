@@ -18,6 +18,13 @@ export interface nameTypeRange {
   range: vscode.Range;
 }
 
+export interface nameTypeValueRange {
+  name: string;
+  type: string;
+  value: string;
+  range: vscode.Range;
+}
+
 export interface structureType {
   structName: string;
   members: nameType[];
@@ -44,6 +51,7 @@ export interface constTypeExternal {
 
 export interface functionType {
   name: string;
+  nameRange: vscode.Range;
   returnValue: string;
   params: nameTypeRange[];
   docBlock?: string;

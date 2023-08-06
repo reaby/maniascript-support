@@ -41,6 +41,7 @@ export class FunctionParser {
             docBlock: docs,
             codeBlock: body,
             range: range,
+            nameRange: range,
           });
           continue;
         }
@@ -68,6 +69,7 @@ export class FunctionParser {
           docBlock: docs,
           codeBlock: body,
           range: range,
+          nameRange: range,
         });
       }
     }

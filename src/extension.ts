@@ -11,7 +11,6 @@ import ManialinkPreview from "./ManialinkPreview";
 import Api from "./api";
 import FoldingRangeHelper from "./folding";
 import formatDocument from "./formatter";
-import SymbolHelper from "./symbols";
 import SymbolsHelper from "./symbols";
 
 
@@ -27,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
   const decorator = new Decorator(typeParser, api, completions);
   const signatureHelper = new SignatureHelper(typeParser, api, completions);
   const renameHelper = new RenameHelper(typeParser);
-  const definitionHelper = new DefinitionHelper(typeParser);
+  const definitionHelper = new DefinitionHelper(typeParser, completions);
   const hoverHelper = new HoverHelper(typeParser, api, completions);
   const foldingHelper = new FoldingRangeHelper();
   const SymbolHelper = new SymbolsHelper(typeParser);
@@ -54,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideHover(document, position, token) {
-          typeParser.update(document.getText().replace(/\r/g, "") || "");
+          typeParser.update(document);
           return hoverHelper.onHover(document, position);
         },
       }
@@ -78,7 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
             new vscode.Position(position.line, 0)
           );
 
-          typeParser.update(document.getText().replace(/\r/g, "") || "");
+          typeParser.update(document);
           return hoverHelper.onHover(document, position);
         },
       }
@@ -90,7 +89,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideDocumentSymbols(document, token) {
-         return SymbolHelper.update(document.getText().replace(/\r/g, "") || "");
+         return SymbolHelper.update(document);
         }
       }
     )
@@ -113,7 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
             new vscode.Position(position.line, 0)
           );
 
-          typeParser.update(document.getText().replace(/\r/g, "") || "");
+          typeParser.update(document);
           return hoverHelper.onHover(document, position);
         },
       }
@@ -144,7 +143,7 @@ export function activate(context: vscode.ExtensionContext) {
 
           const text = document.getText(line).replace(/\r/g, "");
           const idx = context.activeSignatureHelp?.activeSignature ?? 0;
-          typeParser.update(document.getText().replace(/\r/g, "") || "");
+          typeParser.update(document);
           return signatureHelper.provideHelp(text, idx);
         },
       },
@@ -157,7 +156,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideDefinition(document, position, token) {
-          typeParser.update(document.getText().replace(/\r/g, "") || "");
+          typeParser.update(document);
           return definitionHelper.provideDefinitions(document, position);
         },
       }
@@ -169,7 +168,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "xml", scheme: "file" },
       {
         provideDefinition(document, position, token) {
-          typeParser.update(document.getText().replace(/\r/g, "") || "");
+          typeParser.update(document);
           return definitionHelper.provideDefinitions(document, position);
         },
       }
@@ -181,7 +180,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "jinja-xml", scheme: "file" },
       {
         provideDefinition(document, position, token) {
-          typeParser.update(document.getText().replace(/\r/g, ""));
+          typeParser.update(document);
           return definitionHelper.provideDefinitions(document, position);
         },
       }
@@ -231,35 +230,8 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideCompletionItems(document, position, token) {
-          const line = new vscode.Range(
-            new vscode.Position(position.line, 0),
-            position
-          );
-          const docStartToCurrentLine = new vscode.Range(
-            new vscode.Position(0, 0),
-            new vscode.Position(position.line + 1, 0)
-          );
-          const fullLine = new vscode.Range(
-            new vscode.Position(position.line, 0),
-            new vscode.Position(position.line + 1, 0)
-          );
-
-          const searchFor = document
-            .getText(docStartToCurrentLine)
-            .replace(/\r/g, ""); //limit reading file from start to current line, so variables gets parsed right
-          typeParser.update(document.getText().replace(/\r/g, "") || "");
-
-          const text = document
-            .getText(line)
-            .replace(/\r/g, "")
-            .replace(/^\s*/, "")
-            .split(/([ |(])/);
-
-          return completions.complete(
-            text,
-            searchFor,
-            document.getText(fullLine)
-          );
+          typeParser.update(document);          
+          return completions.complete(document, position);
         },
       },
       "."
@@ -294,11 +266,9 @@ export function activate(context: vscode.ExtensionContext) {
             .replace(/\r/g, "")
             .split(/([ |(])/);
           const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
-          typeParser.update(document.getText().replace(/\r/g, "") || "");
+          typeParser.update(document);
           const completionItems = completions.complete(
-            text,
-            searchFor,
-            document.getText(fullLine)
+            document,position
           );
 
           return completionItems;
@@ -336,8 +306,8 @@ export function activate(context: vscode.ExtensionContext) {
             .replace(/\r/g, "")
             .split(/([ |(])/);
           const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
-          typeParser.update(document.getText().replace(/\r/g, "") || "");
-          const completionItems = completions.complete(text, searchFor, document.getText(fullLine));
+          typeParser.update(document);
+          const completionItems = completions.complete(document, position);
 
           return completionItems;
         },
@@ -353,7 +323,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     timeout = setTimeout(() => {
-      typeParser.updateStructs(activeEditor?.document.getText() ?? "");
+      typeParser.updateStructs(activeEditor?.document);
       decorator.update(activeEditor);
       if (
         activeEditor?.document.languageId == "xml" &&

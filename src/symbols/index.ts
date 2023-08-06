@@ -7,10 +7,14 @@ export default class SymbolsHelper {
   constructor(typeParser: TypeParser) {
     this.typeParser = typeParser;
   }
-
-  update(docText: string): vscode.DocumentSymbol[] {
+/**
+ * 
+ * @param doc 
+ * @returns 
+ */
+  update(doc:vscode.TextDocument): vscode.DocumentSymbol[] {
     const out: vscode.DocumentSymbol[] = [];
-    this.typeParser.update(docText);
+    this.typeParser.update(doc);
 
     for (const elem of this.typeParser.includes) {
       const item = new vscode.DocumentSymbol(
@@ -50,7 +54,7 @@ export default class SymbolsHelper {
         func.name,
         func.returnValue,
         vscode.SymbolKind.Function,
-        func.range,
+        func.nameRange,
         func.range
       );
       out.push(item);

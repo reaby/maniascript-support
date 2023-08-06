@@ -18,7 +18,7 @@
         "type": "git",
         "url": "https://github.com/reaby/maniascript-support"
     },
-    "main": "./app/extension.js",
+    "main": "./out/extension.js",
     "contributes": {
         "menus": {
             "editor/context": [
@@ -89,7 +89,7 @@
                 "scopeName": "source.ms",
                 "path": "./syntaxes/ManiaScript.json",
                 "embeddedLanguages": {
-                    "string.templatestring.ms": "xml",
+                    "string.templatestring.ms": "xml",               
                     "meta.embedded.script.block.ms": "maniascript"
                 }
             },
@@ -143,13 +143,16 @@
         "lint": "eslint . --ext .ts,.tsx",
         "watch": "tsc -watch -p ./"
     },
-    "devDependencies": {
+    "dependencies": {
+        "@maniascript/parser": "12.1.0"
+    },
+    "devDependencies": {        
         "@types/node": "^16.0.0",
         "@types/vscode": "^1.66.0",
         "@typescript-eslint/eslint-plugin": "^4.28.2",
         "@typescript-eslint/parser": "^4.28.2",
         "esbuild": "^0.15.7",
         "eslint": "^7.30.0",
-        "typescript": "^4.8.2"
+        "typescript": "^4.8.2"        
     }
 }
