@@ -15,8 +15,9 @@ import SymbolsHelper from "./symbols";
 
 
 // this method is called when vs code is activated
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   console.log("ManiaScript support is enabled.");
+  const langs = await vscode.languages.getLanguages();
 
   let timeout: NodeJS.Timer | undefined = undefined;
   const api = new Api();
@@ -89,35 +90,37 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideDocumentSymbols(document, token) {
-         return SymbolHelper.update(document);
+          return SymbolHelper.update(document);
         }
       }
     )
   );
 
-  context.subscriptions.push(
-    vscode.languages.registerHoverProvider(
-      { language: "jinja-xml", scheme: "file" },
-      {
-        provideHover(document, position, token) {
-          let startToCurrent = new vscode.Range(
-            new vscode.Position(0, 0),
-            new vscode.Position(position.line, 0)
-          );
-          const index = document.getText().indexOf("<script>");
-          if (index == -1) return null;
+  if (langs.includes("jinja-xml")) {
+    context.subscriptions.push(
+      vscode.languages.registerHoverProvider(
+        { language: "jinja-xml", scheme: "file" },
+        {
+          provideHover(document, position, token) {
+            let startToCurrent = new vscode.Range(
+              new vscode.Position(0, 0),
+              new vscode.Position(position.line, 0)
+            );
+            const index = document.getText().indexOf("<script>");
+            if (index == -1) return null;
 
-          startToCurrent = new vscode.Range(
-            document.positionAt(index),
-            new vscode.Position(position.line, 0)
-          );
+            startToCurrent = new vscode.Range(
+              document.positionAt(index),
+              new vscode.Position(position.line, 0)
+            );
 
-          typeParser.update(document);
-          return hoverHelper.onHover(document, position);
-        },
-      }
-    )
-  );
+            typeParser.update(document);
+            return hoverHelper.onHover(document, position);
+          },
+        }
+      )
+    );
+  }
 
 
   /*context.subscriptions.push(
@@ -174,18 +177,19 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
-
-  context.subscriptions.push(
-    vscode.languages.registerDefinitionProvider(
-      { language: "jinja-xml", scheme: "file" },
-      {
-        provideDefinition(document, position, token) {
-          typeParser.update(document);
-          return definitionHelper.provideDefinitions(document, position);
-        },
-      }
-    )
-  );
+  if (langs.includes("jinja-xml")) {
+    context.subscriptions.push(
+      vscode.languages.registerDefinitionProvider(
+        { language: "jinja-xml", scheme: "file" },
+        {
+          provideDefinition(document, position, token) {
+            typeParser.update(document);
+            return definitionHelper.provideDefinitions(document, position);
+          },
+        }
+      )
+    );
+  }
 
   context.subscriptions.push(
     vscode.languages.registerRenameProvider(
@@ -230,7 +234,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideCompletionItems(document, position, token) {
-          typeParser.update(document);          
+          typeParser.update(document);
           return completions.complete(document, position);
         },
       },
@@ -268,7 +272,7 @@ export function activate(context: vscode.ExtensionContext) {
           const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
           typeParser.update(document);
           const completionItems = completions.complete(
-            document,position
+            document, position
           );
 
           return completionItems;
@@ -277,44 +281,45 @@ export function activate(context: vscode.ExtensionContext) {
       "."
     )
   );
+  if (langs.includes("jinja-xml")) {
+    context.subscriptions.push(
+      vscode.languages.registerCompletionItemProvider(
+        { language: "jinja-xml", scheme: "file" },
+        {
+          provideCompletionItems(document, position, token) {
+            const start = new vscode.Position(position.line, 0);
+            const range = new vscode.Range(start, position);
+            const fullLine = new vscode.Range(
+              new vscode.Position(position.line, 0),
+              new vscode.Position(position.line + 1, 0)
+            );
+            let startToCurrent = new vscode.Range(
+              new vscode.Position(0, 0),
+              new vscode.Position(position.line, 0)
+            );
+            const index = document.getText(startToCurrent).indexOf("<script>");
+            if (index == -1) return [];
 
-  context.subscriptions.push(
-    vscode.languages.registerCompletionItemProvider(
-      { language: "jinja-xml", scheme: "file" },
-      {
-        provideCompletionItems(document, position, token) {
-          const start = new vscode.Position(position.line, 0);
-          const range = new vscode.Range(start, position);
-          const fullLine = new vscode.Range(
-            new vscode.Position(position.line, 0),
-            new vscode.Position(position.line + 1, 0)
-          );
-          let startToCurrent = new vscode.Range(
-            new vscode.Position(0, 0),
-            new vscode.Position(position.line, 0)
-          );
-          const index = document.getText(startToCurrent).indexOf("<script>");
-          if (index == -1) return [];
+            startToCurrent = new vscode.Range(
+              document.positionAt(index),
+              new vscode.Position(position.line, 0)
+            );
+            const text = document
+              .getText(range)
+              .replace(/^\s*/, "")
+              .replace(/\r/g, "")
+              .split(/([ |(])/);
+            const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
+            typeParser.update(document);
+            const completionItems = completions.complete(document, position);
 
-          startToCurrent = new vscode.Range(
-            document.positionAt(index),
-            new vscode.Position(position.line, 0)
-          );
-          const text = document
-            .getText(range)
-            .replace(/^\s*/, "")
-            .replace(/\r/g, "")
-            .split(/([ |(])/);
-          const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
-          typeParser.update(document);
-          const completionItems = completions.complete(document, position);
-
-          return completionItems;
+            return completionItems;
+          },
         },
-      },
-      "."
-    )
-  );
+        "."
+      )
+    );
+  }
 
   function triggerUpdateDocument() {
     if (timeout) {

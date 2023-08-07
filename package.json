@@ -18,7 +18,7 @@
         "type": "git",
         "url": "https://github.com/reaby/maniascript-support"
     },
-    "main": "./app/extension.js",
+    "main": "./out/extension.js",
     "contributes": {
         "menus": {
             "editor/context": [
@@ -81,11 +81,7 @@
             {
                 "language": "xml",
                 "path": "./snippets/manialink.json"
-            },
-            {
-                "language": "jinja-xml",
-                "path": "./snippets/manialink.json"
-            }
+            }       
         ],
         "grammars": [
             {
