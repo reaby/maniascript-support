@@ -2,11 +2,13 @@
 **/*.ts
 **/*.map
 .gitignore
+.git/
 tslint.json
 tsconfig.json
 src/**
 node_modules
 out/
 src/
+*.vsix
 tsconfig.json
 webpack.config.js

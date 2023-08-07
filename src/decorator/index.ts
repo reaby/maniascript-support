@@ -91,7 +91,8 @@ export default class Decorator {
     for (const struct of this.typeParser.structures) {
       const re = new RegExp(`(?:(?<![.]))\\b(${struct.structName})\\b`, "g");
       let line;
-      while ((line = re.exec(text))) {
+      while ((line = re.exec(text))) {        
+        if (line[1].startsWith("K_")) continue;
         const startPos = activeEditor.document.positionAt(line.index);
         const endPos = activeEditor.document.positionAt(
           line.index + line[1].length
@@ -125,6 +126,7 @@ export default class Decorator {
       const re = new RegExp(`\\b(${obj.name})\\b`, "g");
       let line;
       while ((line = re.exec(text))) {
+        if (line[1].startsWith("C_")) continue;
         const pos = line.index;
         const startPos = activeEditor.document.positionAt(pos);
         const endPos = activeEditor.document.positionAt(pos + line[1].length);
