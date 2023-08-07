@@ -136,7 +136,7 @@
             }
         }
     },
-    "icon": "./images/ms.png",    
+    "icon": "images/ms.png",    
     "scripts": {
         "vscode:prepublish": "npm run esbuild-base -- --minify",
         "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=app/extension.js --external:vscode --format=cjs --platform=node",
