@@ -1,3 +1,7 @@
+import { SourceLocation, SourceRange } from '@maniascript/parser/dist/lib/position';
+import { Position, Range } from 'vscode';
+import * as parser from "@maniascript/parser";
+
 /**
  * remove duplicates by property
  *
@@ -6,10 +10,6 @@
  * @param {string} prop
  * @returns {*}
  */
-import { SourceLocation, SourceRange } from '@maniascript/parser/dist/lib/position';
-import { Position, Range } from 'vscode';
-import * as parser from "@maniascript/parser";
-
 export function removeDuplicates(arr: any, prop: string): any {
   return arr
     .slice()
