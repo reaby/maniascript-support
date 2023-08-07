@@ -55,7 +55,7 @@ while
 ```
 
 | Snippet     |                           Description                            |
-| :---------- | :-------------------------------------------------------------- |
+| :---------- | :--------------------------------------------------------------  |
 | `main`      |         generate main function with documentation block          |
 | `fnc`       |      generate function declaration with documentation block      |
 | `decontrol` |        to fast declare CMlcontrol with Page.GetFirstChild        |
@@ -77,10 +77,18 @@ You can set the autocomplete namespace root using two ways:
 ```
 
 ### Template Strings
-I added background color change for template strings, so it's easier to spot where templates starts and ends.
-TemplateStrings `"""stringcontent {{{variable}}}"""` are considered as xml for color tokenizer, and scripts in a templatestring xml will autocomplete as well. Just be sure to have `<script><!--` at same line, the regex parser can't figureout if the comment block is next line..sorry for this inconvienience.
+I added background color for template strings, so it's easier to spot where templates starts and ends.
+TemplateStrings `"""stringcontent {{{variable}}}"""` are working as normal. Scripts in a templatestring xml will autocomplete as well. Just be sure to have `<script><!--` at same line, the regex parser can't figureout if the comment block is next line..sorry for this inconvienience.
 
-New feature is being added: use exactly `"""//!` to start template string with pure maniascript content.
+#### Annotations in template strings from 0.2.1
+You can now force annotate the language used in template strings.
+Single line template string will try to detect xml opening tag, if so the templatestring is cast to use XML language. For multiline templatestrings use annotations:
+
+| Language    | Annotation                                                       |
+| :---------- | :--------------------------------------------------------------  |
+| XML | `"""//xml` |
+| Manialink XML |  `"""//manialink` | 
+| ManiaScript | `"""//maniascript` or `"""//ms` or `"""//!` |
 
 ### External libraries
 Just add folder to workspace to get libraries load relatively from those directories.

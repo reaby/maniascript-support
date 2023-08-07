@@ -1,7 +1,7 @@
 {
   "name": "maniascript-support",
   "description": "Maniascript support for vscode",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "reaby",
   "license": "MIT",
   "engines": {
@@ -89,10 +89,11 @@
         "scopeName": "source.ms",
         "path": "./syntaxes/ManiaScript.json",
         "embeddedLanguages": {
-          "string.templatestring.ms": "xml",
+          "meta.embedded.xml": "xml",
+          "meta.embedded.manialink": "xml",
           "meta.embedded.script.block.ms": "maniascript"
         }
-      },
+      },      
       {
         "scopeName": "jinja2.maniascript",
         "path": "./syntaxes/jinja2-ManiaScript.json",
@@ -104,7 +105,7 @@
         "scopeName": "xml.maniascript",
         "path": "./syntaxes/xml-ManiaScript.json",
         "injectTo": [
-          "text.xml"
+          "text.xml", "source.ms"
         ],
         "embeddedLanguages": {
           "meta.embedded.script.block": "maniascript"

@@ -1,3 +1,16 @@
+# version 0.2.1
+
+## Annotations in template strings from 0.2.1
+You can now force annotate the language used in template strings.
+Single line template string will try to detect xml opening tag, if so the templatestring is cast to use XML language. 
+For multiline templatestrings use annotations:
+
+| Language    | Annotation                                                       |
+| :---------- | :--------------------------------------------------------------  |
+| XML | `"""//xml` |
+| Manialink XML |  `"""//manialink` | 
+| ManiaScript | `"""//maniascript` or `"""//ms` or `"""//!` |
+
 # version 0.2
  * Major refactoring... uses now @maniascript/parser
 
