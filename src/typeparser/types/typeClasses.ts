@@ -4,6 +4,7 @@ export interface includeType {
   includeName: string;
   variableName: string;
   range: vscode.Range;
+  rangeName: vscode.Range;
 }
 
 export interface nameType {

@@ -1,3 +1,9 @@
+# version 0.2.3
+  * fixed outline generator
+  * add ctrl-click and outline support for labels
+  * fixed highlight error on string escape sequences
+  * update the default doc.h to latest with trackmania2020 api
+  
 # version 0.2.2
 Template strings without any annotations are considered now as manialink-xml, changed annotates format:
 Annotates changed to use format `"""//! <languageId>`

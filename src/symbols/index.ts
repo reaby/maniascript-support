@@ -7,14 +7,14 @@ export default class SymbolsHelper {
   constructor(typeParser: TypeParser) {
     this.typeParser = typeParser;
   }
-/**
- * 
- * @param doc 
- * @returns 
- */
-  update(doc:vscode.TextDocument): vscode.DocumentSymbol[] {
+  /**
+   * 
+   * @param doc 
+   * @returns 
+   */
+  async update(doc: vscode.TextDocument): Promise<vscode.DocumentSymbol[]> {
     const out: vscode.DocumentSymbol[] = [];
-    this.typeParser.update(doc);
+    await this.typeParser.update(doc);
 
     for (const elem of this.typeParser.includes) {
       const item = new vscode.DocumentSymbol(
@@ -22,7 +22,7 @@ export default class SymbolsHelper {
         elem.includeName,
         vscode.SymbolKind.Module,
         elem.range,
-        elem.range
+        elem.rangeName
       );
       out.push(item);
     }
@@ -33,7 +33,7 @@ export default class SymbolsHelper {
         "",
         vscode.SymbolKind.Struct,
         elem.range,
-        elem.range
+        elem.range,
       );
       out.push(item);
     }
@@ -49,13 +49,24 @@ export default class SymbolsHelper {
       out.push(item);
     }
 
+    for (const elem of this.typeParser.labels) {
+      const item = new vscode.DocumentSymbol(
+        elem.name,
+        "",
+        vscode.SymbolKind.Field,
+        elem.range,
+        elem.range,
+      );
+      out.push(item);
+    }
+
     for (const func of this.typeParser.functions) {
       const item = new vscode.DocumentSymbol(
         func.name,
         func.returnValue,
         vscode.SymbolKind.Function,
-        func.nameRange,
-        func.range
+        func.range,
+        func.nameRange
       );
       out.push(item);
     }

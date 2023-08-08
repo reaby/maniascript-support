@@ -25,6 +25,7 @@ export default class TypeParser {
   functionsExternal: functionTypeExternal[] = [];
   consts: nameTypeValueRange[] = [];
   constExternal: constTypeExternal[] = [];
+  labels: nameTypeRange[] = [];
 
   requireContext = "";
   scopemanager: parser.ScopeManager = new parser.ScopeManager();
@@ -49,37 +50,37 @@ export default class TypeParser {
   async update(doc: TextDocument) {
     this.requireContext = this.getRequireContext(doc.getText());
     const text = doc.getText();
-    const tree = await parse(text, { twoStepsParsing: false, buildScopes: false, buildAst: true });
-    if (tree.ast.program == undefined) return;
-    
+    const tree = await parse(text, { twoStepsParsing: false, buildScopes: true, buildAst: true });
+    if (!tree.success) return;
+
     this.includes = [];
     this.extend = [];
 
     this.structures = [];
     this.structuresExternal = [];
-    
+
     this.functions = [];
     this.functionsExternal = [];
-    
+
     this.consts = [];
     this.constExternal = [];
+    this.labels = [];
 
-    this.scopemanager = new parser.ScopeManager();
     this.scopemanager.analyze(tree.ast);
-
 
     this.parseDirectives(doc, tree.ast.program?.directives ?? [], false);
     this.parseFunctions(doc, tree.ast.program?.declarations ?? [], false);
+    this.parseLabels(doc, tree.ast.program?.declarations ?? [], false);
 
     for (const include of this.includes) {
       const extDoc = await this.getExternalFile(include.includeName);
       if (!extDoc) continue;
-      const extTree = await parse(extDoc.getText(), { twoStepsParsing: false, buildScopes: false, buildAst: true });
+      const extTree = await parse(extDoc.getText(), { twoStepsParsing: true, buildScopes: true, buildAst: true });
       this.parseDirectives(extDoc, extTree.ast.program?.directives ?? [], include);
       this.parseFunctions(extDoc, extTree.ast.program?.declarations ?? [], include);
     }
   }
-  
+
   async getExternalFile(filename: string): Promise<TextDocument | undefined> {
     try {
       if (filename.match(/\.[sS]cript\.txt/) === null) return;
@@ -94,6 +95,22 @@ export default class TypeParser {
       console.log(e);
     }
     return;
+  }
+
+  parseLabels(doc: TextDocument, declarations: parser.Declaration[], extfile: includeType | false): void {
+    const labels: nameTypeRange[] = [];
+
+    for (const node of declarations) {
+      if (node.kind === "LabelDeclaration") {
+        const nod = (node as parser.LabelDeclaration);
+        labels.push({
+          name: nod.name.name,
+          type: "label",
+          range: getRange(nod.name.source.loc)
+        });
+      }
+    }
+    this.labels = labels;
   }
 
   parseFunctions(docum: TextDocument, declarations: parser.Declaration[], extFile: includeType | false): void {
@@ -140,7 +157,7 @@ export default class TypeParser {
     const includes: includeType[] = [];
     const structures: structureType[] = [];
     const consts: nameTypeValueRange[] = [];
-    const extend: includeType[]= [];
+    const extend: includeType[] = [];
 
     for (const node of directives) {
       switch (node.kind) {
@@ -148,7 +165,8 @@ export default class TypeParser {
           includes.push({
             includeName: (node as parser.IncludeDirective).path.value,
             variableName: (node as parser.IncludeDirective).alias?.name ?? "",
-            range: getRange((node as parser.IncludeDirective).path.source.loc),
+            range: getRange((node as parser.IncludeDirective).source.loc),
+            rangeName: getRange((node as parser.IncludeDirective).alias?.source.loc)
           });
           break;
         }
@@ -157,8 +175,9 @@ export default class TypeParser {
           extend.push({
             includeName: (node as parser.ExtendsDirective).path.value,
             variableName: "",
-            range: getRange((node as parser.ExtendsDirective).path.source.loc),
-          });          
+            rangeName: getRange((node as parser.ExtendsDirective).path.source.loc),
+            range: getRange((node as parser.ExtendsDirective).source.loc)
+          });
           break;
         }
 
@@ -219,10 +238,10 @@ export default class TypeParser {
     }
 
     if (extFile === false) {
-      this.includes.push(...includes);
-      this.extend.push(...extend);
-      this.structures.push(...removeDuplicates(structures, "structName"));
-      this.consts.push(...consts);
+      this.includes= includes;
+      this.extend = extend;
+      this.structures = removeDuplicates(structures, "structName");
+      this.consts = consts;
     } else {
       this.structuresExternal.push({
         file: extFile.includeName,

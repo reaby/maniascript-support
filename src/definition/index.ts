@@ -29,12 +29,20 @@ export default class DefinitionHelper {
     let out = new vscode.Location(document.uri, new vscode.Position(0, 0));
 
     for (const func of this.typeParser.functions) {
-      if (func.range) {
+      if (func.nameRange) {
         if (func.name == search) {
-          return new vscode.Location(document.uri, func.range);
+          return new vscode.Location(document.uri, func.nameRange);
         }
       }
 
+      for (const lbl of this.typeParser.labels) {
+        if (lbl.range) {
+          if (lbl.name == search) {
+            return new vscode.Location(document.uri, lbl.range);
+          }
+        }
+      }
+      
       for (const param of func.params) {
         if (param.name == search) {
           if (
@@ -51,7 +59,7 @@ export default class DefinitionHelper {
 
     if (found) return out;
     this.completer.genVars(position);
-    
+
     out = new vscode.Location(document.uri, new vscode.Position(0, 0));
     for (const variable of this.completer.availableVars) {
       if (variable.name == search) {
