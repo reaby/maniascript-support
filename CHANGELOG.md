@@ -1,3 +1,9 @@
+# version 0.2.2
+Template strings without any annotations are considered now as manialink-xml, changed annotates format:
+Annotates changed to use format `"""//! <languageId>`
+
+> Notice that xml-based languages will have validation errors if annote is left to prod code, use only for IDE and remove when deploying code.
+
 # version 0.2.1
 
 ## Annotations in template strings from 0.2.1

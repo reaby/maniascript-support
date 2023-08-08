@@ -46,6 +46,50 @@
         }
       ]
     },
+    "storage-types": {
+      "patterns": [
+        {
+          "match": "(?<!\\.)\\bText\\b",
+          "name": "storage.type.text.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bReal\\b",
+          "name": "storage.type.number.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bIdent\\b",
+          "name": "storage.type.identity.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bBoolean\\b",
+          "name": "storage.type.boolean.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bInteger\\b",
+          "name": "storage.type.integer.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bVec2\\b",
+          "name": "storage.type.vector-tuple.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bVec3\\b",
+          "name": "storage.type.vector-triple.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bInt3\\b",
+          "name": "storage.type.integer-triple.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bInt2\\b",
+          "name": "storage.type.integer-tuple.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bVoid\\b",
+          "name": "storage.type.void.ms"
+        }
+      ]
+    },
     "brackets": {
       "patterns": [
         {
@@ -100,55 +144,49 @@
         }
       ]
     },
-    "storage-types": {
+    "keyword-language": {
       "patterns": [
         {
-          "match": "(?<!\\.)\\bText\\b",
-          "name": "storage.type.text.ms"
+          "comment": "Common control keywords found in various C style languages",
+          "match": "\\b(break|continue|do|for|foreach|sleep|yield|return|while|meanwhile|wait)\\b",
+          "name": "keyword.control.flow.ms"
         },
         {
-          "match": "(?<!\\.)\\bReal\\b",
-          "name": "storage.type.number.ms"
+          "comment": "Common control keywords found in various C style languages",
+          "match": "\\b(case|else|if)\\b",
+          "name": "keyword.control.conditional.ms"
         },
         {
-          "match": "(?<!\\.)\\bIdent\\b",
-          "name": "storage.type.identity.ms"
+          "comment": "Keywords specific to maniascript",
+          "match": "#\\b(Command|RequireContext|Setting|Extends)\\b",
+          "name": "keyword.control.ms"
         },
         {
-          "match": "(?<!\\.)\\bBoolean\\b",
-          "name": "storage.type.boolean.ms"
+          "match": "(#\\bInclude\\b)\\s+(\".*?\")(\\s+as\\s+\\b(\\w+)\\b){0,1}",
+          "captures": {
+            "1": {
+              "name": "keyword.control.ms"
+            },
+            "2": {
+              "name": "string.quoted.ms"
+            },
+            "4": {
+              "name": "support.class.ms"
+            }
+          },
+          "name": "meta.include.ms"
         },
         {
-          "match": "(?<!\\.)\\bInteger\\b",
-          "name": "storage.type.integer.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bVec2\\b",
-          "name": "storage.type.vector-tuple.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bVec3\\b",
-          "name": "storage.type.vector-triple.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bInt3\\b",
-          "name": "storage.type.integer-triple.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bInt2\\b",
-          "name": "storage.type.integer-tuple.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bVoid\\b",
-          "name": "storage.type.void.ms"
-        }
-      ]
-    },
-    "keyword-storage": {
-      "patterns": [
-        {
-          "match": "(?<!\\.)\\b(persistent|netread|netwrite|declare|let|metadata)\\b",
-          "name": "storage.type.ms"
+          "match": "(#\\bConst\\b)\\s+([_\\w]+)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.ms"
+            },
+            "2": {
+              "name": "variable.other.constant.ms"
+            }
+          },
+          "name": "meta.include.ms"
         }
       ]
     },
@@ -240,49 +278,11 @@
         }
       ]
     },
-    "keyword-language": {
+    "keyword-storage": {
       "patterns": [
         {
-          "comment": "Common control keywords found in various C style languages",
-          "match": "\\b(break|continue|do|for|foreach|sleep|yield|return|while|meanwhile|wait)\\b",
-          "name": "keyword.control.flow.ms"
-        },
-        {
-          "comment": "Common control keywords found in various C style languages",
-          "match": "\\b(case|else|if)\\b",
-          "name": "keyword.control.conditional.ms"
-        },
-        {
-          "comment": "Keywords specific to maniascript",
-          "match": "#\\b(Command|RequireContext|Setting|Extends)\\b",
-          "name": "keyword.control.ms"
-        },
-        {
-          "match": "(#\\bInclude\\b)\\s+(\".*?\")(\\s+as\\s+\\b(\\w+)\\b){0,1}",
-          "captures": {
-            "1": {
-              "name": "keyword.control.ms"
-            },
-            "2": {
-              "name": "string.quoted.ms"
-            },
-            "4": {
-              "name": "support.class.ms"
-            }
-          },
-          "name": "meta.include.ms"
-        },
-        {
-          "match": "(#\\bConst\\b)\\s+([_\\w]+)",
-          "captures": {
-            "1": {
-              "name": "keyword.control.ms"
-            },
-            "2": {
-              "name": "variable.other.constant.ms"
-            }
-          },
-          "name": "meta.include.ms"
+          "match": "(?<!\\.)\\b(persistent|netread|netwrite|declare|let|metadata)\\b",
+          "name": "storage.type.ms"
         }
       ]
     },
@@ -465,6 +465,117 @@
         }
       ]
     },
+    "literal-template-string": {
+      "patterns": [
+        {
+          "begin": "\"\"\"\\s*(?=(\\/\\/\\!\\s*manialink))",
+          "beginCaptures": {
+            "0": {
+              "name": "string.quoted.triple.ms"
+            },
+            "1": {
+              "name": "invalid.ms"
+            }
+          },
+          "end": "\"\"\"",
+          "endCaptures": {
+            "0": {
+              "name": "string.quoted.triple.ms"
+            }
+          },
+          "name": "meta.embedded.manialink.ms",
+          "patterns": [
+            {
+              "include": "#template-string-content"
+            },
+            {
+              "include": "#template-string-embed"
+            },
+            {
+              "include": "text.xml"
+            }
+          ]
+        },
+        {
+          "begin": "\"\"\"\\s*(?=(\\/\\/\\!\\s*xml))",
+          "beginCaptures": {
+            "0": {
+              "name": "string.quoted.triple.ms"
+            },
+            "1": {
+              "name": "invalid.ms"
+            }
+          },
+          "end": "\"\"\"",
+          "endCaptures": {
+            "0": {
+              "name": "string.quoted.triple.ms"
+            }
+          },
+          "name": "meta.embedded.xml.ms",
+          "patterns": [
+            {
+              "include": "#template-string-content"
+            },
+            {
+              "include": "text.xml"
+            }
+          ]
+        },
+        {
+          "begin": "\"\"\"\\s*(\\/\\/\\!(\\s*maniascript){0,1})",
+          "beginCaptures": {
+            "0": {
+              "name": "string.quoted.triple.ms"
+            },
+            "1": {
+              "name": "invalid.ms"
+            }
+          },
+          "end": "\"\"\"",
+          "endCaptures": {
+            "0": {
+              "name": "string.quoted.triple.ms"
+            }
+          },
+          "name": "meta.embedded.maniascript.ms",
+          "patterns": [
+            {
+              "include": "#template-string-content"
+            },
+            {
+              "include": "$self"
+            }
+          ]
+        },
+        {
+          "begin": "\"\"\"",
+          "beginCaptures": {
+            "0": {
+              "name": "string.quoted.triple.ms"
+            }
+          },
+          "end": "\"\"\"",
+          "endCaptures": {
+            "0": {
+              "name": "string.quoted.triple.ms"
+            }
+          },
+          "name": "string.quoted.triple.ms",
+          "patterns": [
+            {
+              "include": "#template-string-content"
+            },
+            {
+              "include": "#template-string-embed"
+            },
+            {
+              "include": "text.xml"
+            }
+          ]
+        }
+      ]
+    },
     "template-string-embed": {
       "patterns": [
         {
@@ -513,111 +624,6 @@
           "patterns": [
             {
               "include": "$self"
-            }
-          ]
-        }
-      ]
-    },
-    "literal-template-string": {
-      "patterns": [
-        {
-          "begin": "\"\"\"\\s*(?=(\\/\\/manialink))",
-          "beginCaptures": {
-            "0": {
-              "name": "string.quoted.triple.ms"
-            },
-            "1": {
-              "name": "invalid.ms"
-            }
-          },
-          "end": "\"\"\"",
-          "endCaptures": {
-            "0": {
-              "name": "string.quoted.triple.ms"
-            }
-          },
-          "name": "meta.embedded.manialink.ms",
-          "patterns": [
-            {
-              "include": "#template-string-content"
-            },
-            {
-              "include": "#template-string-embed"
-            },
-            {
-              "include": "text.xml"
-            }
-          ]
-        },
-        {
-          "begin": "\"\"\"\\s*(?=(\\<|\\/\\/xml))",
-          "beginCaptures": {
-            "0": {
-              "name": "string.quoted.triple.ms"
-            },
-            "1": {
-              "name": "invalid.ms"
-            }
-          },
-          "end": "\"\"\"",
-          "endCaptures": {
-            "0": {
-              "name": "string.quoted.triple.ms"
-            }
-          },
-          "name": "meta.embedded.xml.ms",
-          "patterns": [
-            {
-              "include": "#template-string-content"
-            },
-            {
-              "include": "text.xml"
-            }
-          ]
-        },
-        {
-          "begin": "\"\"\"\\s*(\\/\\/maniascript|\\/\\/\\!|\\/\\/ms)",
-          "beginCaptures": {
-            "0": {
-              "name": "string.quoted.triple.ms"
-            },
-            "1": {
-              "name": "invalid.ms"
-            }
-          },
-          "end": "\"\"\"",
-          "endCaptures": {
-            "0": {
-              "name": "string.quoted.triple.ms"
-            }
-          },
-          "name": "meta.embedded.maniascript.ms",
-          "patterns": [
-            {
-              "include": "#template-string-content"
-            },
-            {
-              "include": "$self"
-            }
-          ]
-        },
-        {
-          "begin": "\"\"\"",
-          "beginCaptures": {
-            "0": {
-              "name": "string.quoted.triple.ms"
-            }
-          },
-          "end": "\"\"\"",
-          "endCaptures": {
-            "0": {
-              "name": "string.quoted.triple.ms"
-            }
-          },
-          "name": "string.quoted.triple.ms",
-          "patterns": [
-            {
-              "include": "#template-string-content"
             }
           ]
         }
@@ -827,6 +833,13 @@
         }
       ]
     },
+    "core": {
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
     "expression": {
       "patterns": [
         {
@@ -876,13 +889,6 @@
         },
         {
           "include": "#punctuation"
-        }
-      ]
-    },
-    "core": {
-      "patterns": [
-        {
-          "include": "#expression"
         }
       ]
     }
