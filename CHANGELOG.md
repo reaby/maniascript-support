@@ -1,3 +1,6 @@
+# version 0.2.4
+ * fix parsing special case `#Const External::C_Value as C_Const`
+
 # version 0.2.3
   * fixed outline generator
   * add ctrl-click and outline support for labels
