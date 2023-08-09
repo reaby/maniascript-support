@@ -47,10 +47,10 @@ export default class TypeParser {
     return this.requireContext;
   }
 
-  async update(doc: TextDocument) {
+  async update(doc: TextDocument, processExternals = true) {
     this.requireContext = this.getRequireContext(doc.getText());
     const text = doc.getText();
-    const tree = await parse(text, { twoStepsParsing: false, buildScopes: true, buildAst: true });
+    const tree = await parse(text, { twoStepsParsing: false, buildScopes: false, buildAst: true });
     if (!tree.success) return;
 
     this.includes = [];
@@ -72,12 +72,14 @@ export default class TypeParser {
     this.parseFunctions(doc, tree.ast.program?.declarations ?? [], false);
     this.parseLabels(doc, tree.ast.program?.declarations ?? [], false);
 
-    for (const include of this.includes) {
-      const extDoc = await this.getExternalFile(include.includeName);
-      if (!extDoc) continue;
-      const extTree = await parse(extDoc.getText(), { twoStepsParsing: true, buildScopes: true, buildAst: true });
-      this.parseDirectives(extDoc, extTree.ast.program?.directives ?? [], include);
-      this.parseFunctions(extDoc, extTree.ast.program?.declarations ?? [], include);
+    if (processExternals) {
+      for (const include of this.includes) {
+        const extDoc = await this.getExternalFile(include.includeName);
+        if (!extDoc) continue;
+        const extTree = await parse(extDoc.getText(), { twoStepsParsing: false, buildScopes: false, buildAst: true });
+        this.parseDirectives(extDoc, extTree.ast.program?.directives ?? [], include);
+        this.parseFunctions(extDoc, extTree.ast.program?.declarations ?? [], include);
+      }
     }
   }
 
@@ -214,12 +216,21 @@ export default class TypeParser {
 
         case "ConstDirective": {
           const nod = (node as parser.ConstDirective);
-          consts.push({
-            name: nod.declaration?.name.name ?? "",
-            type: (nod.declaration?.value.kind ?? "").replace("Literal", ""),
-            value: doc.getText(getRange(nod.declaration?.value.source.loc)),
-            range: getRange(nod.declaration?.source.loc)
-          });
+          if (nod.aliasing) {
+            consts.push({
+              name: nod.aliasing.alias.name ?? "",
+              type: nod.aliasing.name.namespace + "::" + nod.aliasing.name.name,
+              value: "",
+              range: getRange(nod.aliasing.source.loc),
+            });
+          } else {
+            consts.push({
+              name: nod.declaration?.name.name ?? "",
+              type: (nod.declaration?.value.kind ?? "").replace("Literal", ""),
+              value: doc.getText(getRange(nod.declaration?.value.source.loc)),
+              range: getRange(nod.declaration?.source.loc)
+            });
+          }
           break;
         }
 
@@ -238,7 +249,7 @@ export default class TypeParser {
     }
 
     if (extFile === false) {
-      this.includes= includes;
+      this.includes = includes;
       this.extend = extend;
       this.structures = removeDuplicates(structures, "structName");
       this.consts = consts;

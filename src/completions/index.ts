@@ -130,7 +130,7 @@ export default class Completer {
       if (position.line >= scope.node.source.loc.start.line && position.line <= scope.node.source.loc.end.line) {
         for (const vari of scope.variables) {
           if (vari[1].node.parent?.kind == "ForeachStatement") {
-            const fore = vari[1].node.parent as parser.ForeachStatement;            
+            const fore = vari[1].node.parent as parser.ForeachStatement;
             foreach.push({
               name: vari[1].name,
               type: this.ParseExression(fore.expression),
@@ -150,7 +150,7 @@ export default class Completer {
     this.availableVars = vars;
   }
 
-  ParseExression(expression: parser.Expression): string {    
+  ParseExression(expression: parser.Expression): string {
     if (expression.kind == "Identifier") {
       return (expression as parser.Identifier).name;
     }
@@ -304,7 +304,7 @@ export default class Completer {
   getTypeVariable(search: string): string | null {
     for (const elem of this.availableVars) {
       if (search == elem.name) {
-        const type = elem.type;        
+        const type = elem.type;
         return type;
       }
     }
@@ -373,7 +373,7 @@ export default class Completer {
       item.detail = vari.type;
       out.push(item);
     }
-
+    out.push(...this.getConsts());
     return out;
   }
 
@@ -454,6 +454,18 @@ export default class Completer {
     return out;
   }
 
+  getConsts(): CompletionItem[] {
+    const out: CompletionItem[] = [];
+    for (const elem of this.typeParser.consts) {
+      const Item = new CompletionItem(
+        elem.name,
+        CompletionItemKind.Constant
+      );
+      Item.detail = elem.type;
+      out.push(Item);
+    }
+    return out;
+  }
   getClassProperties(className: string): CompletionItem[] {
     const out: CompletionItem[] = [];
     const classes = this.api.get().classes;
