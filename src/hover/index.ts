@@ -2,6 +2,7 @@ import Api from "../api";
 import TypeParser from "../typeparser";
 import Completer from "../completions";
 import * as vscode from "vscode";
+import { getText } from "../utils";
 
 export default class HoverHelper {
   typeParser: TypeParser;
@@ -14,24 +15,39 @@ export default class HoverHelper {
     this.completions = completions;
   }
 
-  onHover(document: vscode.TextDocument, position: vscode.Position) {
+  async onHover(document: vscode.TextDocument, position: vscode.Position) {
     const range = document.getWordRangeAtPosition(position, /(\b\w+\b)/);
-    if (!range) return null;
-
+    if (!range) return null;    
+    let text = document.getText();
+    await this.typeParser.update(text);
+    let index = 0;
+    let newPosition = position;
+    for (const language of this.typeParser.embeddedLanguages) {
+      if (language.type == "maniascript") {
+        index += 1;
+        if (language.range.contains(position)) {
+          text = language.value;          
+          newPosition = new vscode.Position(position.line - language.range.start.line, position.character);
+          await this.typeParser.update(text, true);
+          break;
+        }
+      }
+    }              
+    
     const word = document.getText(range);
-    const line2 = document.getText(
-      new vscode.Range(new vscode.Position(position.line, 0), range.end)
+    const line2 = getText(text,
+      new vscode.Range(new vscode.Position(newPosition.line, 0), new vscode.Position(newPosition.line, range.end.character))
     );
-    const line = document.getText(
+    const line = getText(text,
       new vscode.Range(
-        new vscode.Position(position.line, 0),
-        new vscode.Position(position.line + 1, 0)
+        new vscode.Position(newPosition.line, 0),
+        new vscode.Position(newPosition.line + 1, 0)
       )
     );
 
     const variable = this.wordAtCaret(line, line2);
     this.completions.requireContext = this.typeParser.requireContext;
-    this.completions.genVars(position);
+    this.completions.genVars(newPosition);
     if (variable.indexOf("::") === -1) {
       try {
         // functions
@@ -41,7 +57,7 @@ export default class HoverHelper {
             if (func.docBlock) {
               doc.appendCodeblock(func.docBlock + "\n", "typescript");
             }
-            const body = document.getText(func.range).split("\n").slice(0,1).join("\n");            
+            const body = func.codeBlock;        
             doc.appendCodeblock(body, "maniascript");
             return new vscode.Hover(doc);
           }

@@ -134,7 +134,7 @@ export default class SignatureHelper {
                   outparam.push(new ParameterInformation(param.name));
                   helpTxt += param.name + ":" + param.type + ", ";
                 }
-                helpTxt = helpTxt.substr(0, helpTxt.length - 2);
+                helpTxt = helpTxt.slice(0, helpTxt.length - 2);
 
                 const si = new SignatureInformation(
                   `${func.name}(${helpTxt}): ${func.returnValue}`
@@ -207,13 +207,13 @@ export default class SignatureHelper {
     let func = "";
     let params = "";
     if (matches != null && matches.length > 0) {
-      params = text.substr(text.indexOf(matches[0]) + matches[0].length);
+      params = text.slice(text.indexOf(matches[0]) + matches[0].length);
       func = matches[0].replace(/\s+|\(/g, "");
 
       const paramFunc = params.match(/\b([a-zA-Z_][\w.:]+)\b\s*\(/);
       if (paramFunc !== null && paramFunc.length > 0) {
         func = paramFunc[0].replace(/\s+|\(/g, "");
-        params = text.substr(text.indexOf(paramFunc[0]) + paramFunc[0].length);
+        params = text.slice(text.indexOf(paramFunc[0]) + paramFunc[0].length);
       }
       return { function: func, params: params };
     }
@@ -240,7 +240,7 @@ export default class SignatureHelper {
         }
       }
     }
-
+      
     // resolved at this point hold the class we're about to need
     return resolved.replace(/\[(.*?)\]/g, "");
   }

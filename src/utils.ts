@@ -38,7 +38,34 @@ export function getValue(i: parser.Type | undefined): string {
       const o = i as parser.EnumType;
       return o.class?.name + "::" + o.name.name;
     }
-    console.log(i.kind);
   }
   return "unknown";
+}
+
+export function getText(str: string, range: Range | undefined) {
+  if (range == undefined) return str;
+
+  const arr = str.replace("\r", "").split("\n");
+  if (arr.length <= range.start.line && arr.length >= range.end.line) {
+    throw new Error("Invalid range");
+  }
+  const out = [];
+  for (let line = range.start.line; line <= range.end.line; line++) {
+    if (line == range.start.line && line == range.end.line) {
+      if (range.end.character > 0) {
+        return arr[line].slice(range.start.character, range.end.character);
+      } else {
+        return arr[line].slice(range.start.character);
+      }
+    } else if (line == range.start.line) {
+      out.push(arr[line].slice(range.start.character));
+    } else if (line == range.end.line) {
+      out.push(arr[line].slice(0, range.end.character));
+    }
+    else {
+      out.push(arr[line]);
+    }
+  }
+  // console.log(out);
+  return out.join("\n");
 }

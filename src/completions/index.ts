@@ -14,7 +14,7 @@ import {
   nameType,
   structureType,
 } from "../typeparser/types/typeClasses";
-import { getRange, getValue } from "../utils";
+import { getRange, getValue, getText } from "../utils";
 import * as parser from "@maniascript/parser";
 
 export default class Completer {
@@ -31,17 +31,15 @@ export default class Completer {
     this.foreach = [];
   }
 
-  complete(document: TextDocument, position: Position) {
+  async complete(text: string, position: Position) {
     const requireContext = this.typeParser.requireContext;
     this.requireContext = requireContext;
-    this.typeParser.update(document);
     this.genVars(position);
-    const line = document.getText(new Range(position.line, 0, position.line + 1, 0));
-    const searchFor = document.getText(new Range(position.line, 0, position.line, position.character))
-      .replace(/^\s*/, "")
-      .replace(/\r/g, "")
+    const line = getText(text, new Range(position.line, 0, position.line + 1, 0));
+    const searchFor = getText(text, new Range(position.line, 0, position.line, position.character))
+      .replace(/^\s*/, "")    
       .split(/([ |(])/);
-
+      
     if (
       searchFor.includes("#RequireContext") ||
       searchFor.includes("@context")
@@ -124,7 +122,7 @@ export default class Completer {
 
 
   genVars(position: Position) {
-    const vars = [];
+    const vars: nameType[] = [];
     const foreach: nameType[] = [];
     for (const scope of this.typeParser.scopemanager.scopes) {
       if (position.line >= scope.node.source.loc.start.line && position.line <= scope.node.source.loc.end.line) {
@@ -367,12 +365,13 @@ export default class Completer {
       item.detail = vari.type;
       out.push(item);
     }
-    
+
     for (const vari of this.foreach) {
       const item = new CompletionItem(vari.name, CompletionItemKind.Variable);
       item.detail = vari.type;
       out.push(item);
     }
+
     out.push(...this.getConsts());
     return out;
   }
@@ -538,26 +537,50 @@ export default class Completer {
   }
 
   getKeywords(): CompletionItem[] {
-    return [
+    const arr = [
       "break",
       "case",
       "continue",
-      "log",
+      "default",
       "do",
       "else",
       "yield",
-      "sleep",
-      "wait",
       "return",
+      "reverse",
       "in",
+      "as",      
       "metadata",
+      "netread",
+      "netwrite",
+      "persistent",
+      "while",
+      "if",      
+      "switch",
+      "switchtype",
+      "for",
+      "foreach",
       "meanwhile",
-      "dump",
+      "assert",
+      "tuningstart",
+      "tuningend",
+      "tuningmark"
     ].map((label) => new CompletionItem(label, CompletionItemKind.Keyword));
+    const arr2 = [
+      "dump",
+      "log",
+      "dumptype",
+      "sleep",      
+      "wait",      
+    ].map((label) => new CompletionItem(label, CompletionItemKind.Function));
+    const arr3 = [
+      "This",
+    ].map((label) => new CompletionItem(label, CompletionItemKind.Class));
+
+    return [...arr, ...arr2, ...arr3];
   }
 
   getNamespaces(): CompletionItem[] {
-    const out: CompletionItem[] = [];
+    const out: CompletionItem[] = [];    
     for (const elem of this.typeParser.includes) {
       const Item = new CompletionItem(
         elem.variableName,

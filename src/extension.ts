@@ -12,6 +12,7 @@ import Api from "./api";
 import FoldingRangeHelper from "./folding";
 import formatDocument from "./formatter";
 import SymbolsHelper from "./symbols";
+import { type } from "os";
 
 
 // this method is called when vs code is activated
@@ -31,8 +32,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const hoverHelper = new HoverHelper(typeParser, api, completions);
   const foldingHelper = new FoldingRangeHelper();
   const SymbolHelper = new SymbolsHelper(typeParser);
-  let activeEditor: vscode.TextEditor | undefined =
-    vscode.window.activeTextEditor;
+  let activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
   if (activeEditor) {
     triggerUpdateDocument();
@@ -54,7 +54,6 @@ export async function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideHover(document, position, token) {
-          typeParser.update(document);
           return hoverHelper.onHover(document, position);
         },
       }
@@ -65,7 +64,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerHoverProvider(
       { language: "xml", scheme: "file" },
       {
-        provideHover(document, position, token) {
+        async provideHover(document, position, token) {
           let startToCurrent = new vscode.Range(
             new vscode.Position(0, 0),
             new vscode.Position(position.line, 0)
@@ -77,8 +76,7 @@ export async function activate(context: vscode.ExtensionContext) {
             document.positionAt(index),
             new vscode.Position(position.line, 0)
           );
-
-          typeParser.update(document);
+          await typeParser.update(document.getText(startToCurrent));
           return hoverHelper.onHover(document, position);
         },
       }
@@ -90,7 +88,7 @@ export async function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         provideDocumentSymbols(document, token) {
-          return SymbolHelper.update(document);
+          return SymbolHelper.update(document.getText());
         }
       }
     )
@@ -101,7 +99,7 @@ export async function activate(context: vscode.ExtensionContext) {
       vscode.languages.registerHoverProvider(
         { language: "jinja-xml", scheme: "file" },
         {
-          provideHover(document, position, token) {
+          async provideHover(document, position, token) {
             let startToCurrent = new vscode.Range(
               new vscode.Position(0, 0),
               new vscode.Position(position.line, 0)
@@ -114,7 +112,7 @@ export async function activate(context: vscode.ExtensionContext) {
               new vscode.Position(position.line, 0)
             );
 
-            typeParser.update(document);
+            await typeParser.update(document.getText(startToCurrent));
             return hoverHelper.onHover(document, position);
           },
         }
@@ -138,16 +136,25 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerSignatureHelpProvider(
       { language: "maniascript", scheme: "file" },
       {
-        provideSignatureHelp(document, position, token, context) {
+        async provideSignatureHelp(document, position, token, context) {
           const line = new vscode.Range(
             new vscode.Position(position.line, 0),
             position
           );
 
-          const text = document.getText(line).replace(/\r/g, "");
+          const lineText = document.getText(line).replace(/\r/g, "");
+          let text = document.getText();
           const idx = context.activeSignatureHelp?.activeSignature ?? 0;
-          typeParser.update(document);
-          return signatureHelper.provideHelp(text, idx);
+          for (const lang of typeParser.embeddedLanguages) {
+            if (lang.type == "maniascript") {
+              if (lang.range.contains(position)) {
+                text = lang.value;
+                break;
+              }
+            }
+          }
+          await typeParser.update(text);
+          return signatureHelper.provideHelp(lineText, idx);
         },
       },
       "("
@@ -158,8 +165,8 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerDefinitionProvider(
       { language: "maniascript", scheme: "file" },
       {
-        provideDefinition(document, position, token) {
-          typeParser.update(document);
+        async provideDefinition(document, position, token) {
+          await typeParser.update(document.getText());
           return definitionHelper.provideDefinitions(document, position);
         },
       }
@@ -170,8 +177,8 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerDefinitionProvider(
       { language: "xml", scheme: "file" },
       {
-        provideDefinition(document, position, token) {
-          typeParser.update(document);
+        async provideDefinition(document, position, token) {
+          await typeParser.update(document.getText());
           return definitionHelper.provideDefinitions(document, position);
         },
       }
@@ -182,8 +189,8 @@ export async function activate(context: vscode.ExtensionContext) {
       vscode.languages.registerDefinitionProvider(
         { language: "jinja-xml", scheme: "file" },
         {
-          provideDefinition(document, position, token) {
-            typeParser.update(document);
+          async provideDefinition(document, position, token) {
+            await typeParser.update(document.getText());
             return definitionHelper.provideDefinitions(document, position);
           },
         }
@@ -233,26 +240,35 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCompletionItemProvider(
       { language: "maniascript", scheme: "file" },
       {
-        provideCompletionItems(document, position, token) {
-          typeParser.update(document);
-          return completions.complete(document, position);
-        },
+        async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+          let out: vscode.CompletionItem[] = [];
+          let index = 1;
+
+          for (const lang of typeParser.embeddedLanguages) {
+            if (lang.type == "maniascript") {
+              index += 1;
+              if (lang.range.contains(position)) {
+                await typeParser.update(lang.value);
+                const newPos = new vscode.Position(position.line - lang.range.start.line, position.character);
+                out = await completions.complete(lang.value, newPos);
+                return out;
+              }
+            }
+          }
+          const text = document.getText();
+          await typeParser.update(text);
+          out = await completions.complete(text, position);
+          return out;
+        }
       },
-      "."
-    )
+      ".")
   );
 
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(
       { language: "xml", scheme: "file" },
       {
-        provideCompletionItems(document, position, token) {
-          const start = new vscode.Position(position.line, 0);
-          const range = new vscode.Range(start, position);
-          const fullLine = new vscode.Range(
-            new vscode.Position(position.line, 0),
-            new vscode.Position(position.line + 1, 0)
-          );
+        async provideCompletionItems(document, position, token) {
           let startToCurrent = new vscode.Range(
             new vscode.Position(0, 0),
             new vscode.Position(position.line, 0)
@@ -264,17 +280,9 @@ export async function activate(context: vscode.ExtensionContext) {
             document.positionAt(index),
             new vscode.Position(position.line, 0)
           );
-          const text = document
-            .getText(range)
-            .replace(/^\s*/, "")
-            .replace(/\r/g, "")
-            .split(/([ |(])/);
-          const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
-          typeParser.update(document);
-          const completionItems = completions.complete(
-            document, position
-          );
-
+          const text = document.getText();
+          await typeParser.update(text);
+          const completionItems = completions.complete(text, position);
           return completionItems;
         },
       },
@@ -286,7 +294,7 @@ export async function activate(context: vscode.ExtensionContext) {
       vscode.languages.registerCompletionItemProvider(
         { language: "jinja-xml", scheme: "file" },
         {
-          provideCompletionItems(document, position, token) {
+          async provideCompletionItems(document, position, token) {
             const start = new vscode.Position(position.line, 0);
             const range = new vscode.Range(start, position);
             const fullLine = new vscode.Range(
@@ -307,11 +315,10 @@ export async function activate(context: vscode.ExtensionContext) {
             const text = document
               .getText(range)
               .replace(/^\s*/, "")
-              .replace(/\r/g, "")
               .split(/([ |(])/);
             const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
-            typeParser.update(document);
-            const completionItems = completions.complete(document, position);
+            await typeParser.update(searchFor);
+            const completionItems = completions.complete(searchFor, position);
 
             return completionItems;
           },
@@ -328,7 +335,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }
 
     timeout = setTimeout(() => {
-      typeParser.updateStructs(activeEditor?.document);
+      typeParser.updateStructs(activeEditor?.document.getText() ?? "");
       decorator.update(activeEditor);
       if (
         activeEditor?.document.languageId == "xml" &&

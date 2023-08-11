@@ -12,9 +12,9 @@ export default class SymbolsHelper {
    * @param doc 
    * @returns 
    */
-  async update(doc: vscode.TextDocument): Promise<vscode.DocumentSymbol[]> {
+  async update(text: string): Promise<vscode.DocumentSymbol[]> {
     const out: vscode.DocumentSymbol[] = [];
-    await this.typeParser.update(doc, false);
+    await this.typeParser.update(text, false);
 
     for (const elem of this.typeParser.includes) {
       if (elem.includeName) {
