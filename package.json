@@ -1,7 +1,7 @@
 {
   "name": "maniascript-support",
   "description": "Maniascript support for vscode",
-  "version": "0.2.5-beta.2",
+  "version": "0.2.5-beta.4",
   "publisher": "reaby",
   "license": "MIT",
   "engines": {
@@ -18,7 +18,7 @@
     "type": "git",
     "url": "https://github.com/reaby/maniascript-support"
   },
-  "main": "./out/extension.js",
+  "main": "./app/extension.js",
   "contributes": {
     "menus": {
       "editor/context": [

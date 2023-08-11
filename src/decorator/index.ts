@@ -3,17 +3,17 @@ import TypeParser from "../typeparser";
 import Api from "../api";
 import Completer from "../completions";
 
-export default class Decorator {  
+export default class Decorator {
   typeParser: TypeParser;
   api: Api;
-  completer: Completer;  
+  completer: Completer;
 
   templatestringColor: vscode.TextEditorDecorationType =
     vscode.window.createTextEditorDecorationType({
       isWholeLine: false,
       backgroundColor: { id: "textCodeBlock.background" },
     });
-    
+
   /**
    * @type {vscode.TextEditorDecorationType}
    * @memberof Decorator
@@ -59,7 +59,7 @@ export default class Decorator {
     return out;
   }
 
-  update(activeEditor: vscode.TextEditor | undefined): void {
+  async update(activeEditor: vscode.TextEditor | undefined): Promise<void> {
     if (!activeEditor) {
       return;
     }
@@ -72,6 +72,7 @@ export default class Decorator {
     const multiLineTemplateStrings: vscode.DecorationOptions[] = [];
     const structs: vscode.DecorationOptions[] = [];
     const consts: vscode.DecorationOptions[] = [];
+    const usedConsts: string[] = [];
 
     while ((match = regEx.exec(text))) {
       const startPos = activeEditor.document.positionAt(match.index);
@@ -91,7 +92,7 @@ export default class Decorator {
     for (const struct of this.typeParser.structures) {
       const re = new RegExp(`(?:(?<![.]))\\b(${struct.structName})\\b`, "g");
       let line;
-      while ((line = re.exec(text))) {        
+      while ((line = re.exec(text))) {
         if (line[1].startsWith("K_")) continue;
         const startPos = activeEditor.document.positionAt(line.index);
         const endPos = activeEditor.document.positionAt(
@@ -122,7 +123,7 @@ export default class Decorator {
     }
 
     const _consts = this.typeParser.consts;
-    for(const obj of _consts) {
+    for (const obj of _consts) {
       const re = new RegExp(`\\b(${obj.name})\\b`, "g");
       let line;
       while ((line = re.exec(text))) {
@@ -133,12 +134,15 @@ export default class Decorator {
         const decoration: vscode.DecorationOptions = {
           range: new vscode.Range(startPos, endPos),
         };
-        consts.push(decoration);
+        if (!usedConsts.includes(obj.name)) {
+          usedConsts.push(obj.name);
+          consts.push(decoration);
+        }
       }
     }
 
     const vars = this.getContextProperties(this.typeParser.getRequireContext(text));
-    for(const obj of vars) {
+    for (const obj of vars) {
       const re = new RegExp(`\\b(${obj})\\b`, "g");
       let line;
       while ((line = re.exec(text))) {
@@ -148,7 +152,32 @@ export default class Decorator {
         const decoration: vscode.DecorationOptions = {
           range: new vscode.Range(startPos, endPos),
         };
-        consts.push(decoration);
+        if (!usedConsts.includes(obj)) {
+          usedConsts.push(obj);
+          consts.push(decoration);
+        }
+      }
+    }
+
+    for (const lang of await this.typeParser.getEmbeddedLanguages(text)) {
+      if (lang.type == "maniascript") {
+        const vars = this.getContextProperties(this.typeParser.getRequireContext(lang.value));
+        for (const obj of vars) {
+          const re = new RegExp(`\\b(${obj})\\b`, "g");
+          let line;
+          while ((line = re.exec(text))) {
+            const pos = line.index;
+            const startPos = activeEditor.document.positionAt(pos);
+            const endPos = activeEditor.document.positionAt(pos + line[1].length);
+            const decoration: vscode.DecorationOptions = {
+              range: new vscode.Range(startPos, endPos),
+            };
+            if (!usedConsts.includes(obj)) {
+              usedConsts.push(obj);
+              consts.push(decoration);
+            }
+          }
+        }
       }
     }
 
@@ -187,4 +216,6 @@ export default class Decorator {
     activeEditor.setDecorations(this.structColor, structs);
     activeEditor.setDecorations(this.constColor, consts);
   }
+
+
 }
