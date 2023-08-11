@@ -17,7 +17,7 @@ import { type } from "os";
 
 // this method is called when vs code is activated
 export async function activate(context: vscode.ExtensionContext) {
-  console.log("ManiaScript support is enabled.");
+  console.info("ManiaScript support is enabled.");
   const langs = await vscode.languages.getLanguages();
 
   let timeout: NodeJS.Timer | undefined = undefined;
@@ -53,8 +53,8 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerHoverProvider(
       { language: "maniascript", scheme: "file" },
       {
-        provideHover(document, position, token) {
-          return hoverHelper.onHover(document, position);
+        async provideHover(document, position, token) {
+          return await hoverHelper.onHover(document, position);
         },
       }
     )
@@ -244,25 +244,22 @@ export async function activate(context: vscode.ExtensionContext) {
           const text = document.getText();
           let out: vscode.CompletionItem[] = [];
           let index = 0;
-          
+          const word = document.getText(document.getWordRangeAtPosition(position, /\b[.:\w]+\b/));
 
           for (const lang of await typeParser.getEmbeddedLanguages(text)) {
             if (lang.type == "maniascript") {
               index += 1;
               if (lang.range.contains(position)) {
                 await typeParser.update(lang.value);
-                const newPos = new vscode.Position(position.line - lang.range.start.line, position.character);
-                out = await completions.complete(lang.value, newPos);
-                console.log(newPos);
-                console.log(completions.availableVars);
+                const newPos = new vscode.Position(position.line + 1 - lang.range.start.line, position.character);
+                out = await completions.complete(lang.value, newPos, word);
                 return out;
               }
             }
           }
 
-          
           await typeParser.update(text);
-          out = await completions.complete(text, position);
+          out = await completions.complete(text, position, word);
           return out;
         }
       },
@@ -286,8 +283,9 @@ export async function activate(context: vscode.ExtensionContext) {
             new vscode.Position(position.line, 0)
           );
           const text = document.getText();
+          const word = document.getText(document.getWordRangeAtPosition(position, /\b[.:\w]+\b/));
           await typeParser.update(text);
-          const completionItems = completions.complete(text, position);
+          const completionItems = await completions.complete(text, position, word);
           return completionItems;
         },
       },
@@ -302,10 +300,7 @@ export async function activate(context: vscode.ExtensionContext) {
           async provideCompletionItems(document, position, token) {
             const start = new vscode.Position(position.line, 0);
             const range = new vscode.Range(start, position);
-            const fullLine = new vscode.Range(
-              new vscode.Position(position.line, 0),
-              new vscode.Position(position.line + 1, 0)
-            );
+
             let startToCurrent = new vscode.Range(
               new vscode.Position(0, 0),
               new vscode.Position(position.line, 0)
@@ -321,9 +316,10 @@ export async function activate(context: vscode.ExtensionContext) {
               .getText(range)
               .replace(/^\s*/, "")
               .split(/([ |(])/);
-            const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right
+            const searchFor = document.getText(startToCurrent); //limit reading file from start to current line, so variables gets parsed right            
+            const word = document.getText(document.getWordRangeAtPosition(position, /\b[.:\w]+\b/));
             await typeParser.update(searchFor);
-            const completionItems = completions.complete(searchFor, position);
+            const completionItems = await completions.complete(searchFor, position, word);
 
             return completionItems;
           },

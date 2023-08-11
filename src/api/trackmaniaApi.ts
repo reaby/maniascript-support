@@ -8,7 +8,7 @@ export default class TrackmaniaApiParser implements ApiParser {
     let completions: any = completionsTemplate;
 
     if (fileName == null) {
-      console.log("Using build-in completions for Trackmania maniascript!");
+      console.info("Using build-in completions for Trackmania maniascript!");
       return doch;
     }
 
@@ -46,12 +46,12 @@ export default class TrackmaniaApiParser implements ApiParser {
           completions = this.processClasses(scopeArray, fileArray, completions);
         }
       } catch (err: any) {
-        console.log("doc.h read error: " + err);
-        console.log(err.stack);
-        console.log("No completions in use!");
+        console.error("doc.h read error: " + err);
+        console.error(err.stack);
+        console.info("Partial completions in use!");
         return doch;
       }
-      console.log(
+      console.info(
         "Using file: " + fileName + " for Trackmania maniascript completions!"
       );
       return completions;

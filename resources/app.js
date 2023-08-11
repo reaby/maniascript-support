@@ -161,7 +161,7 @@ function walk(rootNode, html) {
                 }
             }
         } catch (err) {
-            // console.log(err); silent exception
+            // console.error(err); silent exception
         }
     }
 

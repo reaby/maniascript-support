@@ -7,7 +7,7 @@ import { ApiParser } from "./types";
 export default class ManiaplanetApiParser implements ApiParser {
   parse(fileName: string): any {
     if (fileName == null) {
-      console.log("Using build-in completions for ManiaPlanet maniascript!");
+      console.info("Using build-in completions for ManiaPlanet maniascript!");
       return doch;
     }
     let completions: any = completionsTemplate;
@@ -81,18 +81,19 @@ export default class ManiaplanetApiParser implements ApiParser {
           }
           this.processClasses(scopeArray, completions);
         }
-      } catch (err) {
-        console.log("doc.h read error: " + err);
-        //  console.log(err.stack);
-        console.log("Using build-in completions for ManiaPlanet maniascript!");
+      } catch (err: any) {
+        console.error("doc.h read error: " + err);
+        console.error(err.stack);
+        console.info("Using build-in completions for ManiaPlanet maniascript!");
         return doch;
       }
 
-      console.log(
+      console.info(
         "Using file: " + fileName + " for ManiaPlanet maniascript completions!"
       );
       return completions;
     }
+
     return doch;
   }
 
@@ -140,7 +141,7 @@ export default class ManiaplanetApiParser implements ApiParser {
           if (line != 0) {
             const enumValues = [];
             while (!data[line].match(/\s*\};/g)) {
-              enumValues.push(data[line].trim().replace(",",""));
+              enumValues.push(data[line].trim().replace(",", ""));
               line += 1;
             }
             out[enumval[1]] = enumValues;

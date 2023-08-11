@@ -20,7 +20,6 @@ import * as parser from "@maniascript/parser";
 export default class Completer {
   readonly typeParser: TypeParser;
   readonly api: Api;
-  requireContext = "";
   availableVars: nameType[] = [];
   foreach: nameType[] = [];
 
@@ -31,15 +30,15 @@ export default class Completer {
     this.foreach = [];
   }
 
-  async complete(text: string, position: Position) {
+  async complete(text: string, position: Position, word: string) {
     const requireContext = this.typeParser.getRequireContext(text);
     this.genVars(position);
     const line = getText(text, new Range(position.line, 0, position.line + 1, 0));
     const searchFor = getText(text, new Range(position.line, 0, position.line, position.character))
-      .replace(/^\s*/, "")
+      .trimLeft()
       .split(/([ |(])/);
 
-    if (
+      if (
       searchFor.includes("#RequireContext") ||
       searchFor.includes("@context")
     ) {
@@ -211,7 +210,7 @@ export default class Completer {
 
   resolveVariable(search: string, requireContext: string): CompletionItem[] {
     // eslint-disable-next-line prefer-const
-    let { resolved, searchChain } = this.searchVariableType(search);
+    let { resolved, searchChain } = this.searchVariableType(search, requireContext);
 
     // spit autocomplete
     if (resolved != null) {
@@ -248,7 +247,7 @@ export default class Completer {
     return [];
   }
 
-  searchVariableType(search: string): any {
+  searchVariableType(search: string, requireContext: string): any {
     let resolved = "";
     const searchChain = search.split(".");
     searchChain.pop();
@@ -258,16 +257,16 @@ export default class Completer {
       if (searchChain.length == 1) {
         vari = searchChain[0].replace(/\[(.*?)\]/g, "");
         resolved =
-          this.getTypeVariable(vari) ??
-          this.findTypesInContext(vari, this.requireContext) ??
+          this.getTypeVariable(vari, requireContext) ??
+          this.findTypesInContext(vari, requireContext) ??
           "";
       } else {
         vari = searchChain[0].replace(/\[(.*?)\]/g, "");
         for (let count = 0; count < searchChain.length - 1; count++) {
           vari = vari.replace(/\[(.*?)\]/g, "");
           vari =
-            this.getTypeVariable(vari) ??
-            this.findTypesInContext(vari, this.requireContext) ??
+            this.getTypeVariable(vari, requireContext) ??
+            this.findTypesInContext(vari, requireContext) ??
             vari;
 
           const next = searchChain[count + 1].replace(/\[(.*?)\]/g, "");
@@ -289,8 +288,8 @@ export default class Completer {
       }
     } else {
       resolved =
-        this.getTypeVariable(search) ??
-        this.findTypesInContext(search, this.requireContext) ??
+        this.getTypeVariable(search, requireContext) ??
+        this.findTypesInContext(search, requireContext) ??
         "";
     }
 
@@ -298,7 +297,7 @@ export default class Completer {
     return { resolved, searchChain };
   }
 
-  getTypeVariable(search: string): string | null {
+  getTypeVariable(search: string, requireContext: string): string | null {
     for (const elem of this.availableVars) {
       if (search == elem.name) {
         const type = elem.type;
@@ -308,10 +307,10 @@ export default class Completer {
 
     for (const elem of this.foreach) {
       if (search == elem.name) {
-        const { resolved, arrChain } = this.searchVariableType(elem.type + ".");
+        const { resolved, arrChain } = this.searchVariableType(elem.type + ".", requireContext);
         let type =
           resolved ??
-          this.findTypesInContext(elem.type, this.requireContext) ??
+          this.findTypesInContext(elem.type, requireContext) ??
           elem.type;
         type = type.replace("[]", "");
         return type;

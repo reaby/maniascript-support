@@ -43,7 +43,6 @@ export default class TypeParser {
       requireContext = match[2] ?? "CSmMlScriptIngame";
     }
 
-    console.log(requireContext);
     return requireContext;
   }
 
@@ -72,9 +71,9 @@ export default class TypeParser {
     const tree = await parse(text, { twoStepsParsing: false, buildScopes: false, buildAst: true });
     this.scopemanager.analyze(tree.ast);
     if (!tree.success) {
-      for (const err of tree.errors) {
-        console.error(err.message);
-      }
+      /*for (const err of tree.errors) {
+        //console.error(err.message);
+      } */
       return [];
     }
 
@@ -113,7 +112,7 @@ export default class TypeParser {
     this.constExternal = [];
     this.labels = [];    
 
-    if (!tree.success) {
+    if (!tree.success) {     
       for (const err of tree.errors) {
         console.error(err.message);
       }
@@ -146,7 +145,7 @@ export default class TypeParser {
             .toString();
         }
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     }
     return;

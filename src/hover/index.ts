@@ -16,7 +16,7 @@ export default class HoverHelper {
   }
 
   async onHover(document: vscode.TextDocument, position: vscode.Position) {
-    const range = document.getWordRangeAtPosition(position, /(\b\w+\b)/);
+    const range = document.getWordRangeAtPosition(position, /(\b[.:\w]+\b)/);    
     if (!range) return null;    
     let text = document.getText();
     await this.typeParser.update(text);
@@ -26,27 +26,16 @@ export default class HoverHelper {
       if (language.type == "maniascript") {
         index += 1;
         if (language.range.contains(position)) {
-          text = language.value;          
+          text = language.value;                    
           newPosition = new vscode.Position(position.line - language.range.start.line, position.character);
-          await this.typeParser.update(text, true);
+          await this.typeParser.update(language.value, true);
           break;
         }
       }
-    }              
-    
+    }
     const word = document.getText(range);
-    const line2 = getText(text,
-      new vscode.Range(new vscode.Position(newPosition.line, 0), new vscode.Position(newPosition.line, range.end.character))
-    );
-    const line = getText(text,
-      new vscode.Range(
-        new vscode.Position(newPosition.line, 0),
-        new vscode.Position(newPosition.line + 1, 0)
-      )
-    );
-
-    const variable = this.wordAtCaret(line, line2);    
-    const requireContext = this.typeParser.getRequireContext(text);
+    const variable = word;    
+    const requireContext = this.typeParser.getRequireContext(text);    
     this.completions.genVars(newPosition);
     if (variable.indexOf("::") === -1) {
       try {
@@ -96,7 +85,7 @@ export default class HoverHelper {
 
         // variables
         const { resolved, searchChain } =
-          this.completions.searchVariableType(variable);
+          this.completions.searchVariableType(variable, requireContext);
         if (resolved) {
           const out =
             this.getClassVariableType(resolved, word) ||
@@ -108,7 +97,7 @@ export default class HoverHelper {
           return new vscode.Hover(doc);
         }
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     } else {
       // enums and externals
@@ -296,8 +285,8 @@ export default class HoverHelper {
     return out;
   }
 
-  wordAtCaret(line: string, line2: string): string {
-    const current = line2.split(/[\s({[^!]/);
+  wordAtCaret(line: string): string {
+    const current = line.split(/[\s({[^!]/);
     return current.pop() ?? "";
   }
 }

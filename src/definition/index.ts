@@ -23,7 +23,7 @@ export default class DefinitionHelper {
     );
 
     const search = document.getText(range);
-    const word = this.wordAtCaret(caret);
+    const word = document.getText(document.getWordRangeAtPosition(position, /\b[.:\w]+\b/));
 
     let found = false;
     let out = new vscode.Location(document.uri, new vscode.Position(0, 0));
@@ -58,6 +58,7 @@ export default class DefinitionHelper {
     }
 
     if (found) return out;
+
     this.completer.genVars(position);
 
     out = new vscode.Location(document.uri, new vscode.Position(0, 0));

@@ -52,7 +52,7 @@ export function getText(str: string, range: Range | undefined) {
   const out = [];
   for (let line = range.start.line; line <= range.end.line; line++) {
     if (line == range.start.line && line == range.end.line) {
-      if (range.end.character > 0) {
+      if (range.end.character > 0) {        
         return arr[line].slice(range.start.character, range.end.character);
       } else {
         return arr[line].slice(range.start.character);
