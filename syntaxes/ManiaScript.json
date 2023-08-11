@@ -46,94 +46,6 @@
         }
       ]
     },
-    "comments": {
-      "patterns": [
-        {
-          "match": "(//).*",
-          "name": "comment.line.double-slash.ms"
-        },
-        {
-          "begin": "/\\*\\*(?!/)",
-          "captures": {
-            "0": {
-              "name": "punctuation.definition.comment.ms"
-            }
-          },
-          "end": "\\*/",
-          "name": "comment.block.documentation.ms",
-          "patterns": [
-            {
-              "match": "(@param)\\s+(\\w+)\\s+",
-              "captures": {
-                "1": {
-                  "name": "storage.type.ms"
-                },
-                "2": {
-                  "name": "variable.other.readwrite.ms"
-                }
-              }
-            },
-            {
-              "match": "(@param)\\s+(\\{)\\s*(\\w+)\\s*(\\})\\s+(\\w+){0,1}",
-              "captures": {
-                "1": {
-                  "name": "storage.type.ms"
-                },
-                "2": {
-                  "name": "keyword.operator.ms"
-                },
-                "3": {
-                  "patterns": [
-                    {
-                      "include": "#storage-types"
-                    },
-                    {
-                      "include": "#language-constant"
-                    },
-                    {
-                      "include": "#literal-variable"
-                    }
-                  ]
-                },
-                "4": {
-                  "name": "keyword.operator.ms"
-                },
-                "5": {
-                  "name": "variable.other.readwrite.ms"
-                }
-              }
-            },
-            {
-              "match": "@(todo|TODO)(.*)",
-              "name": "invalid.ms"
-            },
-            {
-              "match": "@(fixme|FIXME)(.*)",
-              "name": "invalid.ms"
-            },
-            {
-              "match": "(@\\w+)",
-              "name": "storage.type.ms"
-            }
-          ]
-        },
-        {
-          "begin": "/\\*",
-          "end": "\\*/",
-          "name": "comment.block.ms",
-          "patterns": [
-            {
-              "match": "@(todo|TODO)(.*)",
-              "name": "invalid.ms"
-            },
-            {
-              "match": "@(fixme|FIXME)(.*)",
-              "name": "invalid.ms"
-            }
-          ]
-        }
-      ]
-    },
     "brackets": {
       "patterns": [
         {
@@ -232,6 +144,94 @@
         }
       ]
     },
+    "comments": {
+      "patterns": [
+        {
+          "match": "(//).*",
+          "name": "comment.line.double-slash.ms"
+        },
+        {
+          "begin": "/\\*\\*(?!/)",
+          "captures": {
+            "0": {
+              "name": "punctuation.definition.comment.ms"
+            }
+          },
+          "end": "\\*/",
+          "name": "comment.block.documentation.ms",
+          "patterns": [
+            {
+              "match": "(@param)\\s+(\\w+)\\s+",
+              "captures": {
+                "1": {
+                  "name": "storage.type.ms"
+                },
+                "2": {
+                  "name": "variable.other.readwrite.ms"
+                }
+              }
+            },
+            {
+              "match": "(@param)\\s+(\\{)\\s*(\\w+)\\s*(\\})\\s+(\\w+){0,1}",
+              "captures": {
+                "1": {
+                  "name": "storage.type.ms"
+                },
+                "2": {
+                  "name": "keyword.operator.ms"
+                },
+                "3": {
+                  "patterns": [
+                    {
+                      "include": "#storage-types"
+                    },
+                    {
+                      "include": "#language-constant"
+                    },
+                    {
+                      "include": "#literal-variable"
+                    }
+                  ]
+                },
+                "4": {
+                  "name": "keyword.operator.ms"
+                },
+                "5": {
+                  "name": "variable.other.readwrite.ms"
+                }
+              }
+            },
+            {
+              "match": "@(todo|TODO)(.*)",
+              "name": "invalid.ms"
+            },
+            {
+              "match": "@(fixme|FIXME)(.*)",
+              "name": "invalid.ms"
+            },
+            {
+              "match": "(@\\w+)",
+              "name": "storage.type.ms"
+            }
+          ]
+        },
+        {
+          "begin": "/\\*",
+          "end": "\\*/",
+          "name": "comment.block.ms",
+          "patterns": [
+            {
+              "match": "@(todo|TODO)(.*)",
+              "name": "invalid.ms"
+            },
+            {
+              "match": "@(fixme|FIXME)(.*)",
+              "name": "invalid.ms"
+            }
+          ]
+        }
+      ]
+    },
     "keyword-language": {
       "patterns": [
         {
@@ -241,7 +241,7 @@
         },
         {
           "comment": "Common control keywords found in various C style languages",
-          "match": "\\b(case|else|if)\\b",
+          "match": "\\b(if|else)\\b",
           "name": "keyword.control.conditional.ms"
         },
         {
@@ -683,7 +683,7 @@
               "name": "keyword.control.switch.ms"
             }
           },
-          "end": "\\}",
+          "end": "}",
           "endCaptures": {
             "0": {
               "name": "meta.brace.curly.ms"
@@ -695,25 +695,53 @@
               "include": "#round-brackets"
             },
             {
-              "begin": "\\{",
-              "beginCaptures": {
-                "0": {
-                  "name": "meta.brace.curly.ms"
-                }
-              },
-              "end": "(?=})",
-              "patterns": [
-                {
-                  "begin": "(?<!\\.)\\b(case|default)\\b",
-                  "beginCaptures": {
-                    "1": {
-                      "name": "keyword.control.switch.ms"
-                    }
-                  },
-                  "end": "(?=:)",
+              "match": "(case)\\s+([\".:\\w]+)\\s*(?=:)",
+              "name": "meta.switch-test.ms",
+              "captures": {
+                "1": {
+                  "name": "keyword.control.switch.ms"
+                },
+                "2": {
                   "patterns": [
                     {
                       "include": "#expression"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "patterns": [
+                {
+                  "match": "(default)\\s*(?=:)",
+                  "name": "keyword.control.switch.ms"
+                },
+                {
+                  "begin": "{",
+                  "end": "}",
+                  "patterns": [
+                    {
+                      "match": "(default)\\s*(?=:)",
+                      "name": "keyword.control.switch.ms"
+                    },
+                    {
+                      "match": "(case)\\s+([\".:\\w]+)\\s*(?=:)",
+                      "name": "meta.switch-test.ms",
+                      "captures": {
+                        "1": {
+                          "name": "keyword.control.switch.ms"
+                        },
+                        "2": {
+                          "patterns": [
+                            {
+                              "include": "#expression"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "include": "$self"
                     }
                   ]
                 },
@@ -797,6 +825,13 @@
           },
           "match": "(?x)  \\.?([_$a-zA-Z][$\\w]*)\\s* (?=\\()",
           "name": "meta.function-call.with-arguments.ms"
+        }
+      ]
+    },
+    "core": {
+      "patterns": [
+        {
+          "include": "#expression"
         }
       ]
     },
@@ -900,13 +935,6 @@
         },
         {
           "include": "#punctuation"
-        }
-      ]
-    },
-    "core": {
-      "patterns": [
-        {
-          "include": "#expression"
         }
       ]
     }

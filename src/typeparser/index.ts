@@ -113,9 +113,9 @@ export default class TypeParser {
     this.labels = [];    
 
     if (!tree.success) {     
-      for (const err of tree.errors) {
+      /*for (const err of tree.errors) {
         console.error(err.message);
-      }
+      } */
       return;
     }
 

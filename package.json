@@ -1,7 +1,7 @@
 {
   "name": "maniascript-support",
   "description": "Maniascript support for vscode",
-  "version": "0.2.5-beta.4",
+  "version": "0.2.5-beta.6",
   "publisher": "reaby",
   "license": "MIT",
   "engines": {

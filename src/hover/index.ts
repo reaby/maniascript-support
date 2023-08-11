@@ -16,7 +16,7 @@ export default class HoverHelper {
   }
 
   async onHover(document: vscode.TextDocument, position: vscode.Position) {
-    const range = document.getWordRangeAtPosition(position, /(\b[.:\w]+\b)/);    
+    const range = document.getWordRangeAtPosition(position, /(\b[\w]+\b)/);
     if (!range) return null;    
     let text = document.getText();
     await this.typeParser.update(text);
@@ -27,14 +27,17 @@ export default class HoverHelper {
         index += 1;
         if (language.range.contains(position)) {
           text = language.value;                    
-          newPosition = new vscode.Position(position.line - language.range.start.line, position.character);
+          newPosition = new vscode.Position(position.line + 1 - language.range.start.line, position.character);
           await this.typeParser.update(language.value, true);
           break;
         }
       }
     }
     const word = document.getText(range);
-    const variable = word;    
+    const line = getText(text,
+      new vscode.Range(new vscode.Position(newPosition.line, 0), new vscode.Position(newPosition.line, range.end.character))
+    );
+    const variable = this.wordAtCaret(line);    
     const requireContext = this.typeParser.getRequireContext(text);    
     this.completions.genVars(newPosition);
     if (variable.indexOf("::") === -1) {

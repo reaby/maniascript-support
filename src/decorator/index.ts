@@ -66,14 +66,12 @@ export default class Decorator {
 
     const regEx = /"{3}([\s\S]*?"{3})/g;
     const text = activeEditor.document.getText();
-    let match;
-
     const singleLineTemplateStrings: vscode.DecorationOptions[] = [];
     const multiLineTemplateStrings: vscode.DecorationOptions[] = [];
     const structs: vscode.DecorationOptions[] = [];
-    const consts: vscode.DecorationOptions[] = [];
-    const usedConsts: string[] = [];
-
+    const consts: vscode.DecorationOptions[] = [];    
+    let match;
+    
     while ((match = regEx.exec(text))) {
       const startPos = activeEditor.document.positionAt(match.index);
       const endPos = activeEditor.document.positionAt(
@@ -88,6 +86,8 @@ export default class Decorator {
         multiLineTemplateStrings.push(decoration);
       }
     }
+
+    await this.typeParser.update(text, false);
 
     for (const struct of this.typeParser.structures) {
       const re = new RegExp(`(?:(?<![.]))\\b(${struct.structName})\\b`, "g");
@@ -122,22 +122,18 @@ export default class Decorator {
       structs.push(decoration);
     }
 
-    const _consts = this.typeParser.consts;
-    for (const obj of _consts) {
-      const re = new RegExp(`\\b(${obj.name})\\b`, "g");
+    for (const obj of this.typeParser.consts) {
+      const re = new RegExp(`\\b(${obj.name})\\b`, "gm");
       let line;
       while ((line = re.exec(text))) {
-        if (line[1].startsWith("C_")) continue;
+        if (line[1].startsWith("C_")) continue;        
         const pos = line.index;
         const startPos = activeEditor.document.positionAt(pos);
         const endPos = activeEditor.document.positionAt(pos + line[1].length);
         const decoration: vscode.DecorationOptions = {
           range: new vscode.Range(startPos, endPos),
         };
-        if (!usedConsts.includes(obj.name)) {
-          usedConsts.push(obj.name);
-          consts.push(decoration);
-        }
+        consts.push(decoration);
       }
     }
 
@@ -152,10 +148,7 @@ export default class Decorator {
         const decoration: vscode.DecorationOptions = {
           range: new vscode.Range(startPos, endPos),
         };
-        if (!usedConsts.includes(obj)) {
-          usedConsts.push(obj);
-          consts.push(decoration);
-        }
+        consts.push(decoration);
       }
     }
 
@@ -172,10 +165,7 @@ export default class Decorator {
             const decoration: vscode.DecorationOptions = {
               range: new vscode.Range(startPos, endPos),
             };
-            if (!usedConsts.includes(obj)) {
-              usedConsts.push(obj);
-              consts.push(decoration);
-            }
+            consts.push(decoration);
           }
         }
       }

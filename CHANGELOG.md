@@ -1,3 +1,10 @@
+# version 0.2.5
+ * implement: maniascripts in template strings work as own scopes
+ * maniascript default context is now `CSmMlScriptIngame`, use #RequireContext to switch it.
+ * fix coloration for literal-switch
+ * added coloring of all consts from all namespaces
+ * hover provider fixes
+
 # version 0.2.4
  * fix parsing special case `#Const External::C_Value as C_Const`
 

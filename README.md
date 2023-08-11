@@ -29,6 +29,15 @@ Next thing is to configure the extension.
  "maniascript.useManiaplanetApi": false,
 ```
 
+you can match the color decorators to your theme by adding:
+
+```json
+"workbench.colorCustomizations": {
+        "maniascript.constColor": "#4FC1FF",
+        "maniascript.structColor": "#4ec9b0"
+}
+```
+
 3. All done!
 
 ## Features
