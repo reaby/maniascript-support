@@ -22,7 +22,7 @@ export default class HoverHelper {
     await this.typeParser.update(text);
     let index = 0;
     let newPosition = position;
-    for (const language of this.typeParser.embeddedLanguages) {
+    for (const language of await this.typeParser.getEmbeddedLanguages(text)) {
       if (language.type == "maniascript") {
         index += 1;
         if (language.range.contains(position)) {
@@ -45,8 +45,8 @@ export default class HoverHelper {
       )
     );
 
-    const variable = this.wordAtCaret(line, line2);
-    this.completions.requireContext = this.typeParser.requireContext;
+    const variable = this.wordAtCaret(line, line2);    
+    const requireContext = this.typeParser.getRequireContext(text);
     this.completions.genVars(newPosition);
     if (variable.indexOf("::") === -1) {
       try {
@@ -69,7 +69,7 @@ export default class HoverHelper {
             }
           }
         }
-        const func = this.getClassMethods(this.typeParser.requireContext, word);
+        const func = this.getClassMethods(requireContext, word);
         if (func !== "") {
           const doc = new vscode.MarkdownString();
           doc.appendCodeblock(func, "maniascript");

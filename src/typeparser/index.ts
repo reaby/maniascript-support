@@ -26,9 +26,6 @@ export default class TypeParser {
   consts: nameTypeValueRange[] = [];
   constExternal: constTypeExternal[] = [];
   labels: nameTypeRange[] = [];
-  embeddedLanguages: nameTypeValueRange[] = [];
-
-  requireContext = "";
   scopemanager: parser.ScopeManager = new parser.ScopeManager();
 
   async updateStructs(text: string | undefined) {
@@ -40,16 +37,18 @@ export default class TypeParser {
   }
 
   getRequireContext(text: string): string {
-    const match = text.match(/(#RequireContext\s+\w+)|(@context\s+\w+)/g);
-    let requireContext = "";
+    const match = text.match(/(#RequireContext|@context)\s+(\w+)/);
+    let requireContext = "CSmMlScriptIngame";
     if (match) {
-      requireContext = match[0]?.split(" ")?.pop() ?? "";
+      requireContext = match[2] ?? "CSmMlScriptIngame";
     }
-    this.requireContext = requireContext;    
-    return this.requireContext;
+
+    console.log(requireContext);
+    return requireContext;
   }
 
-  extractEmbeddedLanguage(content: string, range: Range): void {
+  extractEmbeddedLanguage(content: string, range: Range): nameTypeValueRange[] {
+    const embeddedLanguages: nameTypeValueRange[] = [];
     const regex = content.match(/^"""(\s*(\/\/!)[\t ]*(\w+){0,1}){1}/);
     let lang = "xml";
     if (regex && regex[2] == "//!") {
@@ -58,24 +57,48 @@ export default class TypeParser {
         lang = regex[3];
       }
     }
-
-    this.embeddedLanguages.push({
+    embeddedLanguages.push({
       name: "embedded",
       type: lang,
-      value: content.replace(/"""/g, "").replace(/\s*\/\/!\s*(\w+){0,1}/, "\n"),
+      value: content.replace(/"""/g, "").replace(/\s*\/\/!(\s*\w+){0,1}/, "\n"),
       range: range
     });
+    return embeddedLanguages;
+  }
+
+  async getEmbeddedLanguages(text: string): Promise<nameTypeValueRange[]> {
+    const embeddedLanguages: nameTypeValueRange[] = [];
+
+    const tree = await parse(text, { twoStepsParsing: false, buildScopes: false, buildAst: true });
+    this.scopemanager.analyze(tree.ast);
+    if (!tree.success) {
+      for (const err of tree.errors) {
+        console.error(err.message);
+      }
+      return [];
+    }
+
+    tree.ast.program?.visit((node) => {
+      if (node.kind == "TemplateTextLiteral") {
+        const nod = node as parser.TemplateTextLiteral;
+        const range = getRange(nod.source.loc);
+        embeddedLanguages.push(...this.extractEmbeddedLanguage(getText(text, range), range));
+      }
+      if (node.kind == "TextLiteral") {
+        const nod = node as parser.TextLiteral;
+        if (nod.isMultiline) {
+          embeddedLanguages.push(...this.extractEmbeddedLanguage(nod.raw, getRange(nod.source.loc)));
+        }
+      }
+    }, () => { });
+
+    return embeddedLanguages;
+
+
   }
 
   async update(text: string, processExternals = true): Promise<void> {
-    this.requireContext = this.getRequireContext(text);
     const tree = await parse(text, { twoStepsParsing: false, buildScopes: false, buildAst: true });
-    if (!tree.success) {      
-      /* for(const err of tree.errors) {
-        console.error(err.message);
-      } */
-      return;
-    }
 
     this.includes = [];
     this.extend = [];
@@ -88,24 +111,15 @@ export default class TypeParser {
 
     this.consts = [];
     this.constExternal = [];
-    this.labels = [];
-    this.embeddedLanguages = [];
+    this.labels = [];    
 
-    this.scopemanager.analyze(tree.ast);
+    if (!tree.success) {
+      for (const err of tree.errors) {
+        console.error(err.message);
+      }
+      return;
+    }
 
-    tree.ast.program?.visit((node) => {
-      if (node.kind == "TemplateTextLiteral") {
-        const nod = node as parser.TemplateTextLiteral;
-        const range = getRange(nod.source.loc);
-        this.extractEmbeddedLanguage(getText(text, range), range);
-      }
-      if (node.kind == "TextLiteral") {
-        const nod = node as parser.TextLiteral;
-        if (nod.isMultiline) {
-          this.extractEmbeddedLanguage(nod.raw, getRange(nod.source.loc));
-        }
-      }
-    }, () => { });
     this.parseDirectives(text, tree.ast.program?.directives ?? [], false);
     this.parseFunctions(text, tree.ast.program?.declarations ?? [], false);
     this.parseLabels(text, tree.ast.program?.declarations ?? [], false);
@@ -129,7 +143,7 @@ export default class TypeParser {
         if (fs.existsSync(file)) {
           return fs
             .readFileSync(path.uri.fsPath + "/" + filename)
-            .toString();            
+            .toString();
         }
       } catch (e) {
         console.log(e);
@@ -309,9 +323,9 @@ export default class TypeParser {
 
   parseDocBlock(docLines: string[], line: number): string {
     let out = "";
-    let process = false;    
+    let process = false;
     for (let i = 1; i < 30; i++) {
-      const loc = line - i;      
+      const loc = line - i;
       if (loc >= 0) {
         if (docLines[loc].includes("*/") && i <= 3) process = true;
         if (process) out = docLines[loc] + "\n" + out;

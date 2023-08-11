@@ -20,9 +20,10 @@ export default class SignatureHelper {
     this.completions = completions;
   }
 
-  provideHelp(text: string, idx: number) {
+  provideHelp(lineText: string, idx: number, doctext:string) {
     let found = false;
-    const res = this.resolveFunc(text);
+    const requireContext = this.typeParser.getRequireContext(doctext);
+    const res = this.resolveFunc(lineText);
     if (res == null) return null;
 
     const reserved = [
@@ -64,7 +65,7 @@ export default class SignatureHelper {
       if (parts.length < 1) return;
 
       if (arrayFunctions.includes(parts[parts.length - 1])) return;
-      let resolved = this.findFunc(parts);
+      let resolved = this.findFunc(parts, requireContext);
       const classes: any = this.api.get().classes;
 
       if (Object.prototype.hasOwnProperty.call(classes, resolved)) {
@@ -173,7 +174,7 @@ export default class SignatureHelper {
     if (found) return signature;
 
     const classes: any = this.api.get().classes;
-    let resolved = this.typeParser.requireContext;
+    let resolved = requireContext;
     found = false;
     if (Object.prototype.hasOwnProperty.call(classes, resolved)) {
       do {
@@ -220,9 +221,7 @@ export default class SignatureHelper {
     return null;
   }
 
-  findFunc(searchChain: string[]) {
-    const requireContext = this.typeParser.requireContext;
-
+  findFunc(searchChain: string[], requireContext: string) {  
     let vari =
       this.completions.findTypesInContext(searchChain[0], requireContext) ??
       requireContext;
@@ -240,7 +239,7 @@ export default class SignatureHelper {
         }
       }
     }
-      
+
     // resolved at this point hold the class we're about to need
     return resolved.replace(/\[(.*?)\]/g, "");
   }

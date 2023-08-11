@@ -32,14 +32,13 @@ export default class Completer {
   }
 
   async complete(text: string, position: Position) {
-    const requireContext = this.typeParser.requireContext;
-    this.requireContext = requireContext;
+    const requireContext = this.typeParser.getRequireContext(text);
     this.genVars(position);
     const line = getText(text, new Range(position.line, 0, position.line + 1, 0));
     const searchFor = getText(text, new Range(position.line, 0, position.line, position.character))
-      .replace(/^\s*/, "")    
+      .replace(/^\s*/, "")
       .split(/([ |(])/);
-      
+
     if (
       searchFor.includes("#RequireContext") ||
       searchFor.includes("@context")
@@ -548,13 +547,13 @@ export default class Completer {
       "return",
       "reverse",
       "in",
-      "as",      
+      "as",
       "metadata",
       "netread",
       "netwrite",
       "persistent",
       "while",
-      "if",      
+      "if",
       "switch",
       "switchtype",
       "for",
@@ -569,8 +568,8 @@ export default class Completer {
       "dump",
       "log",
       "dumptype",
-      "sleep",      
-      "wait",      
+      "sleep",
+      "wait",
     ].map((label) => new CompletionItem(label, CompletionItemKind.Function));
     const arr3 = [
       "This",
@@ -580,7 +579,7 @@ export default class Completer {
   }
 
   getNamespaces(): CompletionItem[] {
-    const out: CompletionItem[] = [];    
+    const out: CompletionItem[] = [];
     for (const elem of this.typeParser.includes) {
       const Item = new CompletionItem(
         elem.variableName,

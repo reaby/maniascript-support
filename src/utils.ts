@@ -65,7 +65,6 @@ export function getText(str: string, range: Range | undefined) {
     else {
       out.push(arr[line]);
     }
-  }
-  // console.log(out);
+  }  
   return out.join("\n");
 }

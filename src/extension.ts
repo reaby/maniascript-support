@@ -145,7 +145,7 @@ export async function activate(context: vscode.ExtensionContext) {
           const lineText = document.getText(line).replace(/\r/g, "");
           let text = document.getText();
           const idx = context.activeSignatureHelp?.activeSignature ?? 0;
-          for (const lang of typeParser.embeddedLanguages) {
+          for (const lang of await typeParser.getEmbeddedLanguages(text)) {
             if (lang.type == "maniascript") {
               if (lang.range.contains(position)) {
                 text = lang.value;
@@ -154,7 +154,7 @@ export async function activate(context: vscode.ExtensionContext) {
             }
           }
           await typeParser.update(text);
-          return signatureHelper.provideHelp(lineText, idx);
+          return signatureHelper.provideHelp(lineText, idx, text);
         },
       },
       "("
@@ -241,21 +241,26 @@ export async function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+          const text = document.getText();
           let out: vscode.CompletionItem[] = [];
-          let index = 1;
+          let index = 0;
+          
 
-          for (const lang of typeParser.embeddedLanguages) {
+          for (const lang of await typeParser.getEmbeddedLanguages(text)) {
             if (lang.type == "maniascript") {
               index += 1;
               if (lang.range.contains(position)) {
                 await typeParser.update(lang.value);
                 const newPos = new vscode.Position(position.line - lang.range.start.line, position.character);
                 out = await completions.complete(lang.value, newPos);
+                console.log(newPos);
+                console.log(completions.availableVars);
                 return out;
               }
             }
           }
-          const text = document.getText();
+
+          
           await typeParser.update(text);
           out = await completions.complete(text, position);
           return out;
