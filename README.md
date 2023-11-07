@@ -3,7 +3,7 @@
 VSCode Grammar / Autocompletion support for `".Script.txt"` files.
 For more information about ManiaScript, see https://doc.maniaplanet.com/maniascript and https://wiki.trackmania.io
 
-This is rewritten for typescript and enhanced which bases on [MattMcFarland/vscode-maniascript](https://github.com/MattMcFarland/vscode-maniascript).
+This is rewritten and enhanced for typescript, based on [MattMcFarland/vscode-maniascript](https://github.com/MattMcFarland/vscode-maniascript).
 
 ## Setup Maniascript API
 
@@ -96,19 +96,19 @@ Single line template string will try to detect xml opening tag, if so the templa
 | Language    | Annotation                                                       |
 | :---------- | :--------------------------------------------------------------  |
 | XML | `"""//xml` |
-| Manialink XML |  `"""//manialink` | 
+| Manialink XML |  `"""//manialink` or `"""` | 
 | ManiaScript | `"""//maniascript` or `"""//ms` or `"""//!` |
 
 ### External libraries
 Just add folder to workspace to get libraries load relatively from those directories.
 so if you have
-```
+```ts
 #Include "Mylib/external.Script.Txt" as MyLib
 ```
 be sure that MyLib is folder inside workspace library.
 
 AutoCompleting from structure aliasses works as well, example:
-```
+```ts
 #Struct externalLib::myStruct as structAlias
 ```
 
@@ -135,9 +135,8 @@ Just change the template language at jinja-html, you get instant support for man
 Twig and jinja2 syntaxes are so close to same, so you can use jinja2-html for twig templates as well :)
 
 ## Contributing
-you can find the most recent version of the plugin at https://github.com/reaby/maniascript-support
-colorizer, currently at patch#4 branch:
-https://github.com/reaby/ManiaScript.tmLanguage
+You can find the most recent version of the plugin at https://github.com/reaby/maniascript-support
+Colorizer, currently at patch#4 branch: https://github.com/reaby/ManiaScript.tmLanguage
 
 ## License
 
