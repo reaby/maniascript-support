@@ -1,7 +1,7 @@
 {
   "name": "maniascript-support",
   "description": "Maniascript support for vscode",
-  "version": "0.2.5-beta.7",
+  "version": "0.2.5-beta.10",
   "publisher": "reaby",
   "license": "MIT",
   "engines": {
@@ -89,8 +89,9 @@
         "scopeName": "source.ms",
         "path": "./syntaxes/ManiaScript.json",
         "embeddedLanguages": {
-          "meta.embedded.xml": "xml",
-          "meta.embedded.manialink": "xml",
+          "meta.embedded.xml.ms": "xml",
+          "meta.embedded.manialink.ms": "xml",
+		  "string.quoted.triple.ms": "xml",
           "meta.embedded.script.block.ms": "maniascript"
         }
       },

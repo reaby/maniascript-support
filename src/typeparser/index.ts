@@ -48,21 +48,43 @@ export default class TypeParser {
 	extractEmbeddedLanguage(content: string, range: Range): nameTypeValueRange[] {
 		const embeddedLanguages: nameTypeValueRange[] = [];
 		const regex = content.match(/^"""(\s*(\/\/!)[\t ]*(\w+){0,1}){1}/);
-		let lang = "text";
+		let lang = "xml";
+		let newContent = content.replace(/(^""")|("""$)/gm, "").replace(/\s*\/\/!(\s*\w+){0,1}/, "\n");
 		if (regex && regex[2] == "//!") {
 			lang = "maniascript";
 			if (regex[3]) {
-				lang = regex[3];
+				lang = regex[3];				
 			}
 		}
-		if (regex && (regex[2] == "//<xml" || regex[2] == "//!xml")) {
-			lang = "xml";
+
+		if (lang == "xml" || lang == "manialink") {					
+			const value = newContent.matchAll(/<[/]{0,1}script>/g);
+			const range2 = [];		
+			for(const re of value) {
+				range2.push(re.index);
+			}
+			if (range2.length == 2) {
+				lang = "maniascript";
+				const trimStart = newContent.slice(0, range2[0]).split("\n");
+				let start = "\n";
+				let end = "";
+				for(let i = 0; i < trimStart.length-1; i++) {
+					start += "\n";
+				}
+				const trimEnd = newContent.slice(range2[1]).split("\n");
+				for(let i = 0; i < trimEnd.length-1; i++) {
+					end += "\n";
+				}
+				const script = newContent.slice(range2[0], range2[1]).replace(/<[/]{0,1}script>/g, "").replace(/(<!--)|(-->)|(<\[CDATA\[)|(\]\]>)/g, "");			
+				newContent = start + script + end;
+			}
 		}
+
 		if (["xml", "maniascript"].includes(lang)) {
 			embeddedLanguages.push({
 				name: "embedded",
 				type: lang,
-				value: content.replace(/"""/g, "").replace(/\s*\/\/!(\s*\w+){0,1}/, "\n"),
+				value: newContent,
 				range: range
 			});
 		}
@@ -103,7 +125,7 @@ export default class TypeParser {
 	async update(text: string, processExternals = true, reset = true): Promise<void> {
 		const tree = await parse(text, { twoStepsParsing: true, buildScopes: true, buildAst: true });
 		this.scopemanager.analyze(tree.ast);
-		
+
 		/*if (!tree.success) {
 			for (const err of tree.errors) {
 				console.log(err.message);
