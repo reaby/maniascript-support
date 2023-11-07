@@ -46,104 +46,6 @@
         }
       ]
     },
-    "brackets": {
-      "patterns": [
-        {
-          "include": "#round-brackets"
-        },
-        {
-          "include": "#square-brackets"
-        }
-      ]
-    },
-    "round-brackets": {
-      "patterns": [
-        {
-          "begin": "\\(",
-          "beginCaptures": {
-            "0": {
-              "name": "meta.brace.round.ms"
-            }
-          },
-          "end": "\\)",
-          "endCaptures": {
-            "0": {
-              "name": "meta.brace.round.ms"
-            }
-          },
-          "name": "meta.brace.round.ms",
-          "patterns": [
-            {
-              "include": "#expression"
-            }
-          ]
-        }
-      ]
-    },
-    "square-brackets": {
-      "patterns": [
-        {
-          "begin": "\\[",
-          "beginCaptures": {
-            "0": {
-              "name": "meta.brace.square.ms"
-            }
-          },
-          "end": "\\]",
-          "endCaptures": {
-            "0": {
-              "name": "meta.brace.square.ms"
-            }
-          },
-          "name": "meta.brace.square.ms",
-          "patterns": null
-        }
-      ]
-    },
-    "storage-types": {
-      "patterns": [
-        {
-          "match": "(?<!\\.)\\bText\\b",
-          "name": "storage.type.text.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bReal\\b",
-          "name": "storage.type.number.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bIdent\\b",
-          "name": "storage.type.identity.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bBoolean\\b",
-          "name": "storage.type.boolean.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bInteger\\b",
-          "name": "storage.type.integer.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bVec2\\b",
-          "name": "storage.type.vector-tuple.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bVec3\\b",
-          "name": "storage.type.vector-triple.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bInt3\\b",
-          "name": "storage.type.integer-triple.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bInt2\\b",
-          "name": "storage.type.integer-tuple.ms"
-        },
-        {
-          "match": "(?<!\\.)\\bVoid\\b",
-          "name": "storage.type.void.ms"
-        }
-      ]
-    },
     "comments": {
       "patterns": [
         {
@@ -232,6 +134,112 @@
         }
       ]
     },
+    "storage-types": {
+      "patterns": [
+        {
+          "match": "(?<!\\.)\\bText\\b",
+          "name": "storage.type.text.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bReal\\b",
+          "name": "storage.type.number.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bIdent\\b",
+          "name": "storage.type.identity.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bBoolean\\b",
+          "name": "storage.type.boolean.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bInteger\\b",
+          "name": "storage.type.integer.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bVec2\\b",
+          "name": "storage.type.vector-tuple.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bVec3\\b",
+          "name": "storage.type.vector-triple.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bInt3\\b",
+          "name": "storage.type.integer-triple.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bInt2\\b",
+          "name": "storage.type.integer-tuple.ms"
+        },
+        {
+          "match": "(?<!\\.)\\bVoid\\b",
+          "name": "storage.type.void.ms"
+        }
+      ]
+    },
+    "brackets": {
+      "patterns": [
+        {
+          "include": "#round-brackets"
+        },
+        {
+          "include": "#square-brackets"
+        }
+      ]
+    },
+    "round-brackets": {
+      "patterns": [
+        {
+          "begin": "\\(",
+          "beginCaptures": {
+            "0": {
+              "name": "meta.brace.round.ms"
+            }
+          },
+          "end": "\\)",
+          "endCaptures": {
+            "0": {
+              "name": "meta.brace.round.ms"
+            }
+          },
+          "name": "meta.brace.round.ms",
+          "patterns": [
+            {
+              "include": "#expression"
+            }
+          ]
+        }
+      ]
+    },
+    "square-brackets": {
+      "patterns": [
+        {
+          "begin": "\\[",
+          "beginCaptures": {
+            "0": {
+              "name": "meta.brace.square.ms"
+            }
+          },
+          "end": "\\]",
+          "endCaptures": {
+            "0": {
+              "name": "meta.brace.square.ms"
+            }
+          },
+          "name": "meta.brace.square.ms",
+          "patterns": null
+        }
+      ]
+    },
+    "keyword-storage": {
+      "patterns": [
+        {
+          "match": "(?<!\\.)\\b(persistent|netread|netwrite|declare|let|metadata)\\b",
+          "name": "storage.type.ms"
+        }
+      ]
+    },
     "keyword-language": {
       "patterns": [
         {
@@ -275,14 +283,6 @@
             }
           },
           "name": "meta.include.ms"
-        }
-      ]
-    },
-    "keyword-storage": {
-      "patterns": [
-        {
-          "match": "(?<!\\.)\\b(persistent|netread|netwrite|declare|let|metadata)\\b",
-          "name": "storage.type.ms"
         }
       ]
     },
@@ -360,18 +360,6 @@
         {
           "match": "(?<!\\.)\\b([CS]_\\w+)\\b",
           "name": "variable.other.enummember.ms"
-        }
-      ]
-    },
-    "support-functions": {
-      "patterns": [
-        {
-          "match": "(?<=\\.)\\b(clear|count|containsonly|containsoneof|slice|exists|existskey|remove|removekey|add|addfirst|sort|sortreverse|sortkey|sortkeyreverse|keyof|tojson|fromjson)\\b(?:\\()",
-          "name": "support.function.ms"
-        },
-        {
-          "match": "\\b(log|assert|dump)\\b",
-          "name": "support.function.ms"
         }
       ]
     },
@@ -454,6 +442,18 @@
               "include": "#comments"
             }
           ]
+        }
+      ]
+    },
+    "support-functions": {
+      "patterns": [
+        {
+          "match": "(?<=\\.)\\b(clear|count|containsonly|containsoneof|slice|exists|existskey|remove|removekey|add|addfirst|sort|sortreverse|sortkey|sortkeyreverse|keyof|tojson|fromjson)\\b(?:\\()",
+          "name": "support.function.ms"
+        },
+        {
+          "match": "\\b(log|assert|dump)\\b",
+          "name": "support.function.ms"
         }
       ]
     },
@@ -675,82 +675,51 @@
       ]
     },
     "literal-switch": {
+      "patterns": {
+        "begin": "(?<!\\.)\\b(switch|switchtype)\\b",
+        "beginCaptures": {
+          "1": {
+            "name": "keyword.control.switch.ms"
+          }
+        },
+        "end": "}",
+        "endCaptures": {
+          "0": {
+            "name": "meta.brace.curly.ms"
+          }
+        },
+        "name": "meta.switch.ms",
+        "patterns": [
+          {
+            "include": "#round-brackets"
+          },
+          {
+            "include": "$self"
+          }
+        ]
+      }
+    },
+    "literal-switch-statements": {
       "patterns": [
         {
-          "begin": "(?<!\\.)\\b(switch|switchtype)\\b",
-          "beginCaptures": {
+          "match": "(default)\\s*(?=:)",
+          "name": "keyword.control.switch.ms"
+        },
+        {
+          "match": "(case)\\s+([\".:\\w]+)\\s*(?=:)",
+          "name": "meta.switch-test.ms",
+          "captures": {
             "1": {
               "name": "keyword.control.switch.ms"
-            }
-          },
-          "end": "}",
-          "endCaptures": {
-            "0": {
-              "name": "meta.brace.curly.ms"
-            }
-          },
-          "name": "meta.switch.ms",
-          "patterns": [
-            {
-              "include": "#round-brackets"
             },
-            {
-              "match": "(case)\\s+([\".:\\w]+)\\s*(?=:)",
-              "name": "meta.switch-test.ms",
-              "captures": {
-                "1": {
-                  "name": "keyword.control.switch.ms"
-                },
-                "2": {
-                  "patterns": [
-                    {
-                      "include": "#expression"
-                    }
-                  ]
-                }
-              }
-            },
-            {
+            "2": {
               "patterns": [
                 {
-                  "match": "(default)\\s*(?=:)",
-                  "name": "keyword.control.switch.ms"
-                },
-                {
-                  "begin": "{",
-                  "end": "}",
-                  "patterns": [
-                    {
-                      "match": "(default)\\s*(?=:)",
-                      "name": "keyword.control.switch.ms"
-                    },
-                    {
-                      "match": "(case)\\s+([\".:\\w]+)\\s*(?=:)",
-                      "name": "meta.switch-test.ms",
-                      "captures": {
-                        "1": {
-                          "name": "keyword.control.switch.ms"
-                        },
-                        "2": {
-                          "patterns": [
-                            {
-                              "include": "#expression"
-                            }
-                          ]
-                        }
-                      }
-                    },
-                    {
-                      "include": "$self"
-                    }
-                  ]
-                },
-                {
-                  "include": "$self"
+                  "include": "#expression"
                 }
               ]
             }
-          ]
+          }
         }
       ]
     },
@@ -828,13 +797,6 @@
         }
       ]
     },
-    "core": {
-      "patterns": [
-        {
-          "include": "#expression"
-        }
-      ]
-    },
     "literal-variable": {
       "patterns": [
         {
@@ -886,6 +848,13 @@
         }
       ]
     },
+    "core": {
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
     "expression": {
       "patterns": [
         {
@@ -899,6 +868,9 @@
         },
         {
           "include": "#literal-switch"
+        },
+        {
+          "include": "#literal-switch-statements"
         },
         {
           "include": "#literal-for"

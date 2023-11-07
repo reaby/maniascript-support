@@ -1,6 +1,7 @@
 # version 0.2.5
+ * update maniascript parser to 12.2.0
  * implement: maniascripts in template strings work as own scopes
- * maniascript default context is now `CSmMlScriptIngame`, use #RequireContext to switch it.
+ * maniascript default context is now `CSmMlScriptIngame`, use #RequireContext to switch it. 
  * fix coloration for literal-switch
  * added coloring of all consts from all namespaces
  * hover provider fixes

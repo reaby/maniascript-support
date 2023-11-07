@@ -153,7 +153,7 @@ export async function activate(context: vscode.ExtensionContext) {
               }
             }
           }
-          await typeParser.update(text);
+          await typeParser.update(text, false, false);
           return signatureHelper.provideHelp(lineText, idx, text);
         },
       },
@@ -241,26 +241,26 @@ export async function activate(context: vscode.ExtensionContext) {
       { language: "maniascript", scheme: "file" },
       {
         async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
-          const text = document.getText();
-          let out: vscode.CompletionItem[] = [];
-          let index = 0;
-          const word = document.getText(document.getWordRangeAtPosition(position, /\b[.:\w]+\b/));
+			const text = document.getText();
+			let out: vscode.CompletionItem[] = [];
+			let index = 0;
+			const word = document.getText(document.getWordRangeAtPosition(position, /\b[.:\w]+\b/));
+			await typeParser.update(text, true, true);
 
-          for (const lang of await typeParser.getEmbeddedLanguages(text)) {
-            if (lang.type == "maniascript") {
-              index += 1;
-              if (lang.range.contains(position)) {
-                await typeParser.update(lang.value);
-                const newPos = new vscode.Position(position.line + 1 - lang.range.start.line, position.character);
-                out = await completions.complete(lang.value, newPos, word);
-                return out;
-              }
-            }
-          }
-
-          await typeParser.update(text);
-          out = await completions.complete(text, position, word);
-          return out;
+			for (const lang of await typeParser.getEmbeddedLanguages(text)) {
+				if (lang.type == "maniascript") {
+				index += 1;
+				if (lang.range.contains(position)) {
+					await typeParser.update(lang.value, false, true);
+					const newPos = new vscode.Position(position.line + 1 - lang.range.start.line, position.character);
+					out = await completions.complete(lang.value, newPos, word);
+					return out;
+				}
+				}
+			}
+			
+			out = await completions.complete(text, position, word);
+			return out;
         }
       },
       ".")

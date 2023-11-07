@@ -28,7 +28,7 @@ export default class HoverHelper {
         if (language.range.contains(position)) {
           text = language.value;                    
           newPosition = new vscode.Position(position.line + 1 - language.range.start.line, position.character);
-          await this.typeParser.update(language.value, true);
+          await this.typeParser.update(language.value);
           break;
         }
       }
