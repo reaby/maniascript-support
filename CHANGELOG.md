@@ -1,9 +1,10 @@
 # version 0.2.5
- * update maniascript parser to 12.2.0
+ * update maniascript parser to 12.2.0 - allows partial AST to generate, so the extension now works right
  * implement: maniascripts in template strings work as own scopes
  * maniascript default context is now `CSmMlScriptIngame`, use #RequireContext to switch it. 
  * fix coloration for literal-switch
  * added coloring of all consts from all namespaces
+ * added #Included variable names to autocomplete
  * hover provider fixes
 
 # version 0.2.4

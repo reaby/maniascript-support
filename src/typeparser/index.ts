@@ -75,7 +75,7 @@ export default class TypeParser {
 				for(let i = 0; i < trimEnd.length-1; i++) {
 					end += "\n";
 				}
-				const script = newContent.slice(range2[0], range2[1]).replace(/<[/]{0,1}script>/g, "").replace(/(<!--)|(-->)|(<\[CDATA\[)|(\]\]>)/g, "");			
+				const script = newContent.slice(range2[0], range2[1]).replace(/<[/]{0,1}script>/g, "").replace(/(<!--)|(-->)|(<\[CDATA\[)|(\]\]>)/g, "").replace(/[{]{3}(.*?)[}]{3}/g, "");			
 				newContent = start + script + end;
 			}
 		}
